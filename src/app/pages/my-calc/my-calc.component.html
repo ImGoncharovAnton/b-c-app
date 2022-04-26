@@ -1,0 +1,34 @@
+<div class="page">
+  <h3>ParentId: {{parentId}}</h3>
+  <div class="container">
+    <div class="my-calc-page">
+      <div class="my-calc-page__inner">
+        <div class="my-calc-page__top top-my-calc">
+          <h2 class="top-my-calc__heading">
+            April
+          </h2>
+          <div class="top-my-calc__total">
+            <p>Total Budget:</p>
+            <span>1293</span>
+          </div>
+        </div>
+      </div>
+      <div class="my-calc-page__inner">
+        <div class="my-calc-page__middle middle-my-calc">
+          <div class="middle-my-calc__column">
+            <app-income-list></app-income-list>
+          </div>
+          <div class="middle-my-calc__column">
+            <app-expense-list></app-expense-list>
+          </div>
+        </div>
+        <div class="my-calc-page__bottom">
+          <button mat-raised-button
+                  class="btn-create"
+                  (click)="onCreateItem()">Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

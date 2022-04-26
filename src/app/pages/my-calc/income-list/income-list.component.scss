@@ -1,0 +1,74 @@
+.income-list-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.income-list-heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 3px;
+  border: 1px solid #0f0f0f;
+  background-color: #7dd688;
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  span {
+    padding: 0.2rem;
+    display: inline-flex;
+    font-size: 1.2rem;
+  }
+
+}
+
+.income-list-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 0;
+  width: 75%;
+}
+
+.income-list-item {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 0.5rem 1rem;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #b8d6bc;
+  border-radius: 3px;
+  border: 1px solid darkgreen;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.6);
+
+  p {
+    font-size: 1rem;
+  }
+
+  span {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    .income-list-icon {
+      display: block;
+    }
+  }
+}
+
+.income-list-icon {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  font-size: 1.7rem;
+}

@@ -1,0 +1,39 @@
+<div class="page">
+  <div class="container">
+    <h1>I'm new budget calc</h1>
+    <div class="overview-page">
+      <ul class="months-list">
+        <ng-container *ngIf="monthsArr.length > 0">
+          <!--          [routerLink]="item.monthId > monthsArr[0].monthId + 1 ? null : ['/my-calculator', item.month]"-->
+          <li
+            class="months-item"
+            *ngFor="let item of monthsArr; let i = index"
+            [ngClass]="[item.monthId > monthsArr[0].monthId + 1 ? 'locked' : '']"
+
+            (click)="onMonthPage(i, item)">
+            <mat-icon *ngIf="item.monthId > monthsArr[0].monthId + 1">lock</mat-icon>
+            <mat-icon *ngIf="item.monthId <= monthsArr[0].monthId + 1">lock_open</mat-icon>
+            <h2>{{item.month}}</h2>
+            <div class="months-item__right right-month-item">
+              <div class="right-month-item__block">
+                <h3 class="right-month-item__title">Income</h3>
+                <p class="right-month-item__value">{{item.income}}</p>
+              </div>
+              <div class="right-month-item__block">
+                <h3 class="right-month-item__title">Expense</h3>
+                <p class="right-month-item__value">{{item.expense}}</p>
+              </div>
+            </div>
+          </li>
+        </ng-container>
+        <app-overview-create></app-overview-create>
+      </ul>
+
+    </div>
+  </div>
+
+</div>
+
+
+
+

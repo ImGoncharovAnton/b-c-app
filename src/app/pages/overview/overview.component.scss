@@ -1,0 +1,56 @@
+.red {
+  background-color: indianred;
+  border: 1px solid red !important;
+}
+
+.green {
+  background-color: darkseagreen;
+  border: 1px solid green !important;
+}
+
+.gray {
+  background-color: gray;
+  color: lightgray;
+}
+
+.locked {
+  cursor: not-allowed;
+  color: gray;
+  background-color: lightgray;
+
+  h2 {
+    color: gray;
+  }
+
+}
+
+.months-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 1rem;
+  background-color: #bcbcbc;
+  border-radius: 5px;
+  border: 1px solid #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.months-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+  background-color: #b8d6bc;
+  border: 1px solid #0f0f0f;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+  cursor: pointer
+}
+
+.right-month-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem
+}

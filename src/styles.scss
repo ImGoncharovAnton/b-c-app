@@ -1,1 +1,53 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body {
+  min-height: 100%;
+}
+
+body {
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Roboto,
+  "Helvetica Neue",
+  sans-serif;
+  background-color: #d1d6a2;
+}
+
+// Overlay backdrop styling
+.overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+// Overlay panel styling
+.overlay-panel {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(214, 214, 214, 0.99);
+  border-radius: 5px;
+  border: 1px solid #0f0f0f;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.9);
+  padding: 20px;
+}
+
+* {
+  margin: 0 !important;
+}
+
+.page {
+  padding: 1rem;
+
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1000px;
+  padding: 1rem;
+}
+
+.btn-create {
+  width: 100%;
+}
+
+ul, li {
+  list-style: none;
+}
