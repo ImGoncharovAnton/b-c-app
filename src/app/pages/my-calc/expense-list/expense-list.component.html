@@ -1,14 +1,22 @@
 <div class="expense-list-container">
   <div class="expense-list-heading">
     <h3>Expense: </h3>
-    <span>200</span>
+    <span>{{totalExpenses}}</span>
   </div>
-  <ul class="expense-list-group">
-    <li class="expense-list-item">
-      <p>Description:</p>
-      <span>200</span>
-      <mat-icon class="expense-list-icon">delete</mat-icon>
-    </li>
-
+  <ul
+    class="expense-list-group">
+    <ng-container *ngIf="expenseItems.length > 0">
+      <li
+        *ngFor="let item of expenseItems; let i = index"
+        class="expense-list-item"
+        (click)="onEditItem(i)">
+        <p>{{item.description}}:</p>
+        <span>{{item.amount}}</span>
+        <mat-icon
+          class="expense-list-icon"
+          (click)="onDelete(i)">delete
+        </mat-icon>
+      </li>
+    </ng-container>
   </ul>
 </div>

@@ -1,12 +1,38 @@
 <div class="modal-container">
-  <form class="modal-form">
+  <form
+    class="modal-form"
+    [formGroup]="formGroup">
     <div class="modal-form__inputs">
-      <input type="number" placeholder="amount" class="modal-form__input modal-form__input_amount">
-      <input type="text" placeholder="description" class="modal-form__input modal-form__input_description">
+      <input
+        type="number"
+        placeholder="amount"
+        class="modal-form__input modal-form__input_amount"
+        formControlName="amount"
+      >
+      <input
+        type="text"
+        placeholder="description"
+        class="modal-form__input modal-form__input_description"
+        formControlName="description"
+      >
     </div>
     <div class="modal-form__buttons">
-      <button type="button" class="modal-form__button">Income</button>
-      <button type="button" class="modal-form__button">Expense</button>
+      <button
+        *ngIf="!identityExpense"
+        type="button"
+        class="modal-form__button"
+        [disabled]="!formGroup.valid"
+        (click)="onSubmitIncome()">
+        {{identityIncome ? 'Update' : 'Income'}}
+      </button>
+      <button
+        *ngIf="!identityIncome"
+        type="button"
+        class="modal-form__button"
+        [disabled]="!formGroup.valid"
+        (click)="onSubmitExpense()">
+        {{identityExpense ? 'Update' : 'Expense'}}
+      </button>
     </div>
   </form>
   <button (click)="close()">Cancel</button>

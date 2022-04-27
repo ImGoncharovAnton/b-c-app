@@ -22,8 +22,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    let jsonData = this.budgetService.getMonths();
-    this.monthsArr = jsonData !== null ? JSON.parse(jsonData) : [];
+    this.monthsArr = this.budgetService.getMonths();
     console.log(this.monthsArr)
     this.subscription = this.budgetService.monthsChanged$
       .subscribe(
@@ -39,12 +38,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   onMonthPage(id: number, item: any) {
     this.id = id;
-    this.budgetService.setPageId(this.id)
     this._router.navigate([`/my-calculator/${item.month}`], {
       relativeTo: this._route,
       queryParams: {
         id: this.id
       }
     });
+  }
+
+  onDelete(i: number) {
+    console.log('Deleted')
   }
 }

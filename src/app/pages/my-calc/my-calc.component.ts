@@ -12,7 +12,10 @@ import {DialogService} from 'src/app/shared/dialog/dialog.service';
 })
 export class MyCalcComponent implements OnInit, OnDestroy {
   parentId: number;
-  subscription$: Subscription
+  subscription1$: Subscription;
+  subscription2$: Subscription;
+  totalBudget: number
+  monthName: string;
 
   constructor(private budgetService: BudgetService,
               private route: ActivatedRoute,
@@ -20,15 +23,25 @@ export class MyCalcComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription$ = this.route.queryParams.subscribe(params => {
+    this.subscription1$ = this.route.queryParams.subscribe(params => {
         this.parentId = params['id']
-        console.log(this.parentId)
       }
     )
+    this.budgetService.setPageId(this.parentId)
+    const monthObj = this.budgetService.getMonth(this.parentId);
+    this.monthName = monthObj.month;
+    this.totalBudget = monthObj.income - monthObj.expense;
+    this.subscription2$ = this.budgetService.totalBudgetCounter$
+      .subscribe(
+        (totalBudget: number) => {
+          this.totalBudget = totalBudget
+        }
+      )
   }
 
   ngOnDestroy(): void {
-    this.subscription$.unsubscribe()
+    this.subscription1$.unsubscribe()
+    this.subscription2$.unsubscribe()
   }
 
   onCreateItem() {

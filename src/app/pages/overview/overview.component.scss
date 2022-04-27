@@ -1,18 +1,3 @@
-.red {
-  background-color: indianred;
-  border: 1px solid red !important;
-}
-
-.green {
-  background-color: darkseagreen;
-  border: 1px solid green !important;
-}
-
-.gray {
-  background-color: gray;
-  color: lightgray;
-}
-
 .locked {
   cursor: not-allowed;
   color: gray;
@@ -36,6 +21,7 @@
 }
 
 .months-item {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -45,12 +31,89 @@
   border: 1px solid #0f0f0f;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
-  cursor: pointer
+  cursor: pointer;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+
+  &:hover {
+    .del-icon {
+      display: block;
+    }
+  }
+}
+
+.del-icon {
+  color: black !important;
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  font-size: 1.7rem;
+}
+
+.month-icon {
+  font-size: 2rem;
 }
 
 .right-month-item {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem
+  gap: 1rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  &__block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__title {
+    padding: 0.2rem;
+    font-size: 1.3rem;
+  }
+
+  &__value {
+    text-align: center;
+    padding: 0.2rem;
+    font-size: 1rem;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+  }
+}
+
+.red {
+  background-color: indianred;
+  border: 1px solid red !important;
+}
+
+.green {
+  background-color: darkseagreen;
+  border: 1px solid green !important;
+}
+
+.gray {
+  .right-month-item__block {
+    h3 {
+      color: gray;
+    }
+
+    p {
+      border: none !important;
+      background-color: gray;
+      color: lightgray;
+    }
+  }
+
 }

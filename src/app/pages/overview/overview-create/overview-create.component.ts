@@ -21,8 +21,7 @@ export class OverviewCreateComponent implements OnInit {
     const monthLocalizedString = function (month: number, locale: string) {
       return new Date(new Date().getFullYear(), month).toLocaleString(locale, {month: "long"});
     };
-    const jsonData = this.budgetService.getMonths();
-    let monthsArr = jsonData !== null ? JSON.parse(jsonData) : [];
+    let monthsArr = this.budgetService.getMonths();
 
     if (monthsArr.length > 0) {
       let prevMonth = monthsArr[monthsArr.length - 1];
