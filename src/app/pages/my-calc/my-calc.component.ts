@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {BudgetService} from "../../shared/service/budget.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {MyCalcEditComponent} from "./my-calc-edit/my-calc-edit.component";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 
@@ -19,6 +19,7 @@ export class MyCalcComponent implements OnInit, OnDestroy {
 
   constructor(private budgetService: BudgetService,
               private route: ActivatedRoute,
+              private router: Router,
               private dialog: DialogService) {
   }
 
@@ -51,5 +52,9 @@ export class MyCalcComponent implements OnInit, OnDestroy {
       // Subscription runs after the dialog closes
       console.log('Dialog closed!');
     });
+  }
+
+  goMain() {
+    this.router.navigate(['/overview-page']);
   }
 }

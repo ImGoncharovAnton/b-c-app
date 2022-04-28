@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {Router} from '@angular/router';
 import {LoginComponent} from "./login/login.component";
 import {DialogService} from './shared/dialog/dialog.service';
 
@@ -11,8 +10,7 @@ import {DialogService} from './shared/dialog/dialog.service';
 export class AppComponent {
   title = 'b-c-app';
 
-  constructor(private router: Router,
-              private dialog: DialogService) {
+  constructor(private dialog: DialogService) {
   }
 
   openLogin() {
@@ -22,9 +20,5 @@ export class AppComponent {
       // Subscription runs after the dialog closes
       console.log('Dialog closed!');
     });
-  }
-
-  goMain() {
-    this.router.navigate(['/overview-page']);
   }
 }

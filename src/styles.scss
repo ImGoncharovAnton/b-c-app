@@ -15,7 +15,7 @@ body {
 
 // Overlay backdrop styling
 .overlay-backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.9);
 }
 
 // Overlay panel styling
@@ -45,7 +45,19 @@ body {
 }
 
 .btn-create {
+  height: 3rem;
   width: 100%;
+  font-size: 1.5rem;
+
+  &:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
+    color: #bcbcbc;
+  }
+
+  mat-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
 }
 
 ul, li {

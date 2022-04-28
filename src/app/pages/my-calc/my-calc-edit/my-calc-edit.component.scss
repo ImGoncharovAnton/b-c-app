@@ -1,3 +1,25 @@
+.modal-container {
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.close {
+  border: 1px solid darkred;
+  border-radius: 3px;
+  background-color: indianred;
+  padding: 0.4rem 0.5rem;
+  position: absolute;
+  top: -2.4rem;
+  right: -1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.5s ease;
+
+  &:hover {
+    background-color: red;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+}
+
 .modal-form {
   display: flex;
   flex-direction: column;

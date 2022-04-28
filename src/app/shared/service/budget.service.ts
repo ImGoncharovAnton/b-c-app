@@ -51,6 +51,13 @@ export class BudgetService {
     this.monthsChanged$.next(months.slice())
   }
 
+  deleteMonths(index: number) {
+    let months = this._getLocalStoreData()
+    months.splice(index, 1);
+    localStorage.setItem('monthsStore', JSON.stringify(months));
+    this.monthsChanged$.next(months.slice())
+  }
+
   addIncomeItem(pageId: number, incomeItem: BudgetItem) {
     let totalIncomes: number = 0;
     let totalBudget: number;
@@ -213,27 +220,5 @@ export class BudgetService {
     return this.idEditExpenseItem
   }
 
-  getAmount() {
-    // let incomesAmount = 0;
-    // let expenseAmount = 0;
-    //
-    // for (let incomeItem of this.incomeItems) {
-    //   incomesAmount = incomesAmount + incomeItem.amount
-    // }
-    // for (let expenseItem of this.expenseItems) {
-    //   expenseAmount = expenseAmount + expenseItem.amount
-    // }
-    // this.totalIncomes = incomesAmount;
-    // this.totalExpenses = expenseAmount;
-    // this.totalBudget = this.totalIncomes - this.totalExpenses
-    // const totalInc = this.totalIncomes;
-    // const totalExp = this.totalExpenses;
-    // const totalBudget = this.totalBudget;
-    // return {
-    //   totalInc: totalInc,
-    //   totalExp: totalExp,
-    //   totalBudget: totalBudget
-    // }
-  }
 
 }

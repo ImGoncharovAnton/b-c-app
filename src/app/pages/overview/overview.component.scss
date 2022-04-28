@@ -1,12 +1,11 @@
 .locked {
-  cursor: not-allowed;
   color: gray;
   background-color: lightgray;
 
   h2 {
+    cursor: not-allowed !important;
     color: gray;
   }
-
 }
 
 .months-list {
@@ -31,11 +30,16 @@
   border: 1px solid #0f0f0f;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
-  cursor: pointer;
 
   h2 {
+    width: 100%;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 2rem;
+    cursor: pointer;
   }
 
   &:hover {
@@ -51,8 +55,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  padding: 5px;
-  font-size: 1.7rem;
+  font-size: 3rem;
 }
 
 .month-icon {
@@ -86,6 +89,7 @@
 
   &__value {
     text-align: center;
+    border: 1px solid #0f0f0f;
     padding: 0.2rem;
     font-size: 1rem;
     background-color: #fff;

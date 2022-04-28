@@ -33,6 +33,8 @@ export class DialogService {
       panelClass: 'overlay-panel',
     });
 
+    // Subscribe to a stream that emits when the backdrop was clicked
+    overlayRef.backdropClick().subscribe(_ => dialogRef.close());
     // Create dialogRef to return
     const dialogRef = new DialogRef(overlayRef);
 

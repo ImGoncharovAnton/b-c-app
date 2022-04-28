@@ -47,6 +47,7 @@ export class MyCalcEditComponent implements OnInit {
   }
 
   close() {
+    console.log(this)
     this.dialogRef.close();
   }
 
