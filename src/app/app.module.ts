@@ -12,6 +12,8 @@ import {MyCalcModule} from "./pages/my-calc/my-calc.module";
 import {AuthComponent} from './auth/auth.component';
 import {LoadingSpinnerComponent} from './shared/loading-spinner/loading-spinner.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {AuthInterseptorService} from "./shared/service/auth-interseptor.service";
 
 @NgModule({
   declarations: [
@@ -29,9 +31,14 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     OverviewModule,
     MyCalcModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterseptorService,
+    multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

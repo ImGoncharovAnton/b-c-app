@@ -1,8 +1,8 @@
 <div class='page'>
   <div class='container'>
-    <!--        <div class='alert alert-danger' *ngIf='error'>-->
-    <!--          <p>{{error}}</p>-->
-    <!--        </div>-->
+            <div class='alert alert-danger' *ngIf='error'>
+              <p>{{error}}</p>
+            </div>
     <div *ngIf='isLoading' style='text-align: center;'>
       <app-loading-spinner></app-loading-spinner>
     </div>
@@ -44,7 +44,7 @@
                 [disabled]='!authForm.valid'>
           {{isLoginMode ? 'Login' : 'Sign Up'}}</button>
         |
-        <button class='btn btn-primary' (click)='onSwitchMode()'>Switch
+        <button type="button" class='btn btn-primary' (click)='onSwitchMode()'>Switch
           to {{isLoginMode ? 'Sign Up' : 'Login'}}</button>
       </div>
     </form>

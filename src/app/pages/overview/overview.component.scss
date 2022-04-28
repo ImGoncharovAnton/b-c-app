@@ -121,3 +121,14 @@
   }
 
 }
+
+.del-icon {
+  color: black !important;
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  font-size: 1.7rem;
+  z-index: 100;
+}
