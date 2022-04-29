@@ -1,0 +1,13 @@
+<ul>
+  <li *ngIf="!isAuthenticated">
+    <a routerLink="/auth">Authenticate</a>
+  </li>
+  <li *ngIf="isAuthenticated">
+    <a routerLink="/auth" (click)="onLogout()">Logout</a>
+  </li>
+  |
+  <div *ngIf="isAuthenticated">
+    <li><a routerLink="/overview-page">Overview Page</a></li>
+  </div>
+
+</ul>

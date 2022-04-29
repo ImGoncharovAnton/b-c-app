@@ -31,38 +31,29 @@ export class AuthComponent implements OnInit {
     const email = form.value.email;
     const password = form.value.password;
 
-    // let authObs: Observable<AuthResponseData>
+    let authObs: Observable<AuthResponseData>
 
     this.isLoading = true;
+    this.error = '';
 
     if (this.isLoginMode) {
-      // authObs = this.authService.login(email, password);
+      authObs = this.authService.login(email, password)
     } else {
-      // authObs = this.authService.signUp(email, password);
-      this.authService.signUp(email, password).subscribe({
-        next: (response) => {
-          console.log(response)
-          this.isLoading = false;
-          },
-        error: (error) => {
-          console.error(error)
-          this.isLoading = false
-          this.error = 'An Error has occurred'},
-        complete: () => console.log('authService subscribe observable complete')
-      })
+      authObs = this.authService.signUp(email, password)
     }
 
-    // authObs.subscribe(resData => {
-    //     console.log(resData);
-    //     this.isLoading = false;
-    //     this.router.navigate(['/overview-page']);
-    //   },
-    //   errorMessage => {
-    //     console.log(errorMessage);
-    //     this.error = errorMessage;
-    //     this.isLoading = false;
-    //   }
-    // );
+    authObs.subscribe({
+      next: (response) => {
+        console.log(response)
+        this.isLoading = false;
+        this.router.navigate(['/overview-page']);
+      },
+      error: (errorMessage) => {
+        this.error = errorMessage
+        this.isLoading = false
+      },
+      complete: () => console.log('authService subscribe observable complete')
+    })
 
     form.reset();
   }

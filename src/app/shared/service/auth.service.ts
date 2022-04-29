@@ -1,5 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {BehaviorSubject, catchError, tap} from "rxjs";
+import {User} from "../model/user.model";
+import {Router} from "@angular/router";
 
 export interface AuthResponseData {
   idToken: string,
@@ -14,9 +17,10 @@ export interface AuthResponseData {
   providedIn: 'root'
 })
 export class AuthService {
-  isLoggedIn: boolean = false;
+  userSub$ = new BehaviorSubject<any>(null);
+  private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
   }
 
   signUp(email: string, password: string) {
@@ -26,25 +30,157 @@ export class AuthService {
         password: password,
         returnSecureToken: true
       }
+      // ).pipe(catchError(this.getErrorHandler), tap(this.handleUser))
+    ).pipe(
+      catchError((errorRes) => {
+        let errorMessage = 'An Error has occurred';
+        if (!errorRes.error || !errorRes.error.error) {
+          throw new Error(errorMessage)
+        }
+        switch (errorRes.error.error.message) {
+          case 'EMAIL_EXISTS':
+            errorMessage = 'The email address is already in use by another account.'
+            break;
+          case 'OPERATION_NOT_ALLOWED':
+            errorMessage = 'Password sign-in is disabled for this project.'
+            break;
+          case 'TOO_MANY_ATTEMPTS_TRY_LATER':
+            errorMessage = 'We have blocked all requests from this device due to unusual activity. Try again later.'
+            break;
+        }
+        throw new Error(errorMessage)
+      }),
+      tap(resData => {
+        this.handleAuthentication(
+          resData.email,
+          resData.localId,
+          resData.idToken,
+          +resData.expiresIn)
+      })
     )
 
   }
 
-  login() {
-    this.isLoggedIn = true
+  login(email: string, password: string) {
+    this.autoLogin()
+    return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBRB16qVU9P_RHIUrkFQNXd_8hUm61nPjk`,
+      {
+        email: email,
+        password: password,
+        returnSecureToken: true
+      }
+      // ).pipe(catchError(this.getErrorHandler))
+    ).pipe(catchError((errorRes) => {
+        let errorMessage = 'An Error has occurred';
+        if (!errorRes.error || !errorRes.error.error) {
+          throw new Error(errorMessage)
+        }
+        switch (errorRes.error.error.message) {
+          case 'EMAIL_NOT_FOUND':
+            errorMessage = 'There is no user record corresponding to this identifier. The user may have been deleted.'
+            break;
+          case 'INVALID_PASSWORD':
+            errorMessage = 'The password is invalid or the user does not have a password.'
+            break;
+          case 'USER_DISABLED':
+            errorMessage = 'The user account has been disabled by an administrator.'
+            break;
+        }
+        throw new Error(errorMessage)
+      }),
+      tap(resData => {
+        this.handleAuthentication(
+          resData.email,
+          resData.localId,
+          resData.idToken,
+          +resData.expiresIn)
+      })
+    )
+  }
+
+  autoLogin() {
+    let jsonData = localStorage.getItem('userData')
+    const userData: {
+      email: string;
+      id: string;
+      _token: string;
+      _tokenExpirationDate: Date;
+    } = jsonData !== null ? JSON.parse(jsonData) : [];
+    if (!userData) {
+      return;
+    }
+    const loadedUser = new User(
+      userData.email,
+      userData.id,
+      userData._token,
+      new Date(userData._tokenExpirationDate)
+    )
+    if (loadedUser.token) {
+      this.userSub$.next(loadedUser);
+      const expirationDuration =
+        new Date(userData._tokenExpirationDate).getTime() -
+        new Date().getTime()
+      this.autoLogout(expirationDuration)
+    }
   }
 
   logout() {
-    this.isLoggedIn = false
+    this.userSub$.next(null)
+    this.router.navigate(['/auth']);
+    localStorage.removeItem('userData');
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer)
+    }
+    this.tokenExpirationTimer = null;
   }
 
-  isAuthenticated() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(this.isLoggedIn)
-      }, 5000)
-    })
+  autoLogout(expirationDuration: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expirationDuration);
   }
+
+  private handleAuthentication(
+    email: string,
+    userId: string,
+    token: string,
+    expiresIn: number) {
+    const expireDate = new Date(new Date().getTime() + expiresIn * 1000)
+    const user = new User(
+      email,
+      userId,
+      token,
+      expireDate)
+    this.userSub$.next(user)
+    this.autoLogout(expiresIn * 1000)
+    localStorage.setItem('userData', JSON.stringify(user))
+    // this.isAuthenticated()
+  }
+
+  // getErrorHandler(errorRes: HttpErrorResponse) {
+  //   let errorMessage = 'An Error has occurred';
+  //   if (!errorRes.error || !errorRes.error.error) {
+  //     throw new Error(errorMessage)
+  //   }
+  //   switch (errorRes.error.error.message) {
+  //     case 'EMAIL_EXISTS':
+  //       errorMessage = 'The email address is already in use by another account.'
+  //       break;
+  //     case 'EMAIL_NOT_FOUND':
+  //       errorMessage = 'There is no user record corresponding to this identifier. The user may have been deleted.'
+  //       break;
+  //     case 'INVALID_PASSWORD':
+  //       errorMessage = 'The password is invalid or the user does not have a password.'
+  //       break;
+  //     case 'USER_DISABLED':
+  //       errorMessage = 'The user account has been disabled by an administrator.'
+  //       break;
+  //     case 'TOO_MANY_ATTEMPTS_TRY_LATER':
+  //       errorMessage = 'We have blocked all requests from this device due to unusual activity. Try again later.'
+  //       break;
+  //   }
+  //   throw new Error(errorMessage)
+  // }
 
 
 }

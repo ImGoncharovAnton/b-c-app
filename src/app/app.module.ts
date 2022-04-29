@@ -13,7 +13,8 @@ import {AuthComponent} from './auth/auth.component';
 import {LoadingSpinnerComponent} from './shared/loading-spinner/loading-spinner.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
-import {AuthInterseptorService} from "./shared/service/auth-interseptor.service";
+import {AuthInterceptorService} from "./shared/service/auth-interceptor.service";
+import {HeaderComponent} from './header/header.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import {AuthInterseptorService} from "./shared/service/auth-interseptor.service"
     LoginComponent,
     AuthComponent,
     LoadingSpinnerComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,9 +37,11 @@ import {AuthInterseptorService} from "./shared/service/auth-interseptor.service"
     HttpClientModule
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterseptorService,
-    multi: true}
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

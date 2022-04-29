@@ -54,7 +54,4 @@ export class MyCalcComponent implements OnInit, OnDestroy {
     });
   }
 
-  goMain() {
-    this.router.navigate(['/overview-page']);
-  }
 }
