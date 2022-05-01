@@ -1,52 +1,61 @@
 <div class='page'>
   <div class='container'>
-            <div class='alert alert-danger' *ngIf='error'>
-              <p>{{error}}</p>
-            </div>
-    <div *ngIf='isLoading' style='text-align: center;'>
-      <app-loading-spinner></app-loading-spinner>
+    <div class="login-container">
+      <div class="login-body">
+        <div class='alert alert-danger' *ngIf='error'>
+          <p>{{error}}</p>
+        </div>
+        <div *ngIf='isLoading' style='text-align: center;'>
+          <app-loading-spinner></app-loading-spinner>
+        </div>
+        <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)" *ngIf="!isLoading">
+          <div class="login-inputs">
+            <mat-form-field appearance="outline">
+              <mat-label>Enter your email</mat-label>
+              <input matInput
+                     type="email"
+                     placeholder="mail@example.com"
+                     ngModel
+                     name="email"
+                     required
+                     email
+                     #email="ngModel">
+              <mat-error *ngIf="email.touched && !email.valid">
+                <span *ngIf="email.errors?.['required']">Email is required</span>
+                <span *ngIf="email.errors?.['email']">Please enter a valid email</span>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Enter your password</mat-label>
+              <input matInput
+                     [type]="hide ? 'password' : 'text'"
+                     ngModel
+                     name="password"
+                     required
+                     minlength='6'
+                     #password="ngModel">
+              <mat-error *ngIf="password.touched && !password.valid">
+                <span>{{getPasswordErrors(password)}}</span>
+              </mat-error>
+              <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                      [attr.aria-pressed]="hide">
+                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="login-buttons">
+            <button mat-raised-button color="accent"
+                    type='submit'
+                    [disabled]='!authForm.valid'>
+              {{isLoginMode ? 'Login' : 'Sign Up'}}</button>
+            <button type="button"
+                    mat-raised-button color="primary"
+                    (click)='onSwitchMode()'>Switch
+              to {{isLoginMode ? 'Sign Up' : 'Login'}}</button>
+          </div>
+        </form>
+      </div>
     </div>
-    <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)" *ngIf="!isLoading">
-      <div class="form-group">
-        <label for="email">E-mail</label>
-        <input type="email"
-               id="email"
-               class="form-control"
-               ngModel
-               name="email"
-               required
-               email
-               #email="ngModel">
-        <div class="help-text" *ngIf="email.touched && !email.valid">
-          <div *ngIf="email.errors?.['required']">Email is required</div>
-          <div *ngIf="email.errors?.['email']">Please enter a valid email</div>
-        </div>
-      </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password"
-               id="password"
-               class="form-control"
-               ngModel
-               name="password"
-               required
-               minlength='6'
-               #password="ngModel">
-        <div class="help-text" *ngIf="password.touched && !password.valid">
-
-          <div>{{getPasswordErrors(password)}}</div>
-        </div>
-      </div>
-      <div>
-        <button class='btn btn-primary'
-                type='submit'
-                [disabled]='!authForm.valid'>
-          {{isLoginMode ? 'Login' : 'Sign Up'}}</button>
-        |
-        <button type="button" class='btn btn-primary' (click)='onSwitchMode()'>Switch
-          to {{isLoginMode ? 'Sign Up' : 'Login'}}</button>
-      </div>
-    </form>
   </div>
 </div>

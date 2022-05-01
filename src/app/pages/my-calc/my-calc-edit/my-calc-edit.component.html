@@ -4,18 +4,25 @@
     class="modal-form"
     [formGroup]="formGroup">
     <div class="modal-form__inputs">
-      <input
-        type="number"
-        placeholder="amount"
-        class="modal-form__input modal-form__input_amount"
-        formControlName="amount"
-      >
-      <input
-        type="text"
-        placeholder="description"
-        class="modal-form__input modal-form__input_description"
-        formControlName="description"
-      >
+      <mat-form-field appearance="outline" style="width: 65%">
+        <mat-label>Description</mat-label>
+        <input matInput
+               type="text"
+               class="input-desc"
+               placeholder="Enter a description"
+               formControlName="description">
+        <mat-hint>Fill in the description</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 35%">
+        <mat-label>Amount</mat-label>
+        <input matInput
+               type="number"
+               class="input-amount"
+               placeholder="0"
+               formControlName="amount">
+        <span matPrefix class="mat-prefix">$&nbsp;</span>
+        <mat-hint align="end">Enter a positive value</mat-hint>
+      </mat-form-field>
     </div>
     <div class="modal-form__buttons">
       <button

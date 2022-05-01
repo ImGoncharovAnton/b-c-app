@@ -1,24 +1,17 @@
-import {Component} from '@angular/core';
-import {LoginComponent} from "./login/login.component";
-import {DialogService} from './shared/dialog/dialog.service';
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from './shared/service/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'b-c-app';
+export class AppComponent implements OnInit {
 
-  constructor(private dialog: DialogService) {
+  constructor(private authService: AuthService) {
   }
 
-  openLogin() {
-    const dialogRef = this.dialog.open(LoginComponent, {data: 'John'});
-
-    dialogRef.afterClosed().subscribe(() => {
-      // Subscription runs after the dialog closes
-      console.log('Dialog closed!');
-    });
+  ngOnInit() {
+    this.authService.autoLogin()
   }
 }

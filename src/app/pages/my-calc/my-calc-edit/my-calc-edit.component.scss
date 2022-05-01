@@ -36,29 +36,6 @@
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
   }
 
-  &__input {
-    border: 1px solid #0f0f0f;
-    border-radius: 3px;
-    padding: 0.5rem;
-    background-color: #fff;
-    min-width: 150px;
-    font-size: 16px;
-    width: 100%;
-
-    &_amount {
-      width: 30%;
-    }
-
-    &_desc {
-      width: 70%;
-    }
-
-    &.ng-touched.ng-invalid {
-      background-color: indianred;
-      border: 1px solid red;
-    }
-  }
-
   &__buttons {
     display: flex;
     justify-content: space-between;
@@ -80,3 +57,22 @@
   }
 }
 
+.mat-prefix {
+  position: relative;
+  bottom: 0.15rem;
+}
+
+.input-desc {
+  width: 100%;
+}
+
+.input-amount {
+  width: 100%;
+  text-align: right;
+}
+
+mat-label {
+  &.ng-touched.ng-invalid {
+    border: 1px solid red;
+  }
+}

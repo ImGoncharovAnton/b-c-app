@@ -6,3 +6,22 @@ ul {
 li {
   padding: 0.5rem;
 }
+
+.spacer-toolbar {
+  display: flex;
+  justify-content: space-between;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.pages-button {
+  a {
+    text-decoration: none;
+    color: #bcbcbc;
+    margin-left: 0.5rem;
+  }
+}

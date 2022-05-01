@@ -26,7 +26,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.monthNow = new Date().getMonth();
     this.monthsArr = this.budgetService.getMonths();
-    console.log(this.monthsArr)
     this.subscription = this.budgetService.monthsChanged$
       .subscribe(
         (months: MonthItem[]) => {

@@ -46,12 +46,12 @@ export class MyCalcComponent implements OnInit, OnDestroy {
   }
 
   onCreateItem() {
-    const dialogRef = this.dialog.open(MyCalcEditComponent);
+    this.dialog.open(MyCalcEditComponent);
 
-    dialogRef.afterClosed().subscribe((data) => {
-      // Subscription runs after the dialog closes
-      console.log('Dialog closed!');
-    });
+    // dialogRef.afterClosed().subscribe((data) => {
+    //   // Subscription runs after the dialog closes
+    //   console.log('Dialog closed!');
+    // });
   }
 
 }

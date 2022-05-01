@@ -10,6 +10,7 @@ import {Observable} from "rxjs";
   styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent implements OnInit {
+  hide: boolean = true;
   isLoginMode: boolean = true
   isLoading: boolean = false
   error: string = '';
@@ -24,7 +25,6 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    console.log(form.value)
     if (!form.valid) {
       return
     }
@@ -44,7 +44,6 @@ export class AuthComponent implements OnInit {
 
     authObs.subscribe({
       next: (response) => {
-        console.log(response)
         this.isLoading = false;
         this.router.navigate(['/overview-page']);
       },

@@ -21,6 +21,7 @@ export class AuthService {
   private tokenExpirationTimer: any;
 
   constructor(private http: HttpClient, private router: Router) {
+    console.log('AuthService Works!')
   }
 
   signUp(email: string, password: string) {
@@ -62,7 +63,6 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    this.autoLogin()
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBRB16qVU9P_RHIUrkFQNXd_8hUm61nPjk`,
       {
         email: email,
@@ -135,6 +135,7 @@ export class AuthService {
   }
 
   autoLogout(expirationDuration: number) {
+    console.log('autoLogout, msec', expirationDuration)
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
     }, expirationDuration);

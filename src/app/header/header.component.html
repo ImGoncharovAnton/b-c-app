@@ -1,13 +1,20 @@
-<ul>
-  <li *ngIf="!isAuthenticated">
-    <a routerLink="/auth">Authenticate</a>
-  </li>
-  <li *ngIf="isAuthenticated">
-    <a routerLink="/auth" (click)="onLogout()">Logout</a>
-  </li>
-  |
-  <div *ngIf="isAuthenticated">
-    <li><a routerLink="/overview-page">Overview Page</a></li>
+<mat-toolbar color="primary" class="spacer-toolbar">
+  <div>
+    <mat-icon> turned_in_not</mat-icon>
+    <span>Budget Calculator App</span>
   </div>
-
-</ul>
+  <div>
+    <button mat-button *ngIf="isAuthenticated" class="pages-button">
+      <mat-icon>description</mat-icon>
+      <a routerLink="/overview-page">Overview Page</a>
+    </button>
+    <button mat-button *ngIf="!isAuthenticated" class="pages-button">
+      <mat-icon>person</mat-icon>
+      <a routerLink="/auth">Authenticate</a>
+    </button>
+    <button mat-button *ngIf="isAuthenticated" class="pages-button">
+      <mat-icon>person</mat-icon>
+      <a routerLink="/auth" (click)="onLogout()">Logout</a>
+    </button>
+  </div>
+</mat-toolbar>

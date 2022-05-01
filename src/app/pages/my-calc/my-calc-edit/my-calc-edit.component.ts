@@ -47,7 +47,6 @@ export class MyCalcEditComponent implements OnInit {
   }
 
   close() {
-    console.log(this)
     this.dialogRef.close();
   }
 
@@ -60,7 +59,6 @@ export class MyCalcEditComponent implements OnInit {
     this.formGroup.reset();
     this.identityIncome = false;
     this.dialogRef.close();
-    console.log('onSubmitIncome')
   }
 
   onSubmitExpense() {
@@ -72,8 +70,6 @@ export class MyCalcEditComponent implements OnInit {
     this.formGroup.reset();
     this.identityExpense = false;
     this.dialogRef.close();
-    console.log('onSubmitExpense')
-
   }
 
   initForm() {
