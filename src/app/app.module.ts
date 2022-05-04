@@ -5,7 +5,6 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MaterialModule} from './material/material.module';
-import {LoginComponent} from './login/login.component';
 import {OverlayModule} from "@angular/cdk/overlay";
 import {OverviewModule} from "./pages/overview/overview.module";
 import {MyCalcModule} from "./pages/my-calc/my-calc.module";
@@ -15,14 +14,15 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AuthInterceptorService} from "./shared/service/auth-interceptor.service";
 import {HeaderComponent} from './header/header.component';
+import {AdminComponent} from './admin/admin.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     AuthComponent,
     LoadingSpinnerComponent,
     HeaderComponent,
+    AdminComponent,
   ],
   imports: [
     BrowserModule,

@@ -4,6 +4,8 @@ import {AuthComponent} from "./auth/auth.component";
 import {OverviewComponent} from "./pages/overview/overview.component";
 import {AuthGuard} from "./auth/auth.guard";
 import {MyCalcComponent} from "./pages/my-calc/my-calc.component";
+import {AdminComponent} from './admin/admin.component';
+import {RoleGuard} from "./auth/role.guard";
 
 const routes: Routes = [
   {path: '', redirectTo: '/overview-page', pathMatch: 'full'},
@@ -17,6 +19,14 @@ const routes: Routes = [
     path: 'my-calculator/:myMonth',
     component: MyCalcComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [RoleGuard],
+    // data: {
+    //   expectedRoles: ['Admin']
+    // }
   }
 ];
 

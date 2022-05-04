@@ -30,6 +30,8 @@ export class AuthComponent implements OnInit {
     }
     const email = form.value.email;
     const password = form.value.password;
+    // Checking for word "admin" at registration
+    const result = email.match(/admin/)
 
     let authObs: Observable<AuthResponseData>
 
@@ -39,7 +41,14 @@ export class AuthComponent implements OnInit {
     if (this.isLoginMode) {
       authObs = this.authService.login(email, password)
     } else {
-      authObs = this.authService.signUp(email, password)
+      // Checking for word "admin" at registration
+      if (result) {
+        this.isLoading = false
+        form.reset()
+        return alert('E-mail with the word "admin" cannot be used, please use another email')
+      } else {
+        authObs = this.authService.signUp(email, password)
+      }
     }
 
     authObs.subscribe({

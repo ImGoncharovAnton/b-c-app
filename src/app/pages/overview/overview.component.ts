@@ -65,7 +65,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((result) => {
       if (result === true) {
         this.budgetService.deleteMonths(i)
-        console.log('Month is deleted')
       }
     });
   }

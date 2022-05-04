@@ -23,11 +23,7 @@ export class IncomeListComponent implements OnInit, OnDestroy {
 
   onEditItem(index: number) {
     this.budgetService.setIdEditIncomeItem(index)
-    const dialogRef = this.dialog.open(MyCalcEditComponent, {data: 'income'});
-
-    dialogRef.afterClosed().subscribe((data) => {
-      console.log("data-income", "dialog")
-    });
+    this.dialog.open(MyCalcEditComponent, {data: 'income'});
   }
 
   ngOnInit(): void {

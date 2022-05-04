@@ -104,7 +104,8 @@ export class AuthService {
       email: string;
       id: string;
       _token: string;
-      _tokenExpirationDate: Date;
+      _tokenExpirationDate: Date,
+      role: string;
     } = jsonData !== null ? JSON.parse(jsonData) : [];
     if (!userData) {
       return;
@@ -113,7 +114,8 @@ export class AuthService {
       userData.email,
       userData.id,
       userData._token,
-      new Date(userData._tokenExpirationDate)
+      new Date(userData._tokenExpirationDate),
+      userData.role
     )
     if (loadedUser.token) {
       this.userSub$.next(loadedUser);
@@ -146,14 +148,23 @@ export class AuthService {
     userId: string,
     token: string,
     expiresIn: number) {
+    let role: string
+    const result = email.match(/admin/)
+    if (result) {
+      role = 'immortal';
+    } else {
+      role = 'mortal'
+    }
+
     const expireDate = new Date(new Date().getTime() + expiresIn * 1000)
     const user = new User(
       email,
       userId,
       token,
-      expireDate)
+      expireDate,
+      role)
     this.userSub$.next(user)
-    this.autoLogout(expiresIn * 1000)
+    this.autoLogout(expiresIn * 10000)
     localStorage.setItem('userData', JSON.stringify(user))
     // this.isAuthenticated()
   }

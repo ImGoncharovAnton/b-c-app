@@ -28,7 +28,6 @@ export class OverviewCreateComponent implements OnInit {
       let prevMonthId = prevMonth.monthId
       const newMonthItem = new MonthItem(prevMonthId + 1, monthLocalizedString(prevMonthId + 1, 'en'), 0, 0, [], []);
       this.budgetService.addMonths(newMonthItem)
-      console.log(monthsArr)
     } else {
       const newMonthItem = new MonthItem(new Date().getMonth(), this.monthDate, 0, 0, [], [])
       this.budgetService.addMonths(newMonthItem)

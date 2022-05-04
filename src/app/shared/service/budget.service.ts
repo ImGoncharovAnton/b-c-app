@@ -47,7 +47,6 @@ export class BudgetService {
     let months = this._getLocalStoreData()
     months.push(newMonths)
     localStorage.setItem('monthsStore', JSON.stringify(months));
-    console.log(months)
     this.monthsChanged$.next(months.slice())
   }
 
