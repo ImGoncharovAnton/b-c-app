@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, catchError, tap} from "rxjs";
 import {User} from "../model/user.model";
 import {Router} from "@angular/router";
+import {DataService} from './data.service';
 
 export interface AuthResponseData {
   idToken: string,
@@ -17,21 +18,24 @@ export interface AuthResponseData {
   providedIn: 'root'
 })
 export class AuthService {
+  userName: string;
   userSub$ = new BehaviorSubject<any>(null);
   private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient,
+              private router: Router,
+              private dataService: DataService) {
     console.log('AuthService Works!')
   }
 
-  signUp(email: string, password: string) {
+  signUp(username: string, email: string, password: string) {
+    this.dataService.getUsername(username)
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBRB16qVU9P_RHIUrkFQNXd_8hUm61nPjk`,
       {
         email: email,
         password: password,
         returnSecureToken: true
       }
-      // ).pipe(catchError(this.getErrorHandler), tap(this.handleUser))
     ).pipe(
       catchError((errorRes) => {
         let errorMessage = 'An Error has occurred';
@@ -69,7 +73,6 @@ export class AuthService {
         password: password,
         returnSecureToken: true
       }
-      // ).pipe(catchError(this.getErrorHandler))
     ).pipe(catchError((errorRes) => {
         let errorMessage = 'An Error has occurred';
         if (!errorRes.error || !errorRes.error.error) {
@@ -105,7 +108,7 @@ export class AuthService {
       id: string;
       _token: string;
       _tokenExpirationDate: Date,
-      role: string;
+      role: string
     } = jsonData !== null ? JSON.parse(jsonData) : [];
     if (!userData) {
       return;
@@ -115,7 +118,7 @@ export class AuthService {
       userData.id,
       userData._token,
       new Date(userData._tokenExpirationDate),
-      userData.role
+      userData.role,
     )
     if (loadedUser.token) {
       this.userSub$.next(loadedUser);
@@ -124,6 +127,7 @@ export class AuthService {
         new Date().getTime()
       this.autoLogout(expirationDuration)
     }
+    this.dataService.getUserData(loadedUser)
   }
 
   logout() {
@@ -166,33 +170,9 @@ export class AuthService {
     this.userSub$.next(user)
     this.autoLogout(expiresIn * 10000)
     localStorage.setItem('userData', JSON.stringify(user))
-    // this.isAuthenticated()
+    console.log(user)
+    this.dataService.getUserData(user)
   }
-
-  // getErrorHandler(errorRes: HttpErrorResponse) {
-  //   let errorMessage = 'An Error has occurred';
-  //   if (!errorRes.error || !errorRes.error.error) {
-  //     throw new Error(errorMessage)
-  //   }
-  //   switch (errorRes.error.error.message) {
-  //     case 'EMAIL_EXISTS':
-  //       errorMessage = 'The email address is already in use by another account.'
-  //       break;
-  //     case 'EMAIL_NOT_FOUND':
-  //       errorMessage = 'There is no user record corresponding to this identifier. The user may have been deleted.'
-  //       break;
-  //     case 'INVALID_PASSWORD':
-  //       errorMessage = 'The password is invalid or the user does not have a password.'
-  //       break;
-  //     case 'USER_DISABLED':
-  //       errorMessage = 'The user account has been disabled by an administrator.'
-  //       break;
-  //     case 'TOO_MANY_ATTEMPTS_TRY_LATER':
-  //       errorMessage = 'We have blocked all requests from this device due to unusual activity. Try again later.'
-  //       break;
-  //   }
-  //   throw new Error(errorMessage)
-  // }
 
 
 }

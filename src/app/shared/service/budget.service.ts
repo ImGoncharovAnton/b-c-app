@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {MonthItem} from '../model/month-item.model';
 import {Subject} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
+import {DataService} from "./data.service";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class BudgetService {
   totalCounterExp$ = new Subject<number>();
   totalBudgetCounter$ = new Subject<number>();
 
-  constructor() {
+  constructor(private dataService: DataService) {
     console.log('BudgetService Works!')
   }
 
@@ -44,6 +45,7 @@ export class BudgetService {
   }
 
   addMonths(newMonths: MonthItem) {
+    this.dataService.getMonthData(newMonths)
     let months = this._getLocalStoreData()
     months.push(newMonths)
     localStorage.setItem('monthsStore', JSON.stringify(months));

@@ -28,6 +28,7 @@ export class AuthComponent implements OnInit {
     if (!form.valid) {
       return
     }
+    const username = form.value.user;
     const email = form.value.email;
     const password = form.value.password;
     // Checking for word "admin" at registration
@@ -47,7 +48,7 @@ export class AuthComponent implements OnInit {
         form.reset()
         return alert('E-mail with the word "admin" cannot be used, please use another email')
       } else {
-        authObs = this.authService.signUp(email, password)
+        authObs = this.authService.signUp(username, email, password)
       }
     }
 
