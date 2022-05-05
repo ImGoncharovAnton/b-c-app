@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {MonthItem} from '../model/month-item.model';
 import {Subject} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
-import {DataService} from "./data.service";
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +16,9 @@ export class BudgetService {
   totalCounterInc$ = new Subject<number>();
   totalCounterExp$ = new Subject<number>();
   totalBudgetCounter$ = new Subject<number>();
+  monthsArr: MonthItem[] = [];
 
-  constructor(private dataService: DataService) {
+  constructor() {
     console.log('BudgetService Works!')
   }
 
@@ -36,20 +36,24 @@ export class BudgetService {
   }
 
   getMonths() {
-    return this._getLocalStoreData()
+    // return this._getLocalStoreData()
+    return this.monthsArr
   }
 
   getMonth(index: number) {
-    let months = this._getLocalStoreData()
-    return months[index]
+    // let months = this._getLocalStoreData()
+    // return months[index]
+    return this.monthsArr[index]
   }
 
   addMonths(newMonths: MonthItem) {
-    this.dataService.getMonthData(newMonths)
+    this.monthsArr.push(newMonths)
+    console.log('addMonths monthsArr', this.monthsArr)
     let months = this._getLocalStoreData()
     months.push(newMonths)
-    localStorage.setItem('monthsStore', JSON.stringify(months));
-    this.monthsChanged$.next(months.slice())
+
+    // localStorage.setItem('monthsStore', JSON.stringify(months));
+    // this.monthsChanged$.next(months.slice())
   }
 
   deleteMonths(index: number) {

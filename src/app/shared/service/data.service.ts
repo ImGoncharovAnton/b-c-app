@@ -2,6 +2,8 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {User} from "../model/user.model";
 import {MonthItem} from "../model/month-item.model";
+import { BudgetService } from './budget.service';
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -36,12 +38,14 @@ export class DataService {
 
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              budgetService: BudgetService,
+              authService: AuthService) {
   }
 
   storeData() {
-    const testData = this.testData
-    this.http.put(this.baseUrl + 'users.json', testData)
+    const testData = this.dataUser()
+    this.http.put(this.baseUrl + 'users/-N1KhKZ90Gm3FMmeUuE4.json', testData)
       .subscribe(resData => {
         console.log(resData)
       })
@@ -76,16 +80,21 @@ export class DataService {
   }
 
   dataUser() {
-    const userId = this.userData.id
-    const userName = this.userName
-    const userRole = this.userData.role
-    const month = this.month
-    const dataObj = {
-      userId: {
-        userName,
-        userRole,
-        month
+    const arr = {
+      user: 'John2',
+      role: 'mortal',
+      month: {
+        expense: 20,
+        income: 10,
+        expenseArr: [],
+        incomeArr: [],
+        month: 'May',
+        monthId: '5'
       }
     }
+    console.log(arr)
+
+
+    return arr
   }
 }

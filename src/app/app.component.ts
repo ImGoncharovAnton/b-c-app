@@ -28,9 +28,7 @@ export class AppComponent implements OnInit {
   }
 
   setDataUser() {
-    const a = this.dataService.setUserData()
-    console.log(this.dataService.setMonthData())
-
+    const a = this.dataService.dataUser()
     console.log('user from data service', a)
   }
 }
