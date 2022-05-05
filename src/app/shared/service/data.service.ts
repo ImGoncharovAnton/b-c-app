@@ -2,7 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {User} from "../model/user.model";
 import {MonthItem} from "../model/month-item.model";
-import { BudgetService } from './budget.service';
+import {BudgetService} from './budget.service';
 import {AuthService} from "./auth.service";
 
 @Injectable({
