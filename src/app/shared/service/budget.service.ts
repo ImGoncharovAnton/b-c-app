@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {MonthItem} from '../model/month-item.model';
 import {Subject} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
+import {DataService} from './data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,24 @@ export class BudgetService {
   totalCounterExp$ = new Subject<number>();
   totalBudgetCounter$ = new Subject<number>();
   monthsArr: MonthItem[] = [];
+  resData: any
 
-  constructor() {
+  constructor(private dataService: DataService) {
     console.log('BudgetService Works!')
   }
+
+  // getMonthsFromStoreUser() {
+  //   const userData = this.dataService.getUserDataFromStore()
+  //   console.log(userData)
+  //   if (userData.months) {
+  //     console.log('return userdata with not null monthsArr')
+  //     return userData
+  //   } else {
+  //     console.log('create empty MonthsArr')
+  //     userData.months = []
+  //     return userData
+  //   }
+  // }
 
   _getLocalStoreData() {
     let jsonData = localStorage.getItem('monthsStore')
@@ -35,25 +50,51 @@ export class BudgetService {
     return this.idPage;
   }
 
+  setStoreUser(resData: any) {
+    this.resData = resData
+    console.log(this.resData)
+  }
+
   getMonths() {
+    // const userData: StoreDataUserModel = this.getMonthsFromStoreUser()
+    // return userData.months
+
     // return this._getLocalStoreData()
+
     return this.monthsArr
   }
 
   getMonth(index: number) {
+
+    // return this.getMonthsFromStoreUser().months[index]
+
     // let months = this._getLocalStoreData()
     // return months[index]
+
     return this.monthsArr[index]
+
   }
 
   addMonths(newMonths: MonthItem) {
     this.monthsArr.push(newMonths)
     console.log('addMonths monthsArr', this.monthsArr)
-    let months = this._getLocalStoreData()
-    months.push(newMonths)
 
+    this.dataService.fetchUser()
+
+    console.log('RESDATA FROM STORAGE DATA SERVICE', this.resData)
+    // let months = this._getLocalStoreData()
+    // months.push(newMonths)
+    //
     // localStorage.setItem('monthsStore', JSON.stringify(months));
     // this.monthsChanged$.next(months.slice())
+
+    // const userData: StoreDataUserModel = this.getMonthsFromStoreUser()
+    // let monthsArr = userData.months
+    // console.log('budget service monthsArr from UserStore', monthsArr)
+    // monthsArr.push(newMonths)
+    // console.log('monthsArr after push new elem', monthsArr)
+    // this.dataService.storeDataUser(userData)
+    // this.monthsChanged$.next(monthsArr.slice())
   }
 
   deleteMonths(index: number) {

@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, catchError, tap} from "rxjs";
 import {User} from "../model/user.model";
 import {Router} from "@angular/router";
+import {DataService} from "./data.service";
 
 export interface AuthResponseData {
   idToken: string,
@@ -22,11 +23,12 @@ export class AuthService {
   private tokenExpirationTimer: any;
 
   constructor(private http: HttpClient,
-              private router: Router) {
+              private router: Router,
+              private dataService: DataService) {
     console.log('AuthService Works!')
   }
 
-  signUp(username: string, email: string, password: string) {
+  signUp(email: string, password: string) {
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBRB16qVU9P_RHIUrkFQNXd_8hUm61nPjk`,
       {
         email: email,
@@ -60,7 +62,6 @@ export class AuthService {
           +resData.expiresIn)
       })
     )
-
   }
 
   login(email: string, password: string) {

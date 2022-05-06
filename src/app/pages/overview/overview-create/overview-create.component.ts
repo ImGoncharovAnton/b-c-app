@@ -22,7 +22,6 @@ export class OverviewCreateComponent implements OnInit {
       return new Date(new Date().getFullYear(), month).toLocaleString(locale, {month: "long"});
     };
     let monthsArr = this.budgetService.getMonths();
-    console.log('onCreate monthsArr', monthsArr)
     if (monthsArr.length > 0) {
       let prevMonth = monthsArr[monthsArr.length - 1];
       let prevMonthId = prevMonth.monthId

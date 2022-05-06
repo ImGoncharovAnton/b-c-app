@@ -15,7 +15,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   monthsArr: MonthItem[];
   id: number = 0;
   monthNow: number;
-  private subscription: Subscription;
+  private subscription$: Subscription;
 
   constructor(private budgetService: BudgetService,
               private _route: ActivatedRoute,
@@ -26,7 +26,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.monthNow = new Date().getMonth();
     this.monthsArr = this.budgetService.getMonths();
-    this.subscription = this.budgetService.monthsChanged$
+    this.subscription$ = this.budgetService.monthsChanged$
       .subscribe(
         (months: MonthItem[]) => {
           this.monthsArr = months
@@ -35,7 +35,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscription$.unsubscribe();
   }
 
   onMonthPage(id: number, item: MonthItem) {

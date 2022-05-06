@@ -10,20 +10,6 @@
         </div>
         <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)" *ngIf="!isLoading">
           <div class="login-inputs">
-            <mat-form-field appearance="outline" *ngIf="!isLoginMode">
-              <mat-label>Enter your Name</mat-label>
-              <input matInput
-                     type="text"
-                     placeholder="username"
-                     ngModel
-                     name="user"
-                     required
-                     #user="ngModel">
-              <mat-error *ngIf="user.touched && !user.valid">
-                <span *ngIf="user.errors?.['required']">Username is required</span>
-              </mat-error>
-            </mat-form-field>
-
             <mat-form-field appearance="outline">
               <mat-label>Enter your email</mat-label>
               <input matInput

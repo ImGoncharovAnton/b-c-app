@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import {AuthResponseData, AuthService} from '../shared/service/auth.service';
 import {NgForm, NgModel} from "@angular/forms";
 import {Observable} from "rxjs";
+import {DataService} from '../shared/service/data.service';
 
 @Component({
   selector: 'app-auth',
@@ -14,8 +15,11 @@ export class AuthComponent implements OnInit {
   isLoginMode: boolean = true
   isLoading: boolean = false
   error: string = '';
+
   constructor(private authService: AuthService,
-              private router: Router) {}
+              private router: Router,
+              private dataService: DataService) {
+  }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -28,19 +32,31 @@ export class AuthComponent implements OnInit {
     if (!form.valid) {
       return
     }
-    const username = form.value.user;
     const email = form.value.email;
     const password = form.value.password;
     // Checking for word "admin" at registration
     const result = email.match(/admin/)
 
-    let authObs: Observable<AuthResponseData>
+    let loginObs$: Observable<AuthResponseData>
+    let registerObs$: Observable<AuthResponseData>
 
     this.isLoading = true;
     this.error = '';
 
     if (this.isLoginMode) {
-      authObs = this.authService.login(email, password)
+      this.authService.login(email, password).subscribe({
+        next: (response) => {
+          console.log('login response', response)
+          this.dataService.getUserId(response.localId)
+          this.isLoading = false;
+          this.router.navigate(['/overview-page']);
+        },
+        error: (errorMessage) => {
+          this.error = errorMessage
+          this.isLoading = false
+        },
+        complete: () => console.log('authService subscribe observable complete')
+      })
     } else {
       // Checking for word "admin" at registration
       if (result) {
@@ -48,21 +64,35 @@ export class AuthComponent implements OnInit {
         form.reset()
         return alert('E-mail with the word "admin" cannot be used, please use another email')
       } else {
-        authObs = this.authService.signUp(username, email, password)
+        this.authService.signUp(email, password).subscribe({
+          next: (response) => {
+            console.log('signUp response', response)
+            this.dataService.getUserId(response.localId)
+            this.dataService.storeUser(response.email, response.localId)
+            this.isLoading = false;
+            this.router.navigate(['/overview-page']);
+          },
+          error: (errorMessage) => {
+            this.error = errorMessage
+            this.isLoading = false
+          },
+          complete: () => console.log('authService subscribe observable complete')
+        })
       }
     }
 
-    authObs.subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.router.navigate(['/overview-page']);
-      },
-      error: (errorMessage) => {
-        this.error = errorMessage
-        this.isLoading = false
-      },
-      complete: () => console.log('authService subscribe observable complete')
-    })
+    // loginObs$.subscribe({
+    //   next: (response) => {
+    //     // this.dataService.storeUser(response.email, response.localId)
+    //     this.isLoading = false;
+    //     this.router.navigate(['/overview-page']);
+    //   },
+    //   error: (errorMessage) => {
+    //     this.error = errorMessage
+    //     this.isLoading = false
+    //   },
+    //   complete: () => console.log('authService subscribe observable complete')
+    // })
 
     form.reset();
   }
