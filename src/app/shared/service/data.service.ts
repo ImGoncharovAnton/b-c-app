@@ -2,8 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {User} from "../model/user.model";
 import {MonthItem} from "../model/month-item.model";
-import {BudgetService} from './budget.service';
-import {AuthService} from "./auth.service";
+import {map} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +10,10 @@ import {AuthService} from "./auth.service";
 export class DataService {
   baseUrl: string = 'https://budget-calc-a-default-rtdb.europe-west1.firebasedatabase.app/'
   userData: User
+  storeUserData: any
   userName: string
   month: MonthItem
+  userId: string
   testData = {
     'uid': {
       name: 'John',
@@ -38,17 +39,47 @@ export class DataService {
 
   }
 
-  constructor(private http: HttpClient,
-              budgetService: BudgetService,
-              authService: AuthService) {
+  constructor(private http: HttpClient) {
   }
 
-  storeData() {
-    const testData = this.dataUser()
-    this.http.put(this.baseUrl + 'users/-N1KhKZ90Gm3FMmeUuE4.json', testData)
+  storeUser(username: string, email: string, userId: string) {
+    const lockData = {
+      username: username,
+      email: email,
+      role: 'mortal'
+    }
+    this.http.put(this.baseUrl + `users/${userId}.json`, lockData)
       .subscribe(resData => {
-        console.log(resData)
+        console.log('response Data from storeUserLock',
+          resData
+        )
       })
+  }
+
+  updateUserMonths(months: any) {
+    let _months = months
+    const userId: string = this.setUserId()
+    this.http.put(this.baseUrl + `users/${userId}/months.json`, _months)
+      .subscribe(resData => {
+        console.log('response Data from storeDataUser',
+          resData
+        )
+      })
+  }
+
+  fetchUser() {
+    const userId: string = this.setUserId()
+    return this.http.get<any>(this.baseUrl + `users/${userId}.json`)
+      .pipe(map(resData => {
+          return {
+            ...resData,
+            months: resData.months ? resData.months : []
+          }
+        }
+      ))
+    // .subscribe(resData => {
+    //   console.log(resData)
+    // })
   }
 
   fetchData() {
@@ -58,43 +89,23 @@ export class DataService {
       })
   }
 
-  getUserData(user: User) {
-    this.userData = user;
-
+  getStoreUserData() {
+    return this.storeUserData
   }
 
-  setUserData() {
-    return this.userData
+
+  // true
+
+  getUserId(id: string) {
+    this.userId = id
   }
 
-  getUsername(username: string) {
-    this.userName = username
-  }
-
-  getMonthData(month: MonthItem) {
-    this.month = month;
-  }
-
-  setMonthData() {
-    return this.month
-  }
-
-  dataUser() {
-    const arr = {
-      user: 'John2',
-      role: 'mortal',
-      month: {
-        expense: 20,
-        income: 10,
-        expenseArr: [],
-        incomeArr: [],
-        month: 'May',
-        monthId: '5'
-      }
+  setUserId() {
+    if (this.userId == undefined) {
+      let jsonData = localStorage.getItem('userData')
+      const userData = jsonData !== null ? JSON.parse(jsonData) : [];
+      this.userId = userData.id
     }
-    console.log(arr)
-
-
-    return arr
+    return this.userId
   }
 }

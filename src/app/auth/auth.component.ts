@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import {AuthResponseData, AuthService} from '../shared/service/auth.service';
 import {NgForm, NgModel} from "@angular/forms";
 import {Observable} from "rxjs";
+import {DataService} from '../shared/service/data.service';
 
 @Component({
   selector: 'app-auth',
@@ -14,8 +15,11 @@ export class AuthComponent implements OnInit {
   isLoginMode: boolean = true
   isLoading: boolean = false
   error: string = '';
+
   constructor(private authService: AuthService,
-              private router: Router) {}
+              private router: Router,
+              private dataService: DataService) {
+  }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -48,12 +52,19 @@ export class AuthComponent implements OnInit {
         form.reset()
         return alert('E-mail with the word "admin" cannot be used, please use another email')
       } else {
-        authObs = this.authService.signUp(username, email, password)
+        authObs = this.authService.signUp(email, password)
       }
     }
 
     authObs.subscribe({
       next: (response) => {
+        if (!this.isLoginMode) {
+          console.log('register true')
+          this.dataService.storeUser(username, response.email, response.localId)
+        } else {
+          console.log('login true')
+          this.dataService.getUserId(response.localId)
+        }
         this.isLoading = false;
         this.router.navigate(['/overview-page']);
       },

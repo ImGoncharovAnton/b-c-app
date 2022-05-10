@@ -26,7 +26,7 @@ export class AuthService {
     console.log('AuthService Works!')
   }
 
-  signUp(username: string, email: string, password: string) {
+  signUp(email: string, password: string) {
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBRB16qVU9P_RHIUrkFQNXd_8hUm61nPjk`,
       {
         email: email,

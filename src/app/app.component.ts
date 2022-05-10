@@ -18,17 +18,21 @@ export class AppComponent implements OnInit {
   }
 
   addData() {
-    this.dataService.storeData()
+    let months = [
+      {'key1': 'value1'},
+      {'key2': 'value2'}]
+    this.dataService.updateUserMonths(months)
     console.log('AddData complited')
   }
 
   fetchData() {
-    this.dataService.fetchData()
-    console.log('data fetch complete')
+    this.dataService.fetchUser()
+    console.log('fetchUser complete')
   }
 
   setDataUser() {
-    const a = this.dataService.dataUser()
-    console.log('user from data service', a)
+    console.log(this.dataService.setUserId())
+    // const a = this.dataService.dataUser()
+    // console.log('user from data service', a)
   }
 }

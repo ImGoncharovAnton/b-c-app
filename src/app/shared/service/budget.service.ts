@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {MonthItem} from '../model/month-item.model';
 import {Subject} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
+import {DataService} from './data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,15 @@ export class BudgetService {
   totalBudgetCounter$ = new Subject<number>();
   monthsArr: MonthItem[] = [];
 
-  constructor() {
+  data: any
+
+  constructor(private dataService: DataService) {
     console.log('BudgetService Works!')
+    this.dataService.fetchUser().subscribe(data => this.data = data)
+  }
+
+  _getDataMonths() {
+    this.dataService.fetchUser().subscribe(data => this.data = data)
   }
 
   _getLocalStoreData() {
@@ -47,10 +55,14 @@ export class BudgetService {
   }
 
   addMonths(newMonths: MonthItem) {
+    // const storeUserData = this._getDataMonths()
+    console.log(this.data)
+
     this.monthsArr.push(newMonths)
     console.log('addMonths monthsArr', this.monthsArr)
-    let months = this._getLocalStoreData()
-    months.push(newMonths)
+
+    // let months = this._getLocalStoreData()
+    // months.push(newMonths)
 
     // localStorage.setItem('monthsStore', JSON.stringify(months));
     // this.monthsChanged$.next(months.slice())
