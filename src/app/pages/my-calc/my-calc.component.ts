@@ -30,6 +30,7 @@ export class MyCalcComponent implements OnInit, OnDestroy {
         this.parentId = params['id']
       }
     )
+
     this.budgetService.setPageId(this.parentId)
     const monthObj = this.budgetService.getMonth(this.parentId);
     this.monthName = monthObj.month;
