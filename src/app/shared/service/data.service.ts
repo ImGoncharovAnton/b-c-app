@@ -75,6 +75,7 @@ export class DataService {
         )
       })
   }
+
   // delete item by key from database
   deleteMonths(key: string | undefined) {
     const userId: string = this.setUserId()
