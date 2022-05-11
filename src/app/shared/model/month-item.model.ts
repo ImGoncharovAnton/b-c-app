@@ -6,6 +6,7 @@ export class MonthItem {
               public income: number,
               public expense: number,
               public incomeArr: BudgetItem[],
-              public expenseArr: BudgetItem[]) {
+              public expenseArr: BudgetItem[],
+              public key?: string) {
   }
 }

@@ -1,45 +1,53 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {User} from "../model/user.model";
 import {MonthItem} from "../model/month-item.model";
-import {map} from "rxjs";
+import {map, Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   baseUrl: string = 'https://budget-calc-a-default-rtdb.europe-west1.firebasedatabase.app/'
-  userData: User
+  monthsChanged$ = new Subject<MonthItem[]>()
   storeUserData: any
   userName: string
   month: MonthItem
   userId: string
-  testData = {
-    'uid': {
-      name: 'John',
-      role: 'mortal',
-      monthStore: {
-        "0": {
-          monthId: 4,
-          month: 'May',
-          incomesArr: [
-            {amount: 1, description: 'qwe'},
-            {amount: 2, description: 'ewq'}
-          ],
-          income: 30,
-          expensesArr: [
-            {amount: 3, description: 'rew'},
-            {amount: 4, description: 'fasd'}
-          ],
-          expense: 10
-        }
-      }
+  monthStore = {
+    '-Nslksldf-sdfkkk;l': {
+      monthId: 4,
+      month: 'May',
+      incomesArr: [
+        {amount: 1, description: 'qwe'},
+        {amount: 2, description: 'ewq'}
+      ],
+      income: 30,
+      expensesArr: [
+        {amount: 3, description: 'rew'},
+        {amount: 4, description: 'fasd'}
+      ],
+      expense: 10
     }
-
-
   }
 
+
   constructor(private http: HttpClient) {
+  }
+
+  createPost(data: any) {
+    return this.http.post(this.baseUrl + `test.json`, data)
+  }
+
+  fetchPost() {
+    return this.http.get<any>(this.baseUrl + `test.json`).pipe(
+      map(response => {
+        let posts = []
+        for (let key in response) {
+          posts.push({...response[key], key})
+        }
+        return posts
+      })
+    )
   }
 
   storeUser(username: string, email: string, userId: string) {
@@ -56,16 +64,11 @@ export class DataService {
       })
   }
 
-  updateUserMonths(months: any) {
-    let _months = months
+  updateUserMonths(months: MonthItem) {
     const userId: string = this.setUserId()
-    this.http.put(this.baseUrl + `users/${userId}/months.json`, _months)
-      .subscribe(resData => {
-        console.log('response Data from storeDataUser',
-          resData
-        )
-      })
+    return this.http.post(this.baseUrl + `users/${userId}/months.json`, months)
   }
+
 
   fetchUser() {
     const userId: string = this.setUserId()
@@ -77,9 +80,21 @@ export class DataService {
           }
         }
       ))
-    // .subscribe(resData => {
-    //   console.log(resData)
-    // })
+  }
+
+  fetchUserMonths() {
+    const userId: string = this.setUserId()
+    return this.http.get<any>(this.baseUrl + `users/${userId}/months.json`)
+      .pipe(
+        map(response => {
+          let months = []
+          for (let key in response) {
+            months.push({...response[key], key})
+
+          }
+          return months
+        })
+      )
   }
 
   fetchData() {

@@ -1,10 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BudgetService} from "../../shared/service/budget.service";
 import {MonthItem} from "../../shared/model/month-item.model";
-import {Subscription} from 'rxjs';
+import {Subject, takeUntil} from 'rxjs';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
+import {DataService} from "../../shared/service/data.service";
 
 @Component({
   selector: 'app-overview',
@@ -12,31 +13,40 @@ import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component"
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit, OnDestroy {
-  monthsArr: MonthItem[];
+  monthsArr: MonthItem[] = [];
   id: number = 0;
   monthNow: number;
-  private subscription: Subscription;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private budgetService: BudgetService,
+              private dataService: DataService,
               private _route: ActivatedRoute,
               private _router: Router,
               private dialog: DialogService) {
   }
 
   ngOnInit(): void {
-    this.monthNow = new Date().getMonth();
-    this.monthsArr = this.budgetService.getMonths();
-    this.subscription = this.budgetService.monthsChanged$
-      .subscribe(
-        (months: MonthItem[]) => {
-          this.monthsArr = months
-        }
-      )
+    this._getDataMonths()
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.destroy$.next(true);
   }
+
+  private _getDataMonths() {
+    this.dataService.fetchUserMonths()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(months => {
+          this.monthsArr = this.monthsArr.concat(months);
+        }
+      )
+    this.dataService.monthsChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((months: MonthItem[]) => {
+        this.monthsArr = months
+      })
+  }
+
 
   onMonthPage(id: number, item: MonthItem) {
     this.id = id;
