@@ -37,14 +37,17 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.dataService.fetchUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
-          this.monthsArr = this.monthsArr.concat(months);
+          console.log("Months", months)
+        this.monthsArr = this.monthsArr.concat(months);
         }
       )
     this.dataService.monthsChanged$
       .pipe(takeUntil(this.destroy$))
       .subscribe((months: MonthItem[]) => {
         this.monthsArr = months
+        console.log(months)
       })
+    this.monthNow = new Date().getMonth();
   }
 
 
@@ -62,7 +65,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  onDelete(i: number, item: MonthItem) {
+  onDelete(item: MonthItem) {
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -74,7 +77,19 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result === true) {
-        this.budgetService.deleteMonths(i)
+        this.dataService.deleteMonths(item.key).subscribe(response => {
+          console.log('delete complete')
+          // Либо обнуление всего массива и снова вызов функции, либо повтор кода почти полностью
+          // this.monthsArr = []
+          // this._getDataMonths()
+          // Если передавать новое значение, то идет плавное удаление элемента, если обнулять, то видно ререндер всего блока, что ни есть хорошо
+          this.dataService.fetchUserMonths()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(months => {
+              this.monthsArr = months
+              this.dataService.monthsChanged$.next(months)
+            })
+        })
       }
     });
   }

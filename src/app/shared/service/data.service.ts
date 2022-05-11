@@ -30,9 +30,10 @@ export class DataService {
     }
   }
 
-
   constructor(private http: HttpClient) {
   }
+
+  // test
 
   createPost(data: any) {
     return this.http.post(this.baseUrl + `test.json`, data)
@@ -50,6 +51,9 @@ export class DataService {
     )
   }
 
+  // end test
+
+
   storeUser(username: string, email: string, userId: string) {
     const lockData = {
       username: username,
@@ -62,6 +66,11 @@ export class DataService {
           resData
         )
       })
+  }
+
+  deleteMonths(key: string | undefined) {
+    const userId: string = this.setUserId()
+    return this.http.delete(this.baseUrl + `users/${userId}/months/${key}.json`)
   }
 
   updateUserMonths(months: MonthItem) {

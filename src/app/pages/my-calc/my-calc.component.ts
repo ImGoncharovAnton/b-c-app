@@ -4,6 +4,7 @@ import {BudgetService} from "../../shared/service/budget.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MyCalcEditComponent} from "./my-calc-edit/my-calc-edit.component";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
+import {DataService} from 'src/app/shared/service/data.service';
 
 @Component({
   selector: 'app-my-calc',
@@ -20,7 +21,8 @@ export class MyCalcComponent implements OnInit, OnDestroy {
   constructor(private budgetService: BudgetService,
               private route: ActivatedRoute,
               private router: Router,
-              private dialog: DialogService) {
+              private dialog: DialogService,
+              private dataService: DataService) {
   }
 
   ngOnInit(): void {

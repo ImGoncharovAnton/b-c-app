@@ -62,30 +62,30 @@ export class BudgetService implements OnInit {
 
   addMonths(newMonths: MonthItem) {
 
-    const months = this.data.months
-
-    months.push(newMonths)
-    this.dataService.updateUserMonths(months).subscribe((data) => {
-      console.log("Hello")
-    })
-    console.log(this.data)
-    // this.monthsChanged2$.next(months)
-
-    this.monthsArr.push(newMonths)
-    console.log('addMonths monthsArr', this.monthsArr)
-
-    // let months = this._getLocalStoreData()
+    // const months = this.data.months
+    //
     // months.push(newMonths)
-
-    // localStorage.setItem('monthsStore', JSON.stringify(months));
-    this.monthsChanged$.next(months.slice())
+    // this.dataService.updateUserMonths(months).subscribe((data) => {
+    //   console.log("Hello")
+    // })
+    // console.log(this.data)
+    // // this.monthsChanged2$.next(months)
+    //
+    // this.monthsArr.push(newMonths)
+    // console.log('addMonths monthsArr', this.monthsArr)
+    //
+    // // let months = this._getLocalStoreData()
+    // // months.push(newMonths)
+    //
+    // // localStorage.setItem('monthsStore', JSON.stringify(months));
+    // this.monthsChanged$.next(months.slice())
   }
 
   deleteMonths(index: number) {
-    let months = this._getLocalStoreData()
-    months.splice(index, 1);
-    localStorage.setItem('monthsStore', JSON.stringify(months));
-    this.monthsChanged$.next(months.slice())
+    // let months = this._getLocalStoreData()
+    // months.splice(index, 1);
+    // localStorage.setItem('monthsStore', JSON.stringify(months));
+    // this.monthsChanged$.next(months.slice())
   }
 
   addIncomeItem(pageId: number, incomeItem: BudgetItem) {

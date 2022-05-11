@@ -51,16 +51,20 @@ export class OverviewCreateComponent implements OnInit, OnDestroy {
       const newMonthItem = new MonthItem(prevMonthId + 1, monthLocalizedString(prevMonthId + 1, 'en'), 0, 0, [], []);
 
       // this.budgetService.addMonths(newMonthItem)
-      this.dataService.updateUserMonths(newMonthItem).subscribe((data) => {
-        this._getDataMonths()
-      })
+      this.dataService.updateUserMonths(newMonthItem)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((data) => {
+          this._getDataMonths()
+        })
     } else {
       console.log('empty monthsArr')
       const newMonthItem = new MonthItem(new Date().getMonth(), this.monthDate, 0, 0, [], [])
       // this.budgetService.addMonths(newMonthItem)
-      this.dataService.updateUserMonths(newMonthItem).subscribe((data) => {
-        this._getDataMonths()
-      })
+      this.dataService.updateUserMonths(newMonthItem)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((data) => {
+          this._getDataMonths()
+        })
     }
   }
 
