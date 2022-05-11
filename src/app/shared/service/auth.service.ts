@@ -156,7 +156,7 @@ export class AuthService {
       role = 'mortal'
     }
 
-    const expireDate = new Date(new Date().getTime() + expiresIn * 1000)
+    const expireDate = new Date(new Date().getTime() + expiresIn * 10000)
     const user = new User(
       email,
       userId,

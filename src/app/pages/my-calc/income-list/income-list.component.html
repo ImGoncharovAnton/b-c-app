@@ -4,7 +4,7 @@
     <span>{{totalIncomes}}</span>
   </div>
   <ul class="income-list-group">
-    <ng-container *ngIf="incomeItems.length > 0">
+    <ng-container *ngIf="incomeItems !== undefined">
       <li
         class="income-list-item"
         *ngFor="let item of incomeItems; let i = index"

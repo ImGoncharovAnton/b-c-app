@@ -2,6 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MonthItem} from "../model/month-item.model";
 import {map, Subject} from "rxjs";
+import {BudgetItem} from "../model/budget-item.model";
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,12 @@ import {map, Subject} from "rxjs";
 export class DataService {
   baseUrl: string = 'https://budget-calc-a-default-rtdb.europe-west1.firebasedatabase.app/'
   monthsChanged$ = new Subject<MonthItem[]>()
+  totalBudgetCounter$ = new Subject<number>()
+  itemsChangedInc$ = new Subject<BudgetItem[]>()
+  itemsChangedExp$ = new Subject<BudgetItem[]>()
+  totalCounterInc$ = new Subject<number>()
+  totalCounterExp$ = new Subject<number>()
+  pageId: number
   storeUserData: any
   userName: string
   month: MonthItem
@@ -31,6 +38,7 @@ export class DataService {
   }
 
   constructor(private http: HttpClient) {
+    console.log('DataService Works!')
   }
 
   // test
@@ -53,7 +61,7 @@ export class DataService {
 
   // end test
 
-
+  // Create userData in Database
   storeUser(username: string, email: string, userId: string) {
     const lockData = {
       username: username,
@@ -67,7 +75,7 @@ export class DataService {
         )
       })
   }
-
+  // delete item by key from database
   deleteMonths(key: string | undefined) {
     const userId: string = this.setUserId()
     return this.http.delete(this.baseUrl + `users/${userId}/months/${key}.json`)
@@ -78,7 +86,7 @@ export class DataService {
     return this.http.post(this.baseUrl + `users/${userId}/months.json`, months)
   }
 
-
+  // get userData by key from database
   fetchUser() {
     const userId: string = this.setUserId()
     return this.http.get<any>(this.baseUrl + `users/${userId}.json`)
@@ -91,6 +99,7 @@ export class DataService {
       ))
   }
 
+  // get userData by key months from database
   fetchUserMonths() {
     const userId: string = this.setUserId()
     return this.http.get<any>(this.baseUrl + `users/${userId}/months.json`)
@@ -101,7 +110,13 @@ export class DataService {
             months.push({...response[key], key})
 
           }
-          return months
+          return months.map(data => {
+            return {
+              ...data,
+              incomesArr: data.incomesArr ? data.incomesArr : [],
+              expensesArr: data.expensesArr ? data.expensesArr : [],
+            }
+          })
         })
       )
   }
@@ -118,12 +133,20 @@ export class DataService {
   }
 
 
-  // true
+  getPageId(id: number) {
+    this.pageId = id
+  }
 
+  setPageId() {
+    return this.pageId
+  }
+
+  // get localId from auth service
   getUserId(id: string) {
     this.userId = id
   }
 
+  // set userId from local storage and return value
   setUserId() {
     if (this.userId == undefined) {
       let jsonData = localStorage.getItem('userData')

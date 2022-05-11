@@ -18,7 +18,6 @@ export class BudgetService implements OnInit {
   totalCounterExp$ = new Subject<number>();
   totalBudgetCounter$ = new Subject<number>();
   monthsArr: MonthItem[] = [];
-  // monthsChanged2$ = new Subject<MonthItem[]>();
 
   data: any
 
