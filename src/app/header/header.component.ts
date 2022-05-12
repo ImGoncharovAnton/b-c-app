@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../shared/service/auth.service";
-import {Subscription} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
+import {DataService} from '../shared/service/data.service';
 
 @Component({
   selector: 'app-header',
@@ -9,16 +10,25 @@ import {Subscription} from "rxjs";
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated: boolean = false;
-  private _userSub: Subscription
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  username: string
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService,
+              private dataService: DataService) {
   }
 
   ngOnInit(): void {
-    this._userSub = this.authService.userSub$.subscribe((user) => {
-      this.isAuthenticated = !!user
-      //  !!user = user ? true : false
-    })
+    this.authService.userSub$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((user) => {
+        this.isAuthenticated = !!user
+        // === !!user = user ? true : false
+      })
+    this.dataService.fetchUser()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.username = data.username
+      })
   }
 
   onLogout() {
@@ -26,7 +36,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._userSub.unsubscribe()
+    this.destroy$.next(true)
   }
 
 

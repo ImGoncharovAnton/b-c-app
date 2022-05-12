@@ -15,6 +15,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   monthsArr: MonthItem[] = [];
   id: number = 0;
   monthNow: number;
+
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private dataService: DataService,
@@ -35,7 +36,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.dataService.fetchUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
-          console.log("Months", months)
         this.monthsArr = this.monthsArr.concat(months);
         }
       )
@@ -43,7 +43,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((months: MonthItem[]) => {
         this.monthsArr = months
-        console.log(months)
       })
     this.monthNow = new Date().getMonth();
   }

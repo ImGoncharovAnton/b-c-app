@@ -1,21 +1,28 @@
-.grid-container {
-  margin: 20px;
+.admin-page {
+
 }
 
-.dashboard-card {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
+.users-block {
+  border: 1px solid gray;
+  background-color: #bcbcbc;
+  display: flex;
+  padding: 1.5rem;
+  border-radius: 5px;
 }
 
-.more-button {
-  position: absolute;
-  top: 5px;
-  right: 10px;
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 5px;
+  background-color: #b0bec5;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8)
 }
 
-.dashboard-card-content {
-  text-align: center;
+.users-item {
+  border-radius: 3px;
+  background-color: #fff;
+  padding: 0.5rem;
 }
