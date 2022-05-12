@@ -5,16 +5,17 @@
   </div>
   <ul
     class="expense-list-group">
-    <ng-container *ngIf="expenseItems.length > 0">
+    <ng-container *ngIf="expenseItems">
       <li
         *ngFor="let item of expenseItems; let i = index"
-        class="expense-list-item"
-        (click)="onEditItem(i)">
-        <p>{{item.description}}:</p>
-        <span>{{item.amount}}</span>
+        class="expense-list-item">
+        <div (click)="onEditItem(item, i)">
+          <p>{{item.description}}: </p>
+          <span>{{item.amount}}</span>
+        </div>
         <mat-icon
           class="expense-list-icon"
-          (click)="onDelete(i)">delete
+          (click)="onDelete(item.key)">delete
         </mat-icon>
       </li>
     </ng-container>

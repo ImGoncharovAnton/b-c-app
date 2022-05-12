@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BudgetService} from "../../../shared/service/budget.service";
 import {MonthItem} from "../../../shared/model/month-item.model";
 import {DataService} from "../../../shared/service/data.service";
 import {Subject, takeUntil} from "rxjs";
@@ -14,8 +13,7 @@ export class OverviewCreateComponent implements OnInit, OnDestroy {
   months: MonthItem[]
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private budgetService: BudgetService,
-              private dataService: DataService) {
+  constructor(private dataService: DataService) {
   }
 
   ngOnInit(): void {

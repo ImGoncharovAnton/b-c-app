@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BudgetItem} from "../../../shared/model/budget-item.model";
 import {Subject, takeUntil} from "rxjs";
-import {BudgetService} from 'src/app/shared/service/budget.service';
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {MyCalcEditComponent} from "../my-calc-edit/my-calc-edit.component";
 import {DataService} from 'src/app/shared/service/data.service';
@@ -17,34 +16,32 @@ export class IncomeListComponent implements OnInit, OnDestroy {
   pageId: number;
   totalIncomes: number;
 
-  constructor(private budgetService: BudgetService,
-              private dialog: DialogService,
+  constructor(private dialog: DialogService,
               private dataService: DataService) {
   }
 
   onEditItem(item: BudgetItem, index: number) {
-
     this.dataService.setIdEditIncomeItem(index)
+    this.dataService.setKeyEditIncomeItem(item.key)
     this.dialog.open(MyCalcEditComponent, {data: 'income'});
   }
 
   ngOnInit(): void {
     this.pageId = this.dataService.getPageId()
-    console.log(this.pageId)
     this.dataService.fetchUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
           const month = months[this.pageId]
-          this.totalIncomes = month.income;
+          this.totalIncomes = month.income
+          const origIncomesArr = month.incomesArr
+          const normalizedIncomesArr: BudgetItem[] = []
+          for (let key in origIncomesArr) {
+            normalizedIncomesArr.push({...origIncomesArr[key], key})
+          }
+          this.incomeItems = normalizedIncomesArr
           console.log("Income-list component | Month", month)
         }
       )
-    this.dataService.fetchNormalizedIncomesArr()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(incomesArr => {
-        this.incomeItems = incomesArr
-        console.log('this.incomeItems', this.incomeItems)
-      })
     this.dataService.itemsChangedInc$
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -67,6 +64,4 @@ export class IncomeListComponent implements OnInit, OnDestroy {
   onDelete(key: string | undefined) {
     this.dataService.deleteIncomeItem(key)
   }
-
-
 }

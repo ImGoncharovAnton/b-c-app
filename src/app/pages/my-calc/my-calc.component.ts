@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject, takeUntil} from 'rxjs';
-import {BudgetService} from "../../shared/service/budget.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MyCalcEditComponent} from "./my-calc-edit/my-calc-edit.component";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
@@ -19,8 +18,7 @@ export class MyCalcComponent implements OnInit, OnDestroy {
   month: MonthItem
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private budgetService: BudgetService,
-              private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
               private router: Router,
               private dialog: DialogService,
               private dataService: DataService) {

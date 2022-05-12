@@ -1,6 +1,5 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {BudgetService} from 'src/app/shared/service/budget.service';
 import {DataService} from 'src/app/shared/service/data.service';
 import {DialogRef} from "../../../shared/dialog/dialog-ref";
 import {DIALOG_DATA} from "../../../shared/dialog/dialog-token";
@@ -24,14 +23,12 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
 
   constructor(private dialogRef: DialogRef,
               @Inject(DIALOG_DATA) public data: string,
-              private budgetService: BudgetService,
               private dataService: DataService) {
   }
 
   ngOnInit(): void {
     this.pageId = this.dataService.getPageId()
     if (this.data === 'income') {
-      console.log('INCOME ')
       this.identityIncome = true;
       this.dataService.fetchNormalizedIncomesArr()
         .pipe(takeUntil(this.destroy$))
@@ -46,13 +43,12 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
         })
     }
     if (this.data === 'expense') {
-      console.log('EXPENSE')
       this.identityExpense = true;
       this.dataService.fetchNormalizedExpensesArr()
         .pipe(takeUntil(this.destroy$))
         .subscribe(expenses => {
           const expensesArr = expenses
-          this.editedItemIndex = this.dataService.getIdEditIncomeItem()
+          this.editedItemIndex = this.dataService.getIdEditExpenseItem()
           this.editedItem = expensesArr[this.editedItemIndex]
           this.formGroup.setValue({
             amount: this.editedItem.amount,
@@ -74,9 +70,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
 
   onSubmitIncome() {
     if (this.identityIncome) {
-      this.editedItemIndex = this.dataService.getIdEditIncomeItem()
-
-      // this.budgetService.updateIncomeItem(this.editedItemIndex, this.formGroup.value)
+      this.dataService.updateIncomeItem(this.formGroup.value)
     } else {
       this.dataService.addIncomeItem(this.formGroup.value)
     }
@@ -87,14 +81,12 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   }
 
   onSubmitExpense() {
-
     if (this.identityExpense) {
-      console.log('this.formGroup.value | on Submit Expenses', this.formGroup.value)
-      // this.budgetService.updateExpenseItem(this.pageId, this.editedItemIndex, this.formGroup.value)
+      this.dataService.updateExpenseItem(this.formGroup.value)
     } else {
-      this.budgetService.addExpenseItem(this.pageId, this.formGroup.value)
-
+      this.dataService.addExpenseItem(this.formGroup.value)
     }
+
     this.formGroup.reset();
     this.identityExpense = false;
     this.dialogRef.close();
@@ -120,7 +112,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe(expenses => {
           const expensesArr = expenses
-          this.editedItemIndex = this.dataService.getIdEditIncomeItem()
+          this.editedItemIndex = this.dataService.getIdEditExpenseItem()
           const editItem = expensesArr[this.editedItemIndex]
           myAmount = editItem.amount;
           myDesc = editItem.description;

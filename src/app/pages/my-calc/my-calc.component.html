@@ -20,13 +20,13 @@
             <app-income-list></app-income-list>
           </div>
           <div class="middle-my-calc__column">
-            <!--            <app-expense-list></app-expense-list>-->
+            <app-expense-list></app-expense-list>
           </div>
         </div>
         <div class="my-calc-page__bottom">
-          <button mat-raised-button
+          <button (click)="onCreateItem()"
                   class="btn-create"
-                  (click)="onCreateItem()">Create
+                  mat-raised-button>Create
           </button>
         </div>
       </div>

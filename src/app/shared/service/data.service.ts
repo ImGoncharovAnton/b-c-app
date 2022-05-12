@@ -19,8 +19,8 @@ export class DataService {
   pageId: number
   idEditIncomeItem: number
   idEditExpenseItem: number
-  keyEditIncomeItem: string
-  keyEditExpenseItem: string
+  keyEditIncomeItem: string | undefined
+  keyEditExpenseItem: string | undefined
 
   storeUserData: any
   userName: string
@@ -86,9 +86,24 @@ export class DataService {
         }
         this.itemsChangedInc$.next(incomesArr)
         this.totalCounterInc$.next(totalIncomes)
-        this.updateIncomeValue(totalIncomes)
+        this._updateIncomeValue(totalIncomes)
       })
   }
+
+  _fetchNormalizedExpensesArr() {
+    let totalExpenses: number = 0;
+    this.fetchNormalizedExpensesArr()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(expensesArr => {
+        for (let item of expensesArr) {
+          totalExpenses = totalExpenses + item.amount
+        }
+        this.itemsChangedExp$.next(expensesArr)
+        this.totalCounterExp$.next(totalExpenses)
+        this._updateExpenseValue(totalExpenses)
+      })
+  }
+
 
   // Create userData in Database
   storeUser(username: string, email: string, userId: string) {
@@ -117,20 +132,43 @@ export class DataService {
   }
 
   addIncomeItem(incomeItem: BudgetItem) {
-
     let key = this._getLocalStoreData()
     const userId: string = this.setUserId()
-    // return this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, test)
     this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, incomeItem).subscribe(data => {
       this._fetchNormalizedIncomesArr()
     })
   }
 
-  updateIncomeValue(value: number) {
+  addExpenseItem(expenseItem: BudgetItem) {
+    let key = this._getLocalStoreData()
+    const userId: string = this.setUserId()
+    this.http.post(this.baseUrl + `users/${userId}/months/${key}/expensesArr.json`, expenseItem).subscribe(data => {
+      this._fetchNormalizedExpensesArr()
+    })
+  }
+
+  _updateIncomeValue(value: number) {
     let totalBudget: number;
     let key = this._getLocalStoreData()
     const userId: string = this.setUserId()
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/income.json`, value)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.fetchUserMonths()
+          .subscribe(months => {
+              let month = months[this.pageId]
+              totalBudget = month.income - month.expense
+              this.totalBudgetCounter$.next(totalBudget)
+            }
+          )
+      })
+  }
+
+  _updateExpenseValue(value: number) {
+    let totalBudget: number;
+    let key = this._getLocalStoreData()
+    const userId: string = this.setUserId()
+    this.http.put(this.baseUrl + `users/${userId}/months/${key}/expense.json`, value)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.fetchUserMonths()
@@ -156,21 +194,6 @@ export class DataService {
       }))
   }
 
-  deleteIncomeItem(keyId: string | undefined) {
-    const userId: string = this.setUserId()
-    let key = this._getLocalStoreData()
-    this.http.delete(this.baseUrl + `users/${userId}/months/${key}/incomesArr/${keyId}.json`)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this._fetchNormalizedIncomesArr()
-      })
-  }
-
-  updateIncomeItem() {
-    //  Подумать, что сюда передавать
-  }
-
-
   fetchNormalizedExpensesArr() {
     const userId: string = this.setUserId()
     let key = this._getLocalStoreData()
@@ -184,15 +207,58 @@ export class DataService {
       }))
   }
 
+  deleteIncomeItem(keyId: string | undefined) {
+    const userId: string = this.setUserId()
+    let key = this._getLocalStoreData()
+    this.http.delete(this.baseUrl + `users/${userId}/months/${key}/incomesArr/${keyId}.json`)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this._fetchNormalizedIncomesArr()
+      })
+  }
+
+  deleteExpenseItem(keyId: string | undefined) {
+    const userId: string = this.setUserId()
+    let key = this._getLocalStoreData()
+    this.http.delete(this.baseUrl + `users/${userId}/months/${key}/expensesArr/${keyId}.json`)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this._fetchNormalizedExpensesArr()
+      })
+  }
+
+  updateIncomeItem(item: BudgetItem) {
+    let keyEditItem = this.keyEditIncomeItem
+    let key = this._getLocalStoreData()
+    const userId: string = this.setUserId()
+    this.http.put(this.baseUrl + `users/${userId}/months/${key}/incomesArr/${keyEditItem}.json`, item)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this._fetchNormalizedIncomesArr()
+      })
+  }
+
+  updateExpenseItem(item: BudgetItem) {
+    let keyEditItem = this.keyEditIncomeItem
+    let key = this._getLocalStoreData()
+    const userId: string = this.setUserId()
+    this.http.put(this.baseUrl + `users/${userId}/months/${key}/expensesArr/${keyEditItem}.json`, item)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this._fetchNormalizedExpensesArr()
+      })
+  }
+
+
   // get userData by key from database
   fetchUser() {
     const userId: string = this.setUserId()
     return this.http.get<any>(this.baseUrl + `users/${userId}.json`)
       .pipe(map(resData => {
-          return {
-            ...resData,
-            months: resData.months ? resData.months : []
-          }
+        return {
+          ...resData,
+          months: resData.months ? resData.months : []
+        }
         }
       ))
   }
@@ -245,20 +311,12 @@ export class DataService {
     return this.idEditExpenseItem
   }
 
-  setKeyEditIncomeItem() {
-    // this.idEditIncomeItem = idEditIncomeItem
+  setKeyEditIncomeItem(idKey: string | undefined) {
+    this.keyEditIncomeItem = idKey
   }
 
-  setKeyEditExpenseItem() {
-
-  }
-
-  getKeyEditIncomeItem() {
-    // return this.idEditIncomeItem
-  }
-
-  getKeyEditExpenseItem() {
-    // return this.idEditExpenseItem
+  setKeyEditExpenseItem(idKey: string | undefined) {
+    this.keyEditIncomeItem = idKey
   }
 
   setPageId(id: number) {
