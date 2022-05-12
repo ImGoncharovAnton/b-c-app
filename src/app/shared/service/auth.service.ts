@@ -130,6 +130,7 @@ export class AuthService {
     this.userSub$.next(null)
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
+    localStorage.removeItem('MonthKey')
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer)
     }
@@ -156,7 +157,7 @@ export class AuthService {
       role = 'mortal'
     }
 
-    const expireDate = new Date(new Date().getTime() + expiresIn * 10000)
+    const expireDate = new Date(new Date().getTime() + expiresIn * 1000)
     const user = new User(
       email,
       userId,
@@ -164,7 +165,7 @@ export class AuthService {
       expireDate,
       role)
     this.userSub$.next(user)
-    this.autoLogout(expiresIn * 10000)
+    this.autoLogout(expiresIn * 100000)
     localStorage.setItem('userData', JSON.stringify(user))
   }
 }

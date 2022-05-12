@@ -1,13 +1,14 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MonthItem} from "../model/month-item.model";
-import {map, Subject} from "rxjs";
+import {map, Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
   baseUrl: string = 'https://budget-calc-a-default-rtdb.europe-west1.firebasedatabase.app/'
   monthsChanged$ = new Subject<MonthItem[]>()
   totalBudgetCounter$ = new Subject<number>()
@@ -16,6 +17,11 @@ export class DataService {
   totalCounterInc$ = new Subject<number>()
   totalCounterExp$ = new Subject<number>()
   pageId: number
+  idEditIncomeItem: number
+  idEditExpenseItem: number
+  keyEditIncomeItem: string
+  keyEditExpenseItem: string
+
   storeUserData: any
   userName: string
   month: MonthItem
@@ -41,6 +47,10 @@ export class DataService {
     console.log('DataService Works!')
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+  }
+
   // test
 
   createPost(data: any) {
@@ -60,6 +70,25 @@ export class DataService {
   }
 
   // end test
+
+  _getLocalStoreData() {
+    let jsonData = localStorage.getItem('MonthKey')
+    return jsonData !== null ? JSON.parse(jsonData) : []
+  }
+
+  _fetchNormalizedIncomesArr() {
+    let totalIncomes: number = 0;
+    this.fetchNormalizedIncomesArr()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(incomesArr => {
+        for (let item of incomesArr) {
+          totalIncomes = totalIncomes + item.amount
+        }
+        this.itemsChangedInc$.next(incomesArr)
+        this.totalCounterInc$.next(totalIncomes)
+        this.updateIncomeValue(totalIncomes)
+      })
+  }
 
   // Create userData in Database
   storeUser(username: string, email: string, userId: string) {
@@ -82,9 +111,77 @@ export class DataService {
     return this.http.delete(this.baseUrl + `users/${userId}/months/${key}.json`)
   }
 
-  updateUserMonths(months: MonthItem) {
+  addUserMonths(month: MonthItem) {
     const userId: string = this.setUserId()
-    return this.http.post(this.baseUrl + `users/${userId}/months.json`, months)
+    return this.http.post(this.baseUrl + `users/${userId}/months.json`, month)
+  }
+
+  addIncomeItem(incomeItem: BudgetItem) {
+
+    let key = this._getLocalStoreData()
+    const userId: string = this.setUserId()
+    // return this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, test)
+    this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, incomeItem).subscribe(data => {
+      this._fetchNormalizedIncomesArr()
+    })
+  }
+
+  updateIncomeValue(value: number) {
+    let totalBudget: number;
+    let key = this._getLocalStoreData()
+    const userId: string = this.setUserId()
+    this.http.put(this.baseUrl + `users/${userId}/months/${key}/income.json`, value)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.fetchUserMonths()
+          .subscribe(months => {
+              let month = months[this.pageId]
+              totalBudget = month.income - month.expense
+              this.totalBudgetCounter$.next(totalBudget)
+            }
+          )
+      })
+  }
+
+  fetchNormalizedIncomesArr() {
+    const userId: string = this.setUserId()
+    let key = this._getLocalStoreData()
+    return this.http.get<any>(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`)
+      .pipe(map(resData => {
+        let incomesArr = []
+        for (let key in resData) {
+          incomesArr.push({...resData[key], key})
+        }
+        return incomesArr;
+      }))
+  }
+
+  deleteIncomeItem(keyId: string | undefined) {
+    const userId: string = this.setUserId()
+    let key = this._getLocalStoreData()
+    this.http.delete(this.baseUrl + `users/${userId}/months/${key}/incomesArr/${keyId}.json`)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this._fetchNormalizedIncomesArr()
+      })
+  }
+
+  updateIncomeItem() {
+    //  Подумать, что сюда передавать
+  }
+
+
+  fetchNormalizedExpensesArr() {
+    const userId: string = this.setUserId()
+    let key = this._getLocalStoreData()
+    return this.http.get<any>(this.baseUrl + `users/${userId}/months/${key}/expensesArr.json`)
+      .pipe(map(resData => {
+        let expensesArr = []
+        for (let key in resData) {
+          expensesArr.push({...resData[key], key})
+        }
+        return expensesArr;
+      }))
   }
 
   // get userData by key from database
@@ -109,7 +206,6 @@ export class DataService {
           let months = []
           for (let key in response) {
             months.push({...response[key], key})
-
           }
           return months.map(data => {
             return {
@@ -133,12 +229,43 @@ export class DataService {
     return this.storeUserData
   }
 
+  setIdEditIncomeItem(idEditIncomeItem: number) {
+    this.idEditIncomeItem = idEditIncomeItem
+  }
 
-  getPageId(id: number) {
+  setIdEditExpenseItem(idEditExpenseItem: number) {
+    this.idEditExpenseItem = idEditExpenseItem
+  }
+
+  getIdEditIncomeItem() {
+    return this.idEditIncomeItem
+  }
+
+  getIdEditExpenseItem() {
+    return this.idEditExpenseItem
+  }
+
+  setKeyEditIncomeItem() {
+    // this.idEditIncomeItem = idEditIncomeItem
+  }
+
+  setKeyEditExpenseItem() {
+
+  }
+
+  getKeyEditIncomeItem() {
+    // return this.idEditIncomeItem
+  }
+
+  getKeyEditExpenseItem() {
+    // return this.idEditExpenseItem
+  }
+
+  setPageId(id: number) {
     this.pageId = id
   }
 
-  setPageId() {
+  getPageId() {
     return this.pageId
   }
 
@@ -157,3 +284,13 @@ export class DataService {
     return this.userId
   }
 }
+
+
+// addIncomeItem1(incomeItem: BudgetItem) {
+//   let totalIncomes: number = 0;
+//   let totalBudget: number;
+//   let key = this._getLocalStoreData()
+//   const userId: string = this.setUserId()
+//   // return this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, test)
+//  return this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, incomeItem)
+// }

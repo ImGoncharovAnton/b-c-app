@@ -22,24 +22,29 @@ export class IncomeListComponent implements OnInit, OnDestroy {
               private dataService: DataService) {
   }
 
-  onEditItem(index: number) {
-    this.budgetService.setIdEditIncomeItem(index)
+  onEditItem(item: BudgetItem, index: number) {
+
+    this.dataService.setIdEditIncomeItem(index)
     this.dialog.open(MyCalcEditComponent, {data: 'income'});
   }
 
   ngOnInit(): void {
-    this.pageId = this.dataService.setPageId()
+    this.pageId = this.dataService.getPageId()
     console.log(this.pageId)
     this.dataService.fetchUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
           const month = months[this.pageId]
           this.totalIncomes = month.income;
-          this.incomeItems = month.incomesArr
-          console.log(this.incomeItems)
           console.log("Income-list component | Month", month)
         }
       )
+    this.dataService.fetchNormalizedIncomesArr()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(incomesArr => {
+        this.incomeItems = incomesArr
+        console.log('this.incomeItems', this.incomeItems)
+      })
     this.dataService.itemsChangedInc$
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -59,9 +64,8 @@ export class IncomeListComponent implements OnInit, OnDestroy {
     this.destroy$.next(true)
   }
 
-  onDelete(index: number) {
-    console.log('onDelete activate')
-    // this.budgetService.deleteIncomeItem(this.pageId, index)
+  onDelete(key: string | undefined) {
+    this.dataService.deleteIncomeItem(key)
   }
 
 

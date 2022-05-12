@@ -64,7 +64,7 @@ export class BudgetService implements OnInit {
     // const months = this.data.months
     //
     // months.push(newMonths)
-    // this.dataService.updateUserMonths(months).subscribe((data) => {
+    // this.dataService.addUserMonths(months).subscribe((data) => {
     //   console.log("Hello")
     // })
     // console.log(this.data)
@@ -90,10 +90,13 @@ export class BudgetService implements OnInit {
   addIncomeItem(pageId: number, incomeItem: BudgetItem) {
     let totalIncomes: number = 0;
     let totalBudget: number;
+
+
     let months = this._getLocalStoreData()
     let thisMonth = months[pageId];
     let incomesArr = thisMonth.incomeArr;
     incomesArr.push(incomeItem)
+
 
     for (let item of incomesArr) {
       totalIncomes = totalIncomes + item.amount

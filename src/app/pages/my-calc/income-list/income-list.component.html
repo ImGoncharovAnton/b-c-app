@@ -4,16 +4,17 @@
     <span>{{totalIncomes}}</span>
   </div>
   <ul class="income-list-group">
-    <ng-container *ngIf="incomeItems !== undefined">
+    <ng-container *ngIf="incomeItems">
       <li
         class="income-list-item"
-        *ngFor="let item of incomeItems; let i = index"
-        (click)="onEditItem(i)">
-        <p>{{item.description}}: </p>
-        <span>{{item.amount}}</span>
+        *ngFor="let item of incomeItems; let i = index">
+        <div (click)="onEditItem(item, i)">
+          <p>{{item.description}}: </p>
+          <span>{{item.amount}} | {{item.key}}</span>
+        </div>
         <mat-icon
           class="income-list-icon"
-          (click)="onDelete(i)">delete
+          (click)="onDelete(item.key)">delete
         </mat-icon>
       </li>
     </ng-container>

@@ -31,7 +31,7 @@ export class MyCalcComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
           this.parentId = params['id']
-          this.dataService.getPageId(params['id'])
+        this.dataService.setPageId(params['id'])
         }
       )
     this.dataService.fetchUserMonths()
@@ -39,7 +39,8 @@ export class MyCalcComponent implements OnInit, OnDestroy {
       .subscribe(months => {
           this.month = months[this.parentId]
           this.monthName = this.month.month;
-          this.totalBudget = this.month.income - this.month.expense;
+        this.totalBudget = this.month.income - this.month.expense;
+        localStorage.setItem('MonthKey', JSON.stringify(this.month.key))
         }
       )
     this.dataService.totalBudgetCounter$
@@ -53,15 +54,11 @@ export class MyCalcComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next(true)
+    localStorage.removeItem('MonthKey')
   }
 
   onCreateItem() {
     this.dialog.open(MyCalcEditComponent);
-
-    // dialogRef.afterClosed().subscribe((data) => {
-    //   // Subscription runs after the dialog closes
-    //   console.log('Dialog closed!');
-    // });
   }
 
 }
