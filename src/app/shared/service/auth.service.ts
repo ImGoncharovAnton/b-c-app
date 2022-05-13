@@ -157,7 +157,7 @@ export class AuthService {
       role = 'mortal'
     }
 
-    const expireDate = new Date(new Date().getTime() + expiresIn * 3000)
+    const expireDate = new Date(new Date().getTime() + expiresIn * 10000)
     const user = new User(
       email,
       userId,
@@ -165,7 +165,7 @@ export class AuthService {
       expireDate,
       role)
     this.userSub$.next(user)
-    this.autoLogout(expiresIn * 5000)
+    this.autoLogout(expiresIn * 10000)
     localStorage.setItem('userData', JSON.stringify(user))
   }
 }

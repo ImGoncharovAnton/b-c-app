@@ -24,11 +24,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.isAuthenticated = !!user
         // === !!user = user ? true : false
       })
-    this.dataService.fetchUser()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.username = data.username
-      })
+    if (this.isAuthenticated) {
+      this.dataService.fetchUser()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(data => {
+          this.username = data.username
+        })
+    }
+
   }
 
   onLogout() {

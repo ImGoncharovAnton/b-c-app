@@ -15,6 +15,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AuthInterceptorService} from "./shared/service/auth-interceptor.service";
 import {HeaderComponent} from './header/header.component';
 import {AdminComponent} from './admin/admin.component';
+import {MatSortModule} from "@angular/material/sort";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {AdminComponent} from './admin/admin.component';
     MyCalcModule,
     ReactiveFormsModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatSortModule
   ],
   providers: [
     {

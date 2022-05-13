@@ -22,7 +22,6 @@ export class DataService {
   keyEditIncomeItem: string | undefined
   keyEditExpenseItem: string | undefined
 
-  storeUserData: any
   userName: string
   month: MonthItem
   userId: string
@@ -255,10 +254,10 @@ export class DataService {
     const userId: string = this.setUserId()
     return this.http.get<any>(this.baseUrl + `users/${userId}.json`)
       .pipe(map(resData => {
-        return {
-          ...resData,
-          months: resData.months ? resData.months : []
-        }
+          return {
+            ...resData,
+            months: resData.months ? resData.months : []
+          }
         }
       ))
   }
@@ -286,13 +285,15 @@ export class DataService {
 
   fetchData() {
     return this.http.get<any>(this.baseUrl + 'users.json')
-      .subscribe(resData => {
-        console.log(resData)
-      })
-  }
-
-  getStoreUserData() {
-    return this.storeUserData
+      .pipe(
+        map(response => {
+          let usersArr = []
+          for (let key in response) {
+            usersArr.push({...response[key], key})
+          }
+          return usersArr
+        })
+      )
   }
 
   setIdEditIncomeItem(idEditIncomeItem: number) {
@@ -316,7 +317,7 @@ export class DataService {
   }
 
   setKeyEditExpenseItem(idKey: string | undefined) {
-    this.keyEditIncomeItem = idKey
+    this.keyEditExpenseItem = idKey
   }
 
   setPageId(id: number) {
@@ -342,13 +343,3 @@ export class DataService {
     return this.userId
   }
 }
-
-
-// addIncomeItem1(incomeItem: BudgetItem) {
-//   let totalIncomes: number = 0;
-//   let totalBudget: number;
-//   let key = this._getLocalStoreData()
-//   const userId: string = this.setUserId()
-//   // return this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, test)
-//  return this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, incomeItem)
-// }
