@@ -16,7 +16,7 @@ import {AuthInterceptorService} from "./shared/service/auth-interceptor.service"
 import {HeaderComponent} from './header/header.component';
 import {AdminComponent} from './admin/admin.component';
 import {MatSortModule} from "@angular/material/sort";
-import { UserInfoComponent } from './admin/user-info/user-info.component';
+import {UserInfoComponent} from './admin/user-info/user-info.component';
 
 @NgModule({
   declarations: [

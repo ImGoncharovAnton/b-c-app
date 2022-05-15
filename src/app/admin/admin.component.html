@@ -46,7 +46,7 @@
         <!-- Income Column -->
         <ng-container matColumnDef="income">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Income</th>
-          <td mat-cell *matCellDef="let row"> {{row.income ? row.income: '-'}} </td>
+          <td mat-cell *matCellDef="let row"> {{row.income ? row.income : '-'}} </td>
         </ng-container>
 
         <!-- Expense Column -->
@@ -78,10 +78,10 @@
 
     <app-user-info *ngIf="isOpenTab" [username]="username"></app-user-info>
 
-        <!--<ng-template matTabContent>-->
-        <!--            Content 1-->
-        <!--            <div class="block-test"></div>-->
-        <!--          </ng-template>-->
-    </div>
+    <!--<ng-template matTabContent>-->
+    <!--            Content 1-->
+    <!--            <div class="block-test"></div>-->
+    <!--          </ng-template>-->
   </div>
+</div>
 

@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Observable, Observer, Subject, takeUntil} from "rxjs";
-import { DataService } from 'src/app/shared/service/data.service';
+import {DataService} from 'src/app/shared/service/data.service';
 
 // Example tabs
 export interface ExampleTab {
@@ -19,7 +19,8 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   userKey: string | null
   @Input() username: string
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService) {
+  }
 
   ngOnInit(): void {
     this.dataService.userKey$

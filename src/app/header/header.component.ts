@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../shared/service/auth.service";
-import {BehaviorSubject, Subject, takeUntil} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {DataService} from '../shared/service/data.service';
 
 @Component({

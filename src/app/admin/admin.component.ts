@@ -3,11 +3,11 @@ import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {DataService} from '../shared/service/data.service';
-import {Observable, Observer, Subject, takeUntil} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {MonthItem} from "../shared/model/month-item.model";
 
 export interface UserInfo {
-  username : string
+  username: string
   email: string
   key: string
   role: string
@@ -40,7 +40,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService) {
+  }
 
 
 
