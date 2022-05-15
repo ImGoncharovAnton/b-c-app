@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../shared/service/auth.service";
-import {Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, Subject, takeUntil} from "rxjs";
 import {DataService} from '../shared/service/data.service';
 
 @Component({
@@ -11,7 +11,7 @@ import {DataService} from '../shared/service/data.service';
 export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated: boolean = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  username: string
+  username$: Subject<string>
 
   constructor(private authService: AuthService,
               private dataService: DataService) {
@@ -25,13 +25,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
         // === !!user = user ? true : false
       })
     if (this.isAuthenticated) {
-      this.dataService.fetchUser()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(data => {
-          this.username = data.username
-        })
+      // this.dataService.fetchUser()
+      //   .pipe(takeUntil(this.destroy$))
+      //   .subscribe(data => {
+      //     this.username$.next(data.username)
+      //   })
     }
-
   }
 
   onLogout() {

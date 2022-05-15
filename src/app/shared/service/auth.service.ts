@@ -122,6 +122,7 @@ export class AuthService {
       const expirationDuration =
         new Date(userData._tokenExpirationDate).getTime() -
         new Date().getTime()
+
       this.autoLogout(expirationDuration)
     }
   }
@@ -157,7 +158,7 @@ export class AuthService {
       role = 'mortal'
     }
 
-    const expireDate = new Date(new Date().getTime() + expiresIn * 10000)
+    const expireDate = new Date(new Date().getTime() + expiresIn * 1000)
     const user = new User(
       email,
       userId,
@@ -165,7 +166,7 @@ export class AuthService {
       expireDate,
       role)
     this.userSub$.next(user)
-    this.autoLogout(expiresIn * 10000)
+    this.autoLogout(expiresIn * 1000)
     localStorage.setItem('userData', JSON.stringify(user))
   }
 }

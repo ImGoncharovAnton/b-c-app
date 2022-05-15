@@ -25,9 +25,8 @@
     <div class="table-container">
       <table mat-table [dataSource]="dataSource" matSort class="mat-table-block">
 
-
         <!-- Name Column -->
-        <ng-container matColumnDef="name">
+        <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Name</th>
           <td mat-cell *matCellDef="let row"> {{row.username}} </td>
         </ng-container>
@@ -47,20 +46,20 @@
         <!-- Income Column -->
         <ng-container matColumnDef="income">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Income</th>
-          <td mat-cell *matCellDef="let row"> {{row.income}} </td>
+          <td mat-cell *matCellDef="let row"> {{row.income ? row.income: '-'}} </td>
         </ng-container>
 
         <!-- Expense Column -->
         <ng-container matColumnDef="expense">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Expense</th>
-          <td mat-cell *matCellDef="let row"> {{row.expense}} </td>
+          <td mat-cell *matCellDef="let row"> {{row.expense ? row.expense : '-'}} </td>
         </ng-container>
 
         <!-- Action Column -->
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Action</th>
           <td mat-cell *matCellDef="let row">
-            <button mat-icon-button color="primary">Open</button>
+            <button mat-icon-button color="primary" (click)="onOpenUser(row)">Open</button>
           </td>
         </ng-container>
 
@@ -77,44 +76,12 @@
     </div>
 
 
-    <div class="tabs-group">
-      <mat-tab-group class="tabs-mat-group">
-        <mat-tab label="First">
-          <ng-template matTabContent>
-            Content 1 - Loaded: {{getTimeLoaded(1) | date:'medium'}}
-            <div class="block-test"></div>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Second">
-          <ng-template matTabContent>
-            Content 2 - Loaded: {{getTimeLoaded(2) | date:'medium'}}
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Third">
-          <ng-template matTabContent>
-            Content 3 - Loaded: {{getTimeLoaded(3) | date:'medium'}}
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Fourier">
-          <ng-template matTabContent>
-            Content 4 - Loaded: {{getTimeLoaded(4) | date:'medium'}}
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Fiver">
-          <ng-template matTabContent>
-            Content 5 - Loaded: {{getTimeLoaded(5) | date:'medium'}}
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Six">
-          <ng-template matTabContent>
-            Content 6 - Loaded: {{getTimeLoaded(6) | date:'medium'}}
-          </ng-template>
-        </mat-tab>
-      </mat-tab-group>
+    <app-user-info *ngIf="isOpenTab" [username]="username"></app-user-info>
+
+        <!--<ng-template matTabContent>-->
+        <!--            Content 1-->
+        <!--            <div class="block-test"></div>-->
+        <!--          </ng-template>-->
     </div>
   </div>
-</div>
 
-<div style="margin: 1rem; padding: 1rem; background-color: gray">
-  <!--  <li *ngFor="let item of usersArr">{{item.email}}</li>-->
-</div>

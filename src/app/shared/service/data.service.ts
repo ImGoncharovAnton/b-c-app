@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MonthItem} from "../model/month-item.model";
-import {map, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, map, Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
 
 @Injectable({
@@ -16,6 +16,7 @@ export class DataService {
   itemsChangedExp$ = new Subject<BudgetItem[]>()
   totalCounterInc$ = new Subject<number>()
   totalCounterExp$ = new Subject<number>()
+  userKey$ = new BehaviorSubject<string | null>(null)
   pageId: number
   idEditIncomeItem: number
   idEditExpenseItem: number
@@ -25,7 +26,7 @@ export class DataService {
   userName: string
   month: MonthItem
   userId: string
-  monthStore = {
+  monthStoreExample = {
     '-Nslksldf-sdfkkk;l': {
       monthId: 4,
       month: 'May',

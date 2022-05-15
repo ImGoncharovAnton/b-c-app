@@ -15,7 +15,7 @@
               *ngIf="item.monthId <= monthNow + 1"
               class="month-icon">lock_open
             </mat-icon>
-            <h2 (click)="onMonthPage(i, item)">{{item.month}} | {{item.key}} | {{i}}</h2>
+            <h2 (click)="onMonthPage(i, item)">{{item.month}}</h2>
             <div
               class="months-item__right right-month-item"
               [ngClass]="[item.monthId > monthNow + 1 ? 'gray' : '']">

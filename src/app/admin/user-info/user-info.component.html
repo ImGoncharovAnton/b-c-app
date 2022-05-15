@@ -1,0 +1,17 @@
+<p>user-info works!</p>
+<div class="tabs-group">
+  <p class="tabs-username" *ngIf="username">{{username}}</p>
+  <div class="tabs-block">
+    <ng-container *ngIf="(asyncTabs | async) === null">
+      Loading tabs...
+    </ng-container>
+
+    <mat-tab-group class="tabs-mat-group" animationDuration="0ms">
+      <mat-tab *ngFor="let tab of asyncTabs | async">
+        <ng-template mat-tab-label>{{tab.label}}</ng-template>
+        {{tab.content}}
+        {{userKey}}
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
