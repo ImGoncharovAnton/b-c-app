@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+
+:host {
+  display: block;
+  width: 90%;
+  margin: auto;
+  padding: 5em 0;
+}
+
+
+.text-small {
+
+}
+
+.calc-container {
+  font-family: 'Audiowide', cursive;
+  width: 300px;
+  //margin: auto;
+  border: 2px solid white;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 70px auto;
+  grid-template-areas:
+    "result result result result"
+    "clear clear clear operator"
+    "number number number operator"
+    "number number number operator"
+    "number number number operator"
+    "number number number evaluate";
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.result {
+  font-family: inherit;
+  grid-area: result;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem 1rem;
+  color: #fff;
+  text-align: right;
+}
+
+/* Fix the height so the text doesn't move when there isn't any content */
+.result-item {
+  height: 1em;
+  font-size: 1rem;
+}
+
+.item {
+  height: 50px;
+  width: 50px;
+  color: #fff;
+  text-align: center;
+  justify-self: center;
+  user-select: none;
+  transition: all 0.1s ease;
+  background-color: rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 1px 2px #2b638f;
+  border-radius: 2px;
+}
+
+.item:hover {
+  filter: hue-rotate(90deg);
+  opacity: 0.6;
+}
+
+.item:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.clear .item:active, .number .item:active {
+  box-shadow: none;
+}
+
+.clear {
+  grid-area: clear;
+  margin: 10px 10px 0;
+}
+
+.clear .item {
+  box-shadow: 0px 1px 0px #2b638f,
+  inset 0px 2px 0px rgba(255, 255, 255, .3),
+  inset 0px 0px 3px rgba(255, 255, 255, .5);
+}
+
+.number {
+  grid-area: number;
+  margin: 10px 10px;
+}
+
+.number-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* row-gap: 10px; */
+}
+
+.number .item {
+  box-shadow: 0px 1px 0px wheat,
+  inset 0px 2px 0px rgba(255, 255, 255, .3),
+  inset 0px 0px 3px rgba(255, 255, 255, .5);
+}
+
+.operator {
+  grid-area: operator;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 10px;
+  margin: 10px;
+}
+
+.operator .item {
+  /* background-color: orange; */
+  background-color: rgb(235, 149, 50);
+  box-shadow: 0px 1px 0px wheat,
+  inset 0px 2px 0px rgba(255, 255, 255, .3),
+  inset 0px 0px 5px rgba(255, 255, 255, .5);
+  font-size: 1.2em;
+}
+
+.operator .item:hover, .evaluate .item:hover {
+  filter: opacity(0.6);
+}
+
+.evaluate {
+  grid-area: evaluate;
+  margin: 0px 10px 20px;
+}
+
+.evaluate .item {
+  background-color: wheat;
+  color: black;
+  font-size: 1.2em;
+}
+
+button {
+  background: inherit;
+  outline: none;
+  border: none;
+  font-size: inherit;
+}

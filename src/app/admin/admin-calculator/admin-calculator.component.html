@@ -1,0 +1,39 @@
+<div #container class="calc-container">
+  <div class="result">
+    <p class="result-item">
+      <span *ngFor="let part of equation">
+        {{part}}
+      </span>
+    </p>
+    <p class="result-item">
+      {{currentOperand ? currentOperand : result}}
+    </p>
+  </div>
+
+  <div class="clear number-container">
+    <button (click)="reset()" class="item">AC</button>
+    <button (click)="onToggleNegative()" class="item">+/-</button>
+    <button (click)="onPercentageInput()" class="item">%</button>
+  </div>
+
+  <div #operand class="number number-container">
+    <button
+      (click)="onNumberInput(digit)"
+      *ngFor="let digit of numberContent"
+      class="item">
+      {{digit}}
+    </button>
+  </div>
+
+  <div #operator class="operator">
+    <button (click)="onOperatorInput(operator)"
+            *ngFor="let operator of operatorContent"
+            class="item">
+      {{operator}}
+    </button>
+  </div>
+
+  <div class="evaluate">
+    <button (click)="evaluateResult()" class="item">=</button>
+  </div>
+</div>

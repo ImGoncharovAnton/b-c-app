@@ -17,6 +17,7 @@ import {HeaderComponent} from './header/header.component';
 import {AdminComponent} from './admin/admin.component';
 import {MatSortModule} from "@angular/material/sort";
 import {UserInfoComponent} from './admin/user-info/user-info.component';
+import {AdminCalculatorComponent} from './admin/admin-calculator/admin-calculator.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import {UserInfoComponent} from './admin/user-info/user-info.component';
     HeaderComponent,
     AdminComponent,
     UserInfoComponent,
+    AdminCalculatorComponent,
   ],
   imports: [
     BrowserModule,
