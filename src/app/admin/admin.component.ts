@@ -44,7 +44,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
 
-
   ngOnInit() {
     this.getAllUsers()
 
