@@ -1,33 +1,28 @@
 <div class="calc-page">
-  <div #container class="calc-container">
+  <div class="calc-container">
     <div class="result">
-      <p class="result-item">
-      <span *ngFor="let part of equation">
-        {{part}}
-      </span>
-      </p>
-      <p class="result-item" [ngModel]="finallyResult">
-        {{currentOperand ? currentOperand : result}}
-      </p>
-    </div>
+      <input [ngModel]="formattedTokens" class="result-item" readonly type="text">
 
-    <div class="clear number-container">
+      <input [ngModel]="input" class="result-item" readonly type="text">
+    </div>
+    <div class="clear clear-container">
       <button (click)="reset()" class="item">AC</button>
-      <button (click)="onToggleNegative()" class="item">+/-</button>
-      <button (click)="onPercentageInput()" class="item">%</button>
+      <button [disabled]="input === '0'" mat-raised-button color="primary" (click)="onExportValue(input)"
+              class="item-big">Export value
+      </button>
     </div>
 
-    <div #operand class="number number-container">
+    <div class="number number-container">
       <button
-        (click)="onNumberInput(digit)"
+        (click)="insertChar(digit)"
         *ngFor="let digit of numberContent"
         class="item">
         {{digit}}
       </button>
     </div>
 
-    <div #operator class="operator">
-      <button (click)="onOperatorInput(operator)"
+    <div class="operator">
+      <button (click)="execOperator(operator)"
               *ngFor="let operator of operatorContent"
               class="item">
         {{operator}}
@@ -35,9 +30,11 @@
     </div>
 
     <div class="evaluate">
-      <button (click)="evaluateResult()" class="item">=</button>
+      <button (click)="evaluate()" class="item">=</button>
     </div>
   </div>
+
+
   <div class="calc-steppers">
     <mat-stepper orientation="vertical">
       <mat-step>
@@ -48,21 +45,21 @@
               <p>Select User</p>
               <mat-form-field>
                 <mat-select
-                  placeholder="Users"
-                  multiple
                   [(ngModel)]="selectedValue"
-                  name="user">
+                  multiple
+                  name="user"
+                  placeholder="Users">
                   <mat-option
+                    (click)="onSelectValue(selectedValue)"
                     *ngFor="let user of usersArray"
-                    [value]="user"
-                    (click)="onSelectValue(selectedValue)">
+                    [value]="user">
                     {{user.username}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
             </form>
           </div>
-          <button mat-button matStepperNext (click)="onNext()">Next</button>
+          <button (click)="onNext()" mat-button matStepperNext>Next</button>
         </ng-template>
       </mat-step>
       <mat-step>
@@ -80,5 +77,5 @@
       </mat-step>
     </mat-stepper>
   </div>
-</div>
 
+</div>

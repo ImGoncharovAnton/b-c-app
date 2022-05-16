@@ -1,9 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {DataService} from 'src/app/shared/service/data.service';
-import {CalculatorService} from "./calculator.service";
 import {Subject, takeUntil} from "rxjs";
 import {UserInfo} from "../admin.component";
 
+import {rpn} from './rpn';
+import {yard} from './yard';
+import {format} from './format';
+import {isOperator} from './model';
 
 @Component({
   selector: 'app-admin-calculator',
@@ -16,21 +19,17 @@ export class AdminCalculatorComponent implements OnInit, OnDestroy {
   usersArray: UserInfo[] = [];
   finallyResult: number
 
-  multiplication = '×';
-  division = '÷';
-  addition = '+';
-  subtraction = '-';
+  //
+  tokens: string[] = [];
+  showResult = false;
 
   numberContent = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.'];
-  operatorContent = [this.division, this.multiplication, this.subtraction, this.addition]
+  operatorContent: string[] = ['-', '+', '*', '/'];
 
-  currentOperand = '0';
-  result = 0;
-  equation = [];
 
-  constructor(private calculatorService: CalculatorService,
-              private dataService: DataService) {
+  constructor(private dataService: DataService) {
   }
+
 
   ngOnInit(): void {
     this.getAllUsers()
@@ -54,7 +53,6 @@ export class AdminCalculatorComponent implements OnInit, OnDestroy {
       })
   }
 
-
   onSelectValue(selectedValue: UserInfo[]) {
     console.log(selectedValue)
     this.selectedValue = selectedValue
@@ -68,181 +66,109 @@ export class AdminCalculatorComponent implements OnInit, OnDestroy {
   }
 
   onNext() {
-    // let techArr: string[] = []
-    // if (this.selectedValue) {
-    //   for (let item of this.selectedValue) {
-    //     techArr.push(item.key)
-    //   }
-    // }
-    // console.log('techArr', techArr)
   }
+
+  onExportValue(value: string) {
+    this.finallyResult = Number(value)
+    console.log('finallyResult', this.finallyResult)
+  }
+
 
   // --------------------------------------------------
 
-  evaluateResult() {
-    // if (this.currentOperand) {
-    //   this.equation = this.result ? [this.result] : [...this.equation, this.currentOperand];
-    // }
+  insertChar(character: string): void {
+    const lastToken = this.lastToken;
+    const doubleMin = lastToken === '-' && isOperator(this.beforeLastToken);
 
-    let info = this.calculatorService.evaluateResult(this.currentOperand, this.equation, this.result);
+    if (lastToken === undefined || (isOperator(lastToken) && !doubleMin)) {
+      if (character === '.') {
+        character = '0' + character;
+      }
 
-    this.equation = info.equation;
-    this.result = info.result;
-    this.currentOperand = info.operand;
-    // Use the result in the next operation
-    // this.currentOperand = this.result.toString();
+      this.tokens.push(character);
+    } else if (this.showResult) {
+      this.tokens = [character];
+    } else {
+      this.tokens[this.tokens.length - 1] = lastToken + character;
+    }
 
+    this.showResult = false;
   }
 
-  onOperatorInput(operator: any) {
-    console.log('onOperator', operator);
-    let info = this.calculatorService.collateEquation(this.currentOperand, operator, this.equation);
-
-    console.log('info', info);
-    this.currentOperand = info.operand;
-    this.equation = info.equation;
-    this.result = info.result;
+  get lastToken(): string {
+    return this.tokens[this.tokens.length - 1];
   }
 
-  onNumberInput(digit: any) {
-    this.currentOperand = this.calculatorService.collateOperandString(this.currentOperand, digit);
+  get beforeLastToken(): string {
+    return this.tokens[this.tokens.length - 2];
   }
 
-  onPercentageInput() {
-    this.currentOperand = this.calculatorService.getPercentage(this.currentOperand);
+  get input(): string {
+    if (this.showResult) {
+      try {
+        //return format(math.eval(this.tokens.join(' ')).toString());
+        return format(rpn(yard(this.tokens)).toString());
+      } catch (e) {
+        return 'You did something wrong!'
+      }
+    }
+
+    return format(this.tokens
+      .slice()
+      .reverse()
+      .find(t => !isOperator(t)) || '0');
   }
 
-  onToggleNegative() {
-    this.currentOperand = this.calculatorService.togglePositiveNegative(this.currentOperand);
+  get formattedTokens(): string {
+    return this.tokens.map(format).join(' ').replace(/\*/g, 'x') || '0';
   }
 
-  reset() {
-    this.currentOperand = '0';
-    this.equation = [];
-    this.result = 0;
-    this.calculatorService.reset();
+  reset(): void {
+    this.tokens = [];
+    this.showResult = false;
   }
 
+  evaluate(): void {
+    // repeat last action
+    if (this.showResult && this.tokens.length >= 2) {
+      this.tokens = this.tokens.concat(this.tokens.slice(-2));
+    }
+
+    this.showResult = true;
+  }
+
+  execOperator(operator: string): void {
+    // ANS support
+    if (this.showResult) {
+      this.tokens = [rpn(yard(this.tokens)).toString()];
+    }
+
+    if (!this.lastToken) {
+      this.tokens.push('0');
+    }
+
+    this.tokens.push(operator);
+    this.showResult = false;
+  }
+
+  // KEYBOARD SUPPORT
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    const key = event.key.toLowerCase();
+
+    event.preventDefault();
+
+    if (key === 'c' || key === 'backspace') {
+      this.reset();
+    } else if (key === ',' || key === '.') {
+      this.insertChar('.');
+    } else if (!isNaN(parseInt(key))) {
+      this.insertChar(key);
+    } else if (key === 'enter') {
+      this.evaluate();
+    } else if (isOperator(key)) {
+      this.execOperator(key);
+    }
+  }
 
 }
-
-
-/*TODO:
-1. Strip 0 only if not followed by decimal point
-*/
-
-
-// evaluateResult() {
-//   if (this.currentNumber) {
-//     this.numbers = [...this.numbers, this.currentNumber];
-
-//     this.userInput = this.result ? [this.result] : [...this.userInput, this.numbers[this.numbers.length-1]];
-//   }
-
-//   console.log('Evaluate', this.numbers, this.operators);
-//   // If user entered operator then clicked equals,the operator is not needed in the equation, so ignore it.
-//   if (this.numbers.length === this.operators.length) {
-//     this.operators.pop();
-//     this.userInput.pop();
-//   }
-
-//   let newNumbers = [];
-//   let newOperators = [];
-//   let operand1;
-
-//   // Pass 1: Multiplication and division
-//   for (let i = 0; i < this.operators.length; i++) {
-//     operand1 = operand1 ? operand1 : this.numbers[i];
-
-//     if (this.operators[i] === this.division) {
-//       operand1 = +operand1 / +this.numbers[i+1];
-//     }
-
-//     if (this.operators[i] === this.multiplication) {
-//       operand1 = +operand1 * +this.numbers[i+1];
-//     }
-
-//     if (this.operators[i] === '+' || this.operators[i] === '-') {
-//       newNumbers = [...newNumbers, operand1];
-//       operand1 = null;
-//       newOperators = [...newOperators, this.operators[i]];
-//     }
-
-//     if (i === this.operators.length - 1) {
-//       let value = operand1 ? operand1 : this.numbers[i+1];
-//       newNumbers = [...newNumbers, value];
-//     }
-//   }
-
-//   // If there are only multiplications and/or divisions then  operand1 has the result:
-//   this.result = operand1 ? operand1 : this.currentNumber;
-
-//   console.log('newNumbers/newOperators', newNumbers, newOperators);
-
-//   // Pass 2: Add and subtract
-//   if (newNumbers.length) {
-//     this.result = +newNumbers[0];
-//     for (let i = 0; i < newOperators.length; i++) {
-//       switch (newOperators[i]) {
-//         case this.addition:
-//           this.result += +newNumbers[i+1];
-//           break;
-//         case this.subtraction:
-//           this.result -= +newNumbers[i+1];
-//           break;
-//       }
-//     }
-//   }
-
-//   // Use the result in the next operation
-//   this.currentNumber = this.result.toString();
-//   this.numbers = [];
-//   this.operators = [];
-// }
-
-// collateEquation(value) {
-//   if (this.currentNumber) {
-//     this.addOperandToArray();
-//   }
-
-//   // if multiple operators are pressed
-//   if (this.numbers.length === this.operators.length) {
-//     this.operators[this.operators.length - 1] = value;
-//     this.userInput[this.userInput.length - 1] = value;
-//   }
-//   else {
-//     this.operators = [...this.operators, value];
-//      this.userInput = [...this.userInput, this.operators[this.operators.length-1]];
-//   }
-// }
-
-// addOperandToArray() {
-//     this.numbers = [...this.numbers, this.currentNumber];
-//     this.userInput = [...this.userInput, this.currentNumber];
-
-//     // reset currentNumber
-//     this.previousNumber = this.currentNumber;
-//     this.currentNumber = '';
-// }
-
-// collateOperandString(value) {
-//   this.currentNumber = this.currentNumber.replace(/^0+/, '');
-
-//   this.currentNumber = (value === '.' && this.currentNumber.includes('.')) ? this.currentNumber : this.currentNumber + value;
-// }
-
-// togglePositiveNegative() {
-//   this.currentNumber = (+this.currentNumber * -1).toString();
-// }
-
-// getPercentage() {
-//   this.currentNumber = (+this.currentNumber / 100).toString();
-// }
-
-// reset() {
-//   this.currentNumber = '0';
-//   this.numbers = [];
-//   this.operators = [];
-//   this.userInput = [];
-//   this.result = 0;
-// }
