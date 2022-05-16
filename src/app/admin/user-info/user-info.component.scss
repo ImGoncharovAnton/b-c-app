@@ -14,3 +14,64 @@
   font-weight: 500;
   font-size: 1.5rem;
 }
+
+mat-tab-group {
+  background-color: gray;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.8);
+  border: 1px solid #0f0f0f;
+}
+
+.month-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid #0f0f0f;
+  border-bottom: 1px solid #0f0f0f;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+
+}
+
+.month-incomes {
+  border-right: 1px solid #0f0f0f;
+}
+
+.month-expenses {
+
+}
+
+.month-heading {
+  border-bottom: 1px solid #0f0f0f;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  margin: 0;
+}
+
+.month-list {
+  margin: 0;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem
+}
+
+.month-item {
+  border: 1px solid #0f0f0f;
+  padding: 0.5rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #d6d6d6;
+
+  p {
+    margin: 0
+  }
+}
+
+.w-35 {
+  width: 35%
+}
+
+.w-15 {
+  width: 15%
+}

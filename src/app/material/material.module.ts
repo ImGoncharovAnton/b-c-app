@@ -10,6 +10,9 @@ import {MatTabsModule} from "@angular/material/tabs";
 import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatStepperModule} from "@angular/material/stepper";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatSelectModule} from '@angular/material/select';
 
 const MaterialComponents = [
   MatButtonModule,
@@ -22,10 +25,13 @@ const MaterialComponents = [
   MatButtonModule,
   MatTabsModule,
   MatTableModule,
-  LayoutModule,
   MatSortModule,
   MatPaginatorModule,
-  MatSortModule
+  MatSortModule,
+  MatStepperModule,
+  MatCheckboxModule,
+  MatSelectModule,
+  LayoutModule,
 ]
 
 @NgModule({

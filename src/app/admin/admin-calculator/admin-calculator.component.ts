@@ -1,12 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {DataService} from 'src/app/shared/service/data.service';
 import {CalculatorService} from "./calculator.service";
+import {Subject, takeUntil} from "rxjs";
+import {UserInfo} from "../admin.component";
+
 
 @Component({
   selector: 'app-admin-calculator',
   templateUrl: './admin-calculator.component.html',
   styleUrls: ['./admin-calculator.component.scss']
 })
-export class AdminCalculatorComponent implements OnInit {
+export class AdminCalculatorComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<boolean> = new Subject<boolean>();
+  selectedValue: UserInfo[];
+  usersArray: UserInfo[] = [];
+  finallyResult: number
+
   multiplication = '×';
   division = '÷';
   addition = '+';
@@ -19,8 +28,56 @@ export class AdminCalculatorComponent implements OnInit {
   result = 0;
   equation = [];
 
-  constructor(private calculatorService: CalculatorService) {
+  constructor(private calculatorService: CalculatorService,
+              private dataService: DataService) {
   }
+
+  ngOnInit(): void {
+    this.getAllUsers()
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+  }
+
+  getAllUsers() {
+    this.dataService.fetchData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: UserInfo[]) => {
+        let usersArr: UserInfo[] = []
+        data.map(item => {
+          if (item.months) {
+            usersArr.push(item)
+          }
+        })
+        this.usersArray = usersArr
+      })
+  }
+
+
+  onSelectValue(selectedValue: UserInfo[]) {
+    console.log(selectedValue)
+    this.selectedValue = selectedValue
+    let techArr: string[] = []
+    if (this.selectedValue) {
+      for (let item of this.selectedValue) {
+        techArr.push(item.key)
+      }
+    }
+    console.log('techArr', techArr)
+  }
+
+  onNext() {
+    // let techArr: string[] = []
+    // if (this.selectedValue) {
+    //   for (let item of this.selectedValue) {
+    //     techArr.push(item.key)
+    //   }
+    // }
+    // console.log('techArr', techArr)
+  }
+
+  // --------------------------------------------------
 
   evaluateResult() {
     // if (this.currentOperand) {
@@ -66,8 +123,6 @@ export class AdminCalculatorComponent implements OnInit {
     this.calculatorService.reset();
   }
 
-  ngOnInit(): void {
-  }
 
 }
 

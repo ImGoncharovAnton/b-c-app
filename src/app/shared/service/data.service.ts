@@ -264,8 +264,11 @@ export class DataService {
   }
 
   // get userData by key months from database
-  fetchUserMonths() {
-    const userId: string = this.setUserId()
+  fetchUserMonths(idUser?: string | null) {
+    let userId: string = this.setUserId()
+    if (idUser) {
+      userId = idUser
+    }
     return this.http.get<any>(this.baseUrl + `users/${userId}/months.json`)
       .pipe(
         map(response => {

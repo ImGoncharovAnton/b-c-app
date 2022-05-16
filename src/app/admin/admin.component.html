@@ -3,20 +3,6 @@
 
     <h1 class="mat-h1">Dashboard</h1>
     <app-admin-calculator></app-admin-calculator>
-    <div class="users-block">
-      <ul class="users-list">
-        <li class="users-item">счет всего что нужно</li>
-        <li class="users-item">получается итоговое число</li>
-        <li class="users-item">Будет символ для вызова модалки (Плюс например)</li>
-        <li class="users-item">Открывается модалка (Вызывается таже что и для добавления расходов/доходов)</li>
-        <li class="users-item">Заполнено поле (Рассчитаным значением) + можно выбрать какому пользователю будет добавлен
-          расход/доход. + добавить различные проверки (например проверять если добавленный расход превысит доход челика,
-          вывести модалку с предепреждением => если да - добавляем и рассчитываем отрицательный доход)
-        </li>
-        <li class="users-item">Плюс на админке ты можешь выбрать пользователя и посмотреть его инфу (Доходы - расходы)
-        </li>
-      </ul>
-    </div>
     <mat-form-field appearance="standard">
       <mat-label class="label-mat-filter">Filter</mat-label>
       <input
@@ -61,7 +47,11 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Action</th>
           <td mat-cell *matCellDef="let row">
-            <button mat-icon-button color="primary" (click)="onOpenUser(row)">Open</button>
+            <button
+              mat-icon-button color="primary"
+              (click)="onOpenUser(row)"
+              *ngIf="row.expense || row.income">Open
+            </button>
           </td>
         </ng-container>
 

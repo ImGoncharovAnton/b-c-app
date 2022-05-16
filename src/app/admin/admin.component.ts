@@ -63,7 +63,6 @@ export class AdminComponent implements OnInit, OnDestroy {
           let expense: number
 
           res.map(data => {
-            console.log('DATA', data)
             if (data.months) {
               dataMonths = Object.values(data.months)
               data.months = dataMonths

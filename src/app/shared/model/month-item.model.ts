@@ -5,8 +5,8 @@ export class MonthItem {
               public month: string,
               public income: number,
               public expense: number,
-              public incomeArr: BudgetItem[],
-              public expenseArr: BudgetItem[],
+              public incomesArr: BudgetItem[],
+              public expensesArr: BudgetItem[],
               public key?: string) {
   }
 }

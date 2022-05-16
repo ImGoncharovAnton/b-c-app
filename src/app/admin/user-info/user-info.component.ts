@@ -1,12 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Observable, Observer, Subject, takeUntil} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {DataService} from 'src/app/shared/service/data.service';
 
-// Example tabs
-export interface ExampleTab {
-  label: string;
-  content: string;
-}
 
 @Component({
   selector: 'app-user-info',
@@ -15,8 +10,8 @@ export interface ExampleTab {
 })
 export class UserInfoComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  asyncTabs: Observable<ExampleTab[]>;
   userKey: string | null
+  monthNameArr: any[] = []
   @Input() username: string
 
   constructor(private dataService: DataService) {
@@ -26,23 +21,36 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.dataService.userKey$
       .pipe(takeUntil(this.destroy$))
       .subscribe(key => {
+        this.monthNameArr = [];
         this.userKey = key
-        console.log(this.userKey)
+        this.fetchUserMonths(this.userKey)
       })
-
-    this.asyncTabs = new Observable((observer: Observer<ExampleTab[]>) => {
-      setTimeout(() => {
-        observer.next([
-          {label: 'First', content: 'Content 1'},
-          {label: 'Second', content: 'Content 2'},
-          {label: 'Third', content: 'Content 3'},
-        ]);
-      }, 1000);
-    });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
   }
 
+  fetchUserMonths(idUser: string | null) {
+    this.dataService.fetchUserMonths(idUser)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: data => {
+          if (data) {
+            let incomesArr: [string, unknown][] = []
+            let expensesArr: [string, unknown][] = []
+            data.map(item => {
+              expensesArr = Object.entries(item.expensesArr)
+              incomesArr = Object.entries(item.incomesArr)
+              item.incomesArr = incomesArr
+              item.expensesArr = expensesArr
+              this.monthNameArr.push(item)
+            })
+          }
+        },
+        error: (err) => {
+          alert('error fetching userdata')
+        }
+      })
+  }
 }
