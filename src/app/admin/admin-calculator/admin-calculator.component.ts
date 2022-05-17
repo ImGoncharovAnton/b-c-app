@@ -1,7 +1,5 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {DataService} from 'src/app/shared/service/data.service';
-import {Subject, takeUntil} from "rxjs";
-import {UserInfo} from "../admin.component";
 
 import {rpn} from './rpn';
 import {yard} from './yard';
@@ -13,16 +11,11 @@ import {isOperator} from './model';
   templateUrl: './admin-calculator.component.html',
   styleUrls: ['./admin-calculator.component.scss']
 })
-export class AdminCalculatorComponent implements OnInit, OnDestroy {
-  private destroy$: Subject<boolean> = new Subject<boolean>();
-  selectedValue: UserInfo[];
-  usersArray: UserInfo[] = [];
+export class AdminCalculatorComponent implements OnInit {
+  showSteps: boolean = false;
   finallyResult: number
-
-  //
   tokens: string[] = [];
   showResult = false;
-
   numberContent = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.'];
   operatorContent: string[] = ['-', '+', '*', '/'];
 
@@ -30,49 +23,15 @@ export class AdminCalculatorComponent implements OnInit, OnDestroy {
   constructor(private dataService: DataService) {
   }
 
-
   ngOnInit(): void {
-    this.getAllUsers()
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
-  }
-
-  getAllUsers() {
-    this.dataService.fetchData()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: UserInfo[]) => {
-        let usersArr: UserInfo[] = []
-        data.map(item => {
-          if (item.months) {
-            usersArr.push(item)
-          }
-        })
-        this.usersArray = usersArr
-      })
-  }
-
-  onSelectValue(selectedValue: UserInfo[]) {
-    console.log(selectedValue)
-    this.selectedValue = selectedValue
-    let techArr: string[] = []
-    if (this.selectedValue) {
-      for (let item of this.selectedValue) {
-        techArr.push(item.key)
-      }
-    }
-    console.log('techArr', techArr)
-  }
-
-  onNext() {
   }
 
   onExportValue(value: string) {
     this.finallyResult = Number(value)
+    this.dataService.calcResult$.next(this.finallyResult)
     console.log('finallyResult', this.finallyResult)
+    this.showSteps = true
   }
-
 
   // --------------------------------------------------
 
@@ -152,23 +111,22 @@ export class AdminCalculatorComponent implements OnInit, OnDestroy {
   }
 
   // KEYBOARD SUPPORT
-  @HostListener('window:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent) {
-    const key = event.key.toLowerCase();
-
-    event.preventDefault();
-
-    if (key === 'c' || key === 'backspace') {
-      this.reset();
-    } else if (key === ',' || key === '.') {
-      this.insertChar('.');
-    } else if (!isNaN(parseInt(key))) {
-      this.insertChar(key);
-    } else if (key === 'enter') {
-      this.evaluate();
-    } else if (isOperator(key)) {
-      this.execOperator(key);
-    }
-  }
+  // @HostListener('keydown', ['$event'])
+  // onKeyDown(event: KeyboardEvent) {
+  //   const key = event.key.toLowerCase();
+  //   event.preventDefault();
+  //
+  //   if (key === 'c' || key === 'backspace') {
+  //     this.reset();
+  //   } else if (key === ',' || key === '.') {
+  //     this.insertChar('.');
+  //   } else if (!isNaN(parseInt(key))) {
+  //     this.insertChar(key);
+  //   } else if (key === 'enter') {
+  //     this.evaluate();
+  //   } else if (isOperator(key)) {
+  //     this.execOperator(key);
+  //   }
+  // }
 
 }

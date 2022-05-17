@@ -1,0 +1,133 @@
+<div class="calc-steppers">
+  <mat-stepper orientation="vertical">
+    <mat-step>
+      <ng-template matStepLabel>Step 1</ng-template>
+      <ng-template matStepContent>
+        <div class="step-content">
+          <form>
+            <p>Select User</p>
+            <mat-form-field>
+              <mat-select
+                [(ngModel)]="selectedValue"
+                multiple
+                name="user"
+                placeholder="Users">
+                <mat-option
+                  (click)="onSelectValueUser(selectedValue)"
+                  *ngFor="let user of usersArray"
+                  [value]="user">
+                  {{user.username}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </form>
+        </div>
+        <button (click)="onNext()" mat-button matStepperNext>Next</button>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Step 2</ng-template>
+      <ng-template matStepContent>
+        <div class="step-content">
+          <div>
+            <h4>Selected Users:</h4>
+            <div class="selected-users">
+              <div class="selected-users__username">
+                <h3 class="selected-users__heading">Username</h3>
+                <ul class="selected-users__list"
+                    *ngFor="let item of selectedValue">
+                  <li class="selected-users__item">
+                    <div>
+                      {{item.username}}
+                    </div>
+                    |
+                    <div>
+                      <form>
+                        <mat-form-field>
+                          <mat-select
+                            [(ngModel)]="selectedMonths"
+                            multiple
+                            name="months"
+                            placeholder="Months">
+                            <mat-option
+                              (click)="onSelectValueMonths(selectedMonths)"
+                              *ngFor="let el of item.beautyMonths"
+                              [value]="el">
+                              {{el[1].month}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </form>
+                      <!--                      <span *ngFor="let el of item.months">-->
+                      <!--                      {{el[0]}}-->
+                      <!--                    </span>-->
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <input
+            type="number"
+            [value]="resultValue">
+          <button
+            mat-raised-button
+            matStepperNext
+            color="primary"
+            (click)="onIncomeButton()">Income
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onExpenseButton()"
+            matStepperNext>Expense
+          </button>
+        </div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Step 3</ng-template>
+      <div class="step-content">
+        <div>
+
+          <div>
+            <h4>Selected Users:</h4>
+            <span *ngFor="let item of selectedValue">
+                {{item.username}},
+             </span>
+          </div>
+          <h4>Type: {{buttonData}}</h4>
+        </div>
+        <form [formGroup]="form">
+          <mat-form-field appearance="outline" style="width: 65%; font-size: 1.2rem;">
+            <mat-label>Description</mat-label>
+            <input matInput
+                   type="text"
+                   class="input-desc"
+                   placeholder="Enter a description"
+                   formControlName="description">
+            <mat-hint>Fill in the description</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline" style="width: 35%; font-size: 1.2rem;">
+            <mat-label>Amount</mat-label>
+            <input matInput
+                   type="number"
+                   class="input-amount"
+                   placeholder="0"
+                   formControlName="amount">
+            <span matPrefix class="mat-prefix">$&nbsp;</span>
+            <mat-hint align="end">Enter a positive value</mat-hint>
+          </mat-form-field>
+          <button
+            type="button"
+            [disabled]="!form.valid"
+            (click)="onSubmit()">Save
+          </button>
+        </form>
+      </div>
+      <button mat-button matStepperPrevious>Back</button>
+    </mat-step>
+  </mat-stepper>
+</div>

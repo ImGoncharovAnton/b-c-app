@@ -1,6 +1,8 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject, takeUntil} from "rxjs";
 import {DataService} from 'src/app/shared/service/data.service';
+import {DialogService} from "../../shared/dialog/dialog.service";
+import {MyCalcEditComponent} from "../../pages/my-calc/my-calc-edit/my-calc-edit.component";
 
 
 @Component({
@@ -14,7 +16,8 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   monthNameArr: any[] = []
   @Input() username: string
 
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService,
+              private dialog: DialogService) {
   }
 
   ngOnInit(): void {
@@ -52,5 +55,12 @@ export class UserInfoComponent implements OnInit, OnDestroy {
           alert('error fetching userdata')
         }
       })
+  }
+
+  onEditItemExpense(index: number, key: string, monthKey: string) {
+    this.dataService.setIdEditExpenseItem(index)
+    this.dataService.setKeyEditExpenseItem(key)
+    this.dataService.monthKeyId$.next(monthKey)
+    this.dialog.open(MyCalcEditComponent, {data: 'expense'})
   }
 }

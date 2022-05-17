@@ -31,12 +31,13 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     this.dataService.fetchUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
+          console.log('this.pageId', this.pageId)
           const month = months[this.pageId]
           this.totalExpenses = month.expense
-          const origIncomesArr = month.expensesArr
+          const origExpensesArr = month.expensesArr
           const normalizedExpensesArr: BudgetItem[] = []
-          for (let key in origIncomesArr) {
-            normalizedExpensesArr.push({...origIncomesArr[key], key})
+          for (let key in origExpensesArr) {
+            normalizedExpensesArr.push({...origExpensesArr[key], key})
           }
           this.expenseItems = normalizedExpensesArr
           console.log("Expense-list component | Month", month)

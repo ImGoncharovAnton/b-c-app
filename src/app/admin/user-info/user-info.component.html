@@ -8,7 +8,7 @@
           <div class="month-incomes">
             <h3 class="month-heading">Income: {{item.income}}</h3>
             <ul class="month-list">
-              <li class="month-item" *ngFor="let el of item.incomesArr">
+              <li class="month-item" *ngFor="let el of item.incomesArr; let i = index">
                 <p>
                   <span>{{el[1].description}}</span> | <span>{{el[1].amount}}</span>
                 </p>
@@ -19,11 +19,15 @@
           <div class="month-expenses">
             <h3 class="month-heading">Expense: {{item.expense}}</h3>
             <ul class="month-list">
-              <li class="month-item" *ngFor="let el of item.expensesArr">
+              <li class="month-item" *ngFor="let el of item.expensesArr; let i = index">
                 <p>
                   <span>{{el[1].description}}</span> | <span>{{el[1].amount}}</span>
                 </p>
-                <button mat-raised-button color="warn">Edit</button>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  (click)="onEditItemExpense(i, el[0], item.key)">Edit
+                </button>
               </li>
             </ul>
           </div>

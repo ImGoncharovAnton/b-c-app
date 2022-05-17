@@ -1,0 +1,43 @@
+
+.selected-users {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top: 1px solid #0f0f0f;
+  border-bottom: 1px solid #0f0f0f;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  background-color: #bcbcbc;
+
+  &__heading {
+    border-bottom: 1px solid #0f0f0f;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    margin: 0;
+  }
+
+  &__username {
+  }
+
+  &__select-months {
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__item {
+    margin: 0;
+    border-bottom: 1px solid #0f0f0f;
+    display: flex;
+    align-items: center;
+    background-color: #d6d6d6;
+
+    //&:last-child {
+    //  border: none;
+    //}
+  }
+}
+

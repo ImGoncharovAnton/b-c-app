@@ -17,8 +17,8 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   identityExpense: boolean = false; // variable for changing button status
   editedItemIndex: number;
   editedItem: BudgetItem;
-  pageId: number;
-  key: string;
+  userKeyId: string | null;
+  monthKeyId: string | null;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private dialogRef: DialogRef,
@@ -27,7 +27,6 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.pageId = this.dataService.getPageId()
     if (this.data === 'income') {
       this.identityIncome = true;
       this.dataService.fetchNormalizedIncomesArr()
@@ -43,8 +42,18 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
         })
     }
     if (this.data === 'expense') {
+      this.dataService.userKey$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(key => {
+          this.userKeyId = key
+        })
+      this.dataService.monthKeyId$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(monthkey => {
+          this.monthKeyId = monthkey
+        })
       this.identityExpense = true;
-      this.dataService.fetchNormalizedExpensesArr()
+      this.dataService.fetchNormalizedExpensesArr(this.userKeyId, this.monthKeyId)
         .pipe(takeUntil(this.destroy$))
         .subscribe(expenses => {
           const expensesArr = expenses
@@ -82,7 +91,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
 
   onSubmitExpense() {
     if (this.identityExpense) {
-      this.dataService.updateExpenseItem(this.formGroup.value)
+      this.dataService.updateExpenseItem(this.formGroup.value, this.userKeyId, this.monthKeyId)
     } else {
       this.dataService.addExpenseItem(this.formGroup.value)
     }
@@ -96,28 +105,29 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
     let myAmount: number = 0;
     let myDesc: string = '';
 
-    if (this.identityIncome) {
-      this.dataService.fetchNormalizedIncomesArr()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(incomes => {
-          const incomesArr = incomes
-          this.editedItemIndex = this.dataService.getIdEditIncomeItem()
-          const editItem = incomesArr[this.editedItemIndex]
-          myAmount = editItem.amount;
-          myDesc = editItem.description;
-        })
-    }
-    if (this.identityExpense) {
-      this.dataService.fetchNormalizedExpensesArr()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(expenses => {
-          const expensesArr = expenses
-          this.editedItemIndex = this.dataService.getIdEditExpenseItem()
-          const editItem = expensesArr[this.editedItemIndex]
-          myAmount = editItem.amount;
-          myDesc = editItem.description;
-        })
-    }
+    // Не понимаю зачем этот код... Но зачем-то он был написан в примере по формам реактивным...
+    /* if (this.identityIncome) {
+       this.dataService.fetchNormalizedIncomesArr()
+         .pipe(takeUntil(this.destroy$))
+         .subscribe(incomes => {
+           const incomesArr = incomes
+           this.editedItemIndex = this.dataService.getIdEditIncomeItem()
+           const editItem = incomesArr[this.editedItemIndex]
+           myAmount = editItem.amount;
+           myDesc = editItem.description;
+         })
+     }
+     if (this.identityExpense) {
+       this.dataService.fetchNormalizedExpensesArr()
+         .pipe(takeUntil(this.destroy$))
+         .subscribe(expenses => {
+           const expensesArr = expenses
+           this.editedItemIndex = this.dataService.getIdEditExpenseItem()
+           const editItem = expensesArr[this.editedItemIndex]
+           myAmount = editItem.amount;
+           myDesc = editItem.description;
+         })
+     }*/
 
     this.formGroup = new FormGroup({
       'amount': new FormControl(myAmount, [

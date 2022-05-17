@@ -34,48 +34,6 @@
     </div>
   </div>
 
-
-  <div class="calc-steppers">
-    <mat-stepper orientation="vertical">
-      <mat-step>
-        <ng-template matStepLabel>Step 1</ng-template>
-        <ng-template matStepContent>
-          <div class="step-content">
-            <form>
-              <p>Select User</p>
-              <mat-form-field>
-                <mat-select
-                  [(ngModel)]="selectedValue"
-                  multiple
-                  name="user"
-                  placeholder="Users">
-                  <mat-option
-                    (click)="onSelectValue(selectedValue)"
-                    *ngFor="let user of usersArray"
-                    [value]="user">
-                    {{user.username}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </form>
-          </div>
-          <button (click)="onNext()" mat-button matStepperNext>Next</button>
-        </ng-template>
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Step 2</ng-template>
-        <ng-template matStepContent>
-          <p>This content was also rendered lazily</p>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
-        </ng-template>
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Step 3</ng-template>
-        <p>This content was rendered eagerly</p>
-        <button mat-button matStepperPrevious>Back</button>
-      </mat-step>
-    </mat-stepper>
-  </div>
+    <app-admin-stepper *ngIf="showSteps"></app-admin-stepper>
 
 </div>

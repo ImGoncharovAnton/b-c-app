@@ -11,9 +11,10 @@ export interface UserInfo {
   email: string
   key: string
   role: string
-  months?: MonthItem[]
+  months?: any
   income?: number
   expense?: number
+  beautyMonths?: any
 }
 
 @Component({

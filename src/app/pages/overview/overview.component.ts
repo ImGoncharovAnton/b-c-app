@@ -72,20 +72,21 @@ export class OverviewComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result === true) {
-        this.dataService.deleteMonths(item.key)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(response => {
-            console.log('delete complete')
-            this.dataService.fetchUserMonths()
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(months => {
-                this.monthsArr = months
-                this.dataService.monthsChanged$.next(months)
-              })
-          })
-      }
-    });
+    dialogRef.afterClosed()
+      .subscribe((result) => {
+        if (result === true) {
+          this.dataService.deleteMonths(item.key)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(response => {
+              console.log('delete complete')
+              this.dataService.fetchUserMonths()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(months => {
+                  this.monthsArr = months
+                  this.dataService.monthsChanged$.next(months)
+                })
+            })
+        }
+      });
   }
 }
