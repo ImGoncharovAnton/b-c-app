@@ -2,7 +2,7 @@
   <p class="tabs-username" *ngIf="username">{{username}} | {{userKey}}</p>
   <div class="tabs-block">
     <mat-tab-group class="tabs-mat-group" animationDuration="0ms">
-      <mat-tab class="tab-mat-item" *ngFor="let item of monthNameArr">
+      <mat-tab class="tab-mat-item" *ngFor="let item of monthNameArr; let id = index">
         <ng-template mat-tab-label>{{item.month}}</ng-template>
         <div class="month-block">
           <div class="month-incomes">
@@ -26,7 +26,7 @@
                 <button
                   mat-raised-button
                   color="warn"
-                  (click)="onEditItemExpense(i, el[0], item.key)">Edit
+                  (click)="onEditItemExpense(i, el[0], item.key, id)">Edit
                 </button>
               </li>
             </ul>

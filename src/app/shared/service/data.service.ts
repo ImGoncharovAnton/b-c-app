@@ -20,6 +20,7 @@ export class DataService {
   calcResult$ = new BehaviorSubject<number>(0)
   monthKeyId$ = new BehaviorSubject<string | null>(null)
   pageId: number
+  testPageId: number
   idEditIncomeItem: number
   idEditExpenseItem: number
   keyEditIncomeItem: string | undefined
@@ -94,9 +95,9 @@ export class DataService {
       })
   }
 
-  _fetchNormalizedExpensesArr() {
+  _fetchNormalizedExpensesArr(userId?: string | null, monthId?: string | null) {
     let totalExpenses: number = 0;
-    this.fetchNormalizedExpensesArr()
+    this.fetchNormalizedExpensesArr(userId, monthId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(expensesArr => {
         for (let item of expensesArr) {
@@ -171,6 +172,7 @@ export class DataService {
   _updateExpenseValue(value: number) {
     let key = this._getLocalStoreData()
     let userId: string = this.setUserId()
+    let pageId: number = this.pageId
     this.userKey$
       .pipe(takeUntil(this.destroy$))
       .subscribe(userKey => {
@@ -182,6 +184,7 @@ export class DataService {
         this.monthKeyId = monthKey
       })
     if (this.userKeyId && this.monthKeyId) {
+      console.log('USE VALUE FROM ADMIN PANEL | UPDATE ')
       key = this.monthKeyId
       userId = this.userKeyId
     }
@@ -191,8 +194,7 @@ export class DataService {
       .subscribe(data => {
         this.fetchUserMonths(this.userKeyId)
           .subscribe(months => {
-            console.log(months)
-            let month = months[this.pageId]
+            let month = months[pageId]
             totalBudget = month.income - month.expense
             this.totalBudgetCounter$.next(totalBudget)
             }
@@ -273,7 +275,7 @@ export class DataService {
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/expensesArr/${keyEditItem}.json`, item)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this._fetchNormalizedExpensesArr()
+        this._fetchNormalizedExpensesArr(userId, key)
       })
   }
 
