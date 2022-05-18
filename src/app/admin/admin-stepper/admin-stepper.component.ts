@@ -1,8 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UserInfo} from "../admin.component";
 import {Subject, takeUntil} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {DataService} from "../../shared/service/data.service";
+import {MatStepper} from "@angular/material/stepper";
 
 @Component({
   selector: 'app-admin-stepper',
@@ -12,14 +13,13 @@ import {DataService} from "../../shared/service/data.service";
 export class AdminStepperComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>()
   selectedValue: UserInfo[]
-  selectedMonths: any = [];
+  trueProperty: boolean = false
   usersArray: UserInfo[] = []
   form: FormGroup
   resultValue: number
   buttonData: string
-  isCompleted: boolean = false
 
-  // isLinear = false
+  @ViewChild(MatStepper) stepper: MatStepper;
 
   constructor(private dataService: DataService) {
   }
@@ -32,67 +32,6 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.destroy$.next(true);
-  }
-
-  getCalcResultValue() {
-    this.dataService.calcResult$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(val => {
-        this.resultValue = val
-      })
-  }
-
-  onSelectValueUser(selectedValue: UserInfo[]) {
-    this.selectedValue = selectedValue
-    // months = Object.entries(item.months)
-    if (this.selectedValue) {
-      this.isCompleted = true
-
-      this.selectedValue.map(item => {
-        let months: any = []
-        for (let key in item.months) {
-          months.push({...item.months[key], key})
-        }
-        item.beautyMonths = months
-      })
-      for (let item of this.selectedValue) {
-
-      }
-    }
-    console.log('this.selectedValue after map', this.selectedValue)
-  }
-
-
-  checkValue(p: any) {
-    console.log(p)
-    console.log('this.selectedValue from checkValue', this.selectedValue)
-  }
-
-  onSelectValueMonths(data: any, userKey: string) {
-    let techArr = this.selectedValue
-    techArr.map(item => {
-
-    })
-
-    let editedUser = this.selectedValue.find(x => x.key === userKey)
-
-    if (editedUser) {
-      editedUser.editedMonths = [];
-      editedUser.editedMonths.push(data);
-    }
-
-    this.selectedMonths.push(data);
-
-    console.log(this.selectedValue);
-
-    // this.selectedValue.map((item: any) => {
-    //   item.selectedMonths = data
-    // })
-
-    let selectedMonths: any = []
-    selectedMonths.push([data, userKey])
-    // мб использовать фильтр входящих значений...
-    console.log(this.selectedMonths)
   }
 
   getAllUsers() {
@@ -109,13 +48,51 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
       })
   }
 
+  getCalcResultValue() {
+    this.dataService.calcResult$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(val => {
+        this.resultValue = val
+      })
+  }
 
-  onNext() {
+  onSelectValueUser(selectedValue: UserInfo[]) {
+    this.selectedValue = selectedValue
+    if (this.selectedValue) {
+      this.selectedValue.map(item => {
+        let months: any = []
+        for (let key in item.months) {
+          months.push({...item.months[key], key})
+        }
+        item.beautyMonths = months
+      })
+    }
+    if (this.selectedValue && this.selectedValue.length > 0) {
+      this.stepper.selected!.completed = true
+    }
+    console.log('this.selectedValue after map', this.selectedValue)
+  }
+
+  onNextStep1() {
+    if (this.selectedValue && this.selectedValue.length > 0) {
+      this.stepper.selected!.completed = true
+      this.stepper.next()
+    } else {
+      alert('Please select at least one value!')
+    }
+  }
+
+  checkValue(p?: any) {
+    console.log(p)
+    this.trueProperty = this.selectedValue.every(item => item.editedMonths && item.editedMonths.length > 0)
+    console.log('this.selectedValue from checkValue', this.selectedValue)
   }
 
   onIncomeButton() {
     this.buttonData = 'income'
-    console.log('onIncomeButton', this.buttonData)
+    if (this.trueProperty) {
+      this.stepper.selected!.completed = true
+    }
     this.form.setValue({
       amount: this.resultValue,
       description: ''
@@ -124,10 +101,34 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
 
   onExpenseButton() {
     this.buttonData = 'expense'
-    console.log('onExpenseButton', this.buttonData)
+    if (this.trueProperty) {
+      this.stepper.selected!.completed = true
+    }
     this.form.setValue({
       amount: this.resultValue,
       description: ''
+    })
+  }
+
+  onNextStep2() {
+    if (this.trueProperty && this.buttonData) {
+      this.stepper.selected!.completed = true
+      this.stepper.next()
+    } else {
+      alert('Please select at least one value for each user and operation type.')
+      this.stepper.selected!.completed = false
+    }
+  }
+
+  initForm() {
+    let myAmount: number = 0;
+    let myDesc: string = '';
+    this.form = new FormGroup({
+      'amount': new FormControl(myAmount, [
+        Validators.required,
+        Validators.pattern(/^[1-9]+\d*$/)
+      ]),
+      'description': new FormControl(myDesc, Validators.required)
     })
   }
 
@@ -143,16 +144,9 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
     }
   }
 
-  initForm() {
-    let myAmount: number = 0;
-    let myDesc: string = '';
-    this.form = new FormGroup({
-      'amount': new FormControl(myAmount, [
-        Validators.required,
-        Validators.pattern(/^[1-9]+\d*$/)
-      ]),
-      'description': new FormControl(myDesc, Validators.required)
-    })
+  onBack() {
+    // this.trueProperty = false
   }
+
 
 }

@@ -43,7 +43,9 @@
       <button (click)="evaluate()" class="item">=</button>
     </div>
   </div>
-
-  <app-admin-stepper *ngIf="showSteps"></app-admin-stepper>
+  <div class="stepper-container">
+    <app-admin-stepper *ngIf="showSteps"></app-admin-stepper>
+  </div>
 
 </div>
+

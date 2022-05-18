@@ -1,18 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 
-.calculator-next {
-  display: block;
-  background: #ccc;
-  padding: 20px;
-  width: 400px;
-}
-
 .calc-page {
   display: flex;
   gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .calc-container {
+  align-self: baseline;
   font-family: 'Audiowide', cursive;
   width: 300px;
   border: 2px solid white;
@@ -90,9 +86,9 @@
 }
 
 .clear .item {
-  box-shadow: 0px 1px 0px #2b638f,
-  inset 0px 2px 0px rgba(255, 255, 255, .3),
-  inset 0px 0px 3px rgba(255, 255, 255, .5);
+  box-shadow: 0 1px 0 #2b638f,
+  inset 0 2px 0 rgba(255, 255, 255, .3),
+  inset 0 0 3px rgba(255, 255, 255, .5);
 }
 
 .number {
@@ -112,9 +108,9 @@
 
 
 .number .item {
-  box-shadow: 0px 1px 0px wheat,
-  inset 0px 2px 0px rgba(255, 255, 255, .3),
-  inset 0px 0px 3px rgba(255, 255, 255, .5);
+  box-shadow: 0 1px 0 wheat,
+  inset 0 2px 0 rgba(255, 255, 255, .3),
+  inset 0 0 3px rgba(255, 255, 255, .5);
 }
 
 .operator {
@@ -126,11 +122,10 @@
 }
 
 .operator .item {
-  /* background-color: orange; */
   background-color: rgb(235, 149, 50);
-  box-shadow: 0px 1px 0px wheat,
-  inset 0px 2px 0px rgba(255, 255, 255, .3),
-  inset 0px 0px 5px rgba(255, 255, 255, .5);
+  box-shadow: 0 1px 0 wheat,
+  inset 0 2px 0 rgba(255, 255, 255, .3),
+  inset 0 0 5px rgba(255, 255, 255, .5);
   font-size: 1.2em;
 }
 
@@ -140,7 +135,7 @@
 
 .evaluate {
   grid-area: evaluate;
-  margin: 0px 0 20px 12px;
+  margin: 0 0 20px 12px;
 }
 
 .evaluate .item {
@@ -156,6 +151,6 @@ button {
   font-size: inherit;
 }
 
-.step-content {
+.stepper-container {
   //outline: 1px solid coral;
 }

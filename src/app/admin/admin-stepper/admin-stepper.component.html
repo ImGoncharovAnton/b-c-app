@@ -1,6 +1,6 @@
 <div class="calc-steppers">
   <mat-stepper orientation="vertical" linear #stepper>
-    <mat-step [completed]="isCompleted">
+    <mat-step [completed]="false" disabled="true">
       <ng-template matStepLabel>Step 1</ng-template>
       <ng-template matStepContent>
         <div class="step-content">
@@ -21,67 +21,67 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <button (click)="onNext()" mat-button matStepperNext>Next</button>
+        <button mat-raised-button color="accent" (click)="onNextStep1()">Next</button>
       </ng-template>
     </mat-step>
-    <mat-step>
+    <mat-step [completed]="false">
       <ng-template matStepLabel>Step 2</ng-template>
       <ng-template matStepContent>
         <div class="step-content">
-          <div>
-            <h4>Selected Users:</h4>
-            <div class="selected-users">
-              <div class="selected-users__username">
-                <h3 class="selected-users__heading">Username</h3>
-                <ul class="selected-users__list"
-                    *ngFor="let item of selectedValue">
-                  <li class="selected-users__item">
-                    <div>
-                      {{item.username}}
-                    </div>
-
-                    <div>
-                      <mat-form-field appearance="fill">
-                        <mat-label>Months</mat-label>
-                        <mat-select
-                          multiple
-                          [(ngModel)]="item.editedMonths"
-                          placeholder="Months"
-                          (ngModelChange)="checkValue($event)">
-                          <mat-option
-                            *ngFor="let mon of item.beautyMonths"
-                            [value]="mon">
-                            {{mon.month}}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-                  </li>
-                </ul>
+          <div class="selected-users">
+            <h3 class="selected-users__heading">Selected Users:</h3>
+            <ul class="selected-users__list"
+                *ngFor="let item of selectedValue">
+              <li class="selected-users__item">
+                <div class="selected-users__item-username">
+                  {{item.username}}
+                </div>
+                <div class="selected-users__item-select">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Months</mat-label>
+                    <mat-select
+                      multiple
+                      [(ngModel)]="item.editedMonths"
+                      placeholder="Months"
+                      (ngModelChange)="checkValue($event)"
+                      required>
+                      <mat-option
+                        *ngFor="let mon of item.beautyMonths; let monthIndex = index"
+                        [value]="[mon, monthIndex]">
+                        {{mon.month}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </li>
+            </ul>
+            <div class="select-input">
+              <input type="number"
+                     class="select-input__input"
+                     placeholder="Enter a value"
+                     [value]='resultValue'>
+              <div class="select-input__buttons">
+                <button
+                  mat-raised-button
+                  matStepperNext
+                  color="primary"
+                  (click)="onIncomeButton()">Income
+                </button>
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="onExpenseButton()"
+                  matStepperNext>Expense
+                </button>
               </div>
             </div>
           </div>
-          <input
-            type="number"
-            [value]="resultValue">
-          <button
-            mat-raised-button
-            matStepperNext
-            color="primary"
-            (click)="onIncomeButton()">Income
-          </button>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="onExpenseButton()"
-            matStepperNext>Expense
-          </button>
         </div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext>Next</button>
+        <button mat-raised-button matStepperPrevious>Back</button>
+        <button mat-raised-button color="accent" (click)="onNextStep2()">Next</button>
       </ng-template>
     </mat-step>
-    <mat-step>
+    <mat-step [completed]="false">
       <ng-template matStepLabel>Step 3</ng-template>
       <div class="step-content">
         <div>
@@ -121,7 +121,7 @@
           </button>
         </form>
       </div>
-      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperPrevious (click)="onBack()">Back</button>
     </mat-step>
   </mat-stepper>
 </div>
