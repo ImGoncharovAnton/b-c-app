@@ -28,8 +28,18 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.data === 'income') {
+      this.dataService.userKey$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(key => {
+          this.userKeyId = key
+        })
+      this.dataService.monthKeyId$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(monthkey => {
+          this.monthKeyId = monthkey
+        })
       this.identityIncome = true;
-      this.dataService.fetchNormalizedIncomesArr()
+      this.dataService.fetchNormalizedIncomesArr(this.userKeyId, this.monthKeyId)
         .pipe(takeUntil(this.destroy$))
         .subscribe(incomes => {
           const incomesArr = incomes
@@ -79,7 +89,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
 
   onSubmitIncome() {
     if (this.identityIncome) {
-      this.dataService.updateIncomeItem(this.formGroup.value)
+      this.dataService.updateIncomeItem(this.formGroup.value, this.userKeyId, this.monthKeyId)
     } else {
       this.dataService.addIncomeItem(this.formGroup.value)
     }

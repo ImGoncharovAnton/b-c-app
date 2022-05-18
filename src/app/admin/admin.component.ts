@@ -15,6 +15,7 @@ export interface UserInfo {
   income?: number
   expense?: number
   beautyMonths?: any
+  editedMonths?: any;
 }
 
 @Component({

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {DataService} from 'src/app/shared/service/data.service';
 
 import {rpn} from './rpn';
@@ -111,22 +111,28 @@ export class AdminCalculatorComponent implements OnInit {
   }
 
   // KEYBOARD SUPPORT
-  // @HostListener('keydown', ['$event'])
-  // onKeyDown(event: KeyboardEvent) {
-  //   const key = event.key.toLowerCase();
-  //   event.preventDefault();
-  //
-  //   if (key === 'c' || key === 'backspace') {
-  //     this.reset();
-  //   } else if (key === ',' || key === '.') {
-  //     this.insertChar('.');
-  //   } else if (!isNaN(parseInt(key))) {
-  //     this.insertChar(key);
-  //   } else if (key === 'enter') {
-  //     this.evaluate();
-  //   } else if (isOperator(key)) {
-  //     this.execOperator(key);
-  //   }
-  // }
+  @HostListener('keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+
+    let targetElement = event.target as HTMLElement;
+
+    if (targetElement.id === "main-input-calc" || targetElement.id === "sub-input-calc") {
+      const key = event.key.toLowerCase();
+      event.preventDefault();
+
+      if (key === 'c' || key === 'backspace') {
+        this.reset();
+      } else if (key === ',' || key === '.') {
+        this.insertChar('.');
+      } else if (!isNaN(parseInt(key))) {
+        this.insertChar(key);
+      } else if (key === 'enter') {
+        this.evaluate();
+      } else if (isOperator(key)) {
+        this.execOperator(key);
+      }
+    }
+
+  }
 
 }

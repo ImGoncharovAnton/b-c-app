@@ -12,11 +12,14 @@ import {DataService} from "../../shared/service/data.service";
 export class AdminStepperComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>()
   selectedValue: UserInfo[]
-  selectedMonths: any
+  selectedMonths: any = [];
   usersArray: UserInfo[] = []
   form: FormGroup
   resultValue: number
   buttonData: string
+  isCompleted: boolean = false
+
+  // isLinear = false
 
   constructor(private dataService: DataService) {
   }
@@ -40,29 +43,57 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   }
 
   onSelectValueUser(selectedValue: UserInfo[]) {
-    console.log(selectedValue)
     this.selectedValue = selectedValue
-    let techArr: string[] = []
-    let months: any = []
+    // months = Object.entries(item.months)
     if (this.selectedValue) {
-      for (let item of this.selectedValue) {
-        techArr.push(item.key)
-      }
+      this.isCompleted = true
+
       this.selectedValue.map(item => {
-        months = Object.entries(item.months)
+        let months: any = []
+        for (let key in item.months) {
+          months.push({...item.months[key], key})
+        }
         item.beautyMonths = months
       })
+      for (let item of this.selectedValue) {
+
+      }
     }
-
-
-    console.log('techArr', techArr)
     console.log('this.selectedValue after map', this.selectedValue)
   }
 
-  onSelectValueMonths(data: any) {
 
+  checkValue(p: any) {
+    console.log(p)
+    console.log('this.selectedValue from checkValue', this.selectedValue)
   }
 
+  onSelectValueMonths(data: any, userKey: string) {
+    let techArr = this.selectedValue
+    techArr.map(item => {
+
+    })
+
+    let editedUser = this.selectedValue.find(x => x.key === userKey)
+
+    if (editedUser) {
+      editedUser.editedMonths = [];
+      editedUser.editedMonths.push(data);
+    }
+
+    this.selectedMonths.push(data);
+
+    console.log(this.selectedValue);
+
+    // this.selectedValue.map((item: any) => {
+    //   item.selectedMonths = data
+    // })
+
+    let selectedMonths: any = []
+    selectedMonths.push([data, userKey])
+    // мб использовать фильтр входящих значений...
+    console.log(this.selectedMonths)
+  }
 
   getAllUsers() {
     this.dataService.fetchData()

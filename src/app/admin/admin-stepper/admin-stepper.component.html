@@ -1,26 +1,25 @@
 <div class="calc-steppers">
-  <mat-stepper orientation="vertical">
-    <mat-step>
+  <mat-stepper orientation="vertical" linear #stepper>
+    <mat-step [completed]="isCompleted">
       <ng-template matStepLabel>Step 1</ng-template>
       <ng-template matStepContent>
         <div class="step-content">
-          <form>
-            <p>Select User</p>
-            <mat-form-field>
-              <mat-select
-                [(ngModel)]="selectedValue"
-                multiple
-                name="user"
-                placeholder="Users">
-                <mat-option
-                  (click)="onSelectValueUser(selectedValue)"
-                  *ngFor="let user of usersArray"
-                  [value]="user">
-                  {{user.username}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </form>
+          <p>Select User</p>
+          <mat-form-field>
+            <mat-select
+              [(ngModel)]="selectedValue"
+              multiple
+              name="user"
+              placeholder="Users"
+              required>
+              <mat-option
+                (click)="onSelectValueUser(selectedValue)"
+                *ngFor="let user of usersArray"
+                [value]="user">
+                {{user.username}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
         <button (click)="onNext()" mat-button matStepperNext>Next</button>
       </ng-template>
@@ -40,27 +39,22 @@
                     <div>
                       {{item.username}}
                     </div>
-                    |
+
                     <div>
-                      <form>
-                        <mat-form-field>
-                          <mat-select
-                            [(ngModel)]="selectedMonths"
-                            multiple
-                            name="months"
-                            placeholder="Months">
-                            <mat-option
-                              (click)="onSelectValueMonths(selectedMonths)"
-                              *ngFor="let el of item.beautyMonths"
-                              [value]="el">
-                              {{el[1].month}}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </form>
-                      <!--                      <span *ngFor="let el of item.months">-->
-                      <!--                      {{el[0]}}-->
-                      <!--                    </span>-->
+                      <mat-form-field appearance="fill">
+                        <mat-label>Months</mat-label>
+                        <mat-select
+                          multiple
+                          [(ngModel)]="item.editedMonths"
+                          placeholder="Months"
+                          (ngModelChange)="checkValue($event)">
+                          <mat-option
+                            *ngFor="let mon of item.beautyMonths"
+                            [value]="mon">
+                            {{mon.month}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
                     </div>
                   </li>
                 </ul>

@@ -1,9 +1,19 @@
 <div class="calc-page">
   <div class="calc-container">
     <div class="result">
-      <input [ngModel]="formattedTokens" class="result-item" readonly type="text">
+      <input
+        [ngModel]="formattedTokens"
+        class="result-item"
+        readonly
+        type="text"
+        id="sub-input-calc">
 
-      <input [ngModel]="input" class="result-item" readonly type="text">
+      <input
+        [ngModel]="input"
+        class="result-item"
+        readonly
+        type="text"
+        id="main-input-calc">
     </div>
     <div class="clear clear-container">
       <button (click)="reset()" class="item">AC</button>
@@ -34,6 +44,6 @@
     </div>
   </div>
 
-    <app-admin-stepper *ngIf="showSteps"></app-admin-stepper>
+  <app-admin-stepper *ngIf="showSteps"></app-admin-stepper>
 
 </div>

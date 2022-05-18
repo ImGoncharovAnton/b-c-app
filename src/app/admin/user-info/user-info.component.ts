@@ -64,4 +64,12 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.dataService.setPageId(idMonth)
     this.dialog.open(MyCalcEditComponent, {data: 'expense'})
   }
+
+  onEditItemIncome(index: number, key: string, monthKey: string, idMonth: number) {
+    this.dataService.setIdEditIncomeItem(index)
+    this.dataService.setKeyEditIncomeItem(key)
+    this.dataService.monthKeyId$.next(monthKey)
+    this.dataService.setPageId(idMonth)
+    this.dialog.open(MyCalcEditComponent, {data: 'income'})
+  }
 }

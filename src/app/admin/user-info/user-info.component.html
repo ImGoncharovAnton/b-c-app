@@ -12,7 +12,11 @@
                 <p>
                   <span>{{el[1].description}}</span> | <span>{{el[1].amount}}</span>
                 </p>
-                <button mat-raised-button color="warn">Edit</button>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  (click)="onEditItemIncome(i, el[0], item.key, id)">Edit
+                </button>
               </li>
             </ul>
           </div>
