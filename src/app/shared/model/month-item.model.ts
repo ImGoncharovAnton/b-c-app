@@ -7,6 +7,7 @@ export class MonthItem {
               public expense: number,
               public incomesArr: BudgetItem[],
               public expensesArr: BudgetItem[],
-              public key?: string) {
+              public key?: string,
+              public changedAdmin?: boolean) {
   }
 }

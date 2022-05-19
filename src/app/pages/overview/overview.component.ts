@@ -16,7 +16,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
   monthsArr: MonthItem[] = [];
   id: number = 0;
   monthNow: number;
-  changedDetected: boolean = false;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -39,20 +38,24 @@ export class OverviewComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
           this.monthsArr = this.monthsArr.concat(months);
-          let incomesArr: BudgetItem[] = []
-          let expensesArr: BudgetItem[] = []
-          months.map(item => {
-            incomesArr = Object.values(item.incomesArr)
-            expensesArr = Object.values(item.expensesArr)
-            item.incomesArr = incomesArr
-            item.expensesArr = expensesArr
-            console.log(item)
-          })
         }
       )
     this.dataService.monthsChanged$
       .pipe(takeUntil(this.destroy$))
       .subscribe((months: MonthItem[]) => {
+        let incomesArr: BudgetItem[] = []
+        let expensesArr: BudgetItem[] = []
+        months.map(item => {
+          incomesArr = Object.values(item.incomesArr)
+          expensesArr = Object.values(item.expensesArr)
+          item.incomesArr = incomesArr
+          item.expensesArr = expensesArr
+          let checkStateIncome = item.incomesArr.some((el: BudgetItem) => el.adminChanged)
+          let checkStateExpenses = item.expensesArr.some((el: BudgetItem) => el.adminChanged)
+          if (checkStateExpenses || checkStateIncome) {
+            item.changedAdmin = true
+          }
+        })
         this.monthsArr = months
       })
     this.monthNow = new Date().getMonth();
@@ -78,8 +81,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Confirm Remove Month',
-        message: 'Are you sure you want to delete this month: ' + item.month
-          + '?'
+        message: 'Are you sure you want to delete this month: ' + item.month + '?'
       }
     });
 
@@ -89,7 +91,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
           this.dataService.deleteMonths(item.key)
             .pipe(takeUntil(this.destroy$))
             .subscribe(response => {
-              console.log('delete complete')
               this.dataService.fetchUserMonths()
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(months => {

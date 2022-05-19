@@ -7,7 +7,7 @@
             class="months-item"
             *ngFor="let item of monthsArr; let i = index"
             [ngClass]="[item.monthId > monthNow + 1 ? 'locked' : '']">
-            <div *ngIf="changedDetected" class="change-message">admin made changes *</div>
+            <div *ngIf="item.changedAdmin" class="change-message">admin made changes *</div>
             <mat-icon
               *ngIf="item.monthId > monthNow + 1"
               class="month-icon">lock
@@ -16,7 +16,9 @@
               *ngIf="item.monthId <= monthNow + 1"
               class="month-icon">lock_open
             </mat-icon>
-            <h2 (click)="onMonthPage(i, item)">{{item.month}}</h2>
+            <h2
+              [ngClass]="[item.changedAdmin ? 'indigo': '']"
+              (click)="onMonthPage(i, item)">{{item.month}}</h2>
             <div
               class="months-item__right right-month-item"
               [ngClass]="[item.monthId > monthNow + 1 ? 'gray' : '']">

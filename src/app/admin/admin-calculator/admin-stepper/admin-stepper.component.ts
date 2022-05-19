@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {UserInfo} from "../admin.component";
+import {UserInfo} from "../../admin.component";
 import {Subject, takeUntil} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {DataService} from "../../shared/service/data.service";
+import {DataService} from "../../../shared/service/data.service";
 import {MatStepper} from "@angular/material/stepper";
 
 export interface DataForSend {
@@ -27,8 +27,9 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   trueProperty: boolean = false
   usersArray: UserInfo[] = []
   form: FormGroup
-  resultValue: number
+  resultValue: number | null
   buttonData: string
+  showSteps: boolean
 
   @ViewChild(MatStepper) stepper: MatStepper;
 
@@ -39,7 +40,11 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
     this.getAllUsers()
     this.getCalcResultValue()
     this.initForm()
-
+    this.dataService.showSteps$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(showSteps => {
+        this.showSteps = showSteps
+      })
   }
 
   ngOnDestroy() {
@@ -187,8 +192,9 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
         this.dataService.addExpenseItem(this.form.value, item.userKey, item.monthKey, item.monthIndex)
       }
     }
-
-
+    alert('Successfully added!')
+    this.stepper.reset()
+    this.showSteps = false
   }
 
   onBack() {

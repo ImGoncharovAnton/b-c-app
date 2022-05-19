@@ -20,6 +20,7 @@ export class DataService {
   calcResult$ = new BehaviorSubject<number>(0)
   monthKeyId$ = new BehaviorSubject<string | null>(null)
   changedState$ = new BehaviorSubject<boolean>(false)
+  showSteps$ = new BehaviorSubject<boolean>(false)
   pageId: number
   idEditIncomeItem: number
   idEditExpenseItem: number

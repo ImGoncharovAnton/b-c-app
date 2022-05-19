@@ -1,6 +1,6 @@
 .locked {
   color: gray;
-  background-color: lightgray;
+  background-color: lightgray !important;
 
   h2 {
     cursor: not-allowed !important;
@@ -139,6 +139,14 @@
     }
   }
 
+}
+
+.indigo {
+  color: #616161;
+
+  &:hover {
+    color: #536dfe;
+  }
 }
 
 .del-icon {

@@ -12,7 +12,6 @@ import {isOperator} from './model';
   styleUrls: ['./admin-calculator.component.scss']
 })
 export class AdminCalculatorComponent implements OnInit {
-  showSteps: boolean = false;
   finallyResult: number
   tokens: string[] = [];
   showResult = false;
@@ -29,7 +28,7 @@ export class AdminCalculatorComponent implements OnInit {
   onExportValue(value: string) {
     this.finallyResult = Number(value)
     this.dataService.calcResult$.next(this.finallyResult)
-    this.showSteps = true
+    this.dataService.showSteps$.next(true)
   }
 
   // --------------------------------------------------

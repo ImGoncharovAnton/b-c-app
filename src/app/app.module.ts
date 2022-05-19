@@ -18,7 +18,7 @@ import {AdminComponent} from './admin/admin.component';
 import {MatSortModule} from "@angular/material/sort";
 import {UserInfoComponent} from './admin/user-info/user-info.component';
 import {AdminCalculatorComponent} from './admin/admin-calculator/admin-calculator.component';
-import {AdminStepperComponent} from './admin/admin-stepper/admin-stepper.component';
+import {AdminStepperComponent} from './admin/admin-calculator/admin-stepper/admin-stepper.component';
 
 @NgModule({
   declarations: [
