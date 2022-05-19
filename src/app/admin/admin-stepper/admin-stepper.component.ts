@@ -5,6 +5,17 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {DataService} from "../../shared/service/data.service";
 import {MatStepper} from "@angular/material/stepper";
 
+export interface DataForSend {
+  userKey: string
+  months: [{ monthKey: string, monthIndex: number }]
+}
+
+export interface NormalizedDataForSend {
+  userKey: string
+  monthKey: string
+  monthIndex: number
+}
+
 @Component({
   selector: 'app-admin-stepper',
   templateUrl: './admin-stepper.component.html',
@@ -26,8 +37,9 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getAllUsers()
-    this.initForm()
     this.getCalcResultValue()
+    this.initForm()
+
   }
 
   ngOnDestroy() {
@@ -70,7 +82,6 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
     if (this.selectedValue && this.selectedValue.length > 0) {
       this.stepper.selected!.completed = true
     }
-    console.log('this.selectedValue after map', this.selectedValue)
   }
 
   onNextStep1() {
@@ -83,9 +94,7 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   }
 
   checkValue(p?: any) {
-    console.log(p)
     this.trueProperty = this.selectedValue.every(item => item.editedMonths && item.editedMonths.length > 0)
-    console.log('this.selectedValue from checkValue', this.selectedValue)
   }
 
   onIncomeButton() {
@@ -118,6 +127,10 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
       alert('Please select at least one value for each user and operation type.')
       this.stepper.selected!.completed = false
     }
+    this.form.setValue({
+      amount: this.resultValue,
+      description: ''
+    })
   }
 
   initForm() {
@@ -133,14 +146,45 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    const selectedValue: UserInfo[] = this.selectedValue
+    const arrForSend: DataForSend[] = []
+    const arrForSendNormalized: NormalizedDataForSend[] = []
+
+    for (let item of selectedValue) {
+      const userObj: any = {}
+      const months: any = []
+      userObj.userKey = item.key
+      userObj.months = months
+      for (let monthItem of item.editedMonths) {
+        let monthObj: any = {}
+        monthObj.monthKey = monthItem[0].key
+        monthObj.monthIndex = monthItem[1]
+        months.push(monthObj)
+      }
+      arrForSend.push(userObj)
+    }
+
+    for (let item of arrForSend) {
+      for (let monthItem of item.months) {
+        let userObj: any = {}
+        userObj.userKey = item.userKey
+        userObj.monthKey = monthItem.monthKey
+        userObj.monthIndex = monthItem.monthIndex
+        arrForSendNormalized.push(userObj)
+      }
+    }
     if (this.buttonData === 'income') {
-      console.log('click onSubmit income')
-      // this.dataService.addIncomeItem(this.form.value)
+      for (let item of arrForSendNormalized) {
+        this.dataService.setPageId(item.monthIndex)
+        this.dataService.addIncomeItem(this.form.value, item.userKey, item.monthKey, item.monthIndex)
+      }
     }
 
     if (this.buttonData === 'expense') {
-      console.log('click onSubmit expense')
-      // this.dataService.addExpenseItem(this.form.value)
+      for (let item of arrForSendNormalized) {
+        this.dataService.setPageId(item.monthIndex)
+        this.dataService.addExpenseItem(this.form.value, item.userKey, item.monthKey, item.monthIndex)
+      }
     }
   }
 

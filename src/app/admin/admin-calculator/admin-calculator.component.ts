@@ -29,7 +29,6 @@ export class AdminCalculatorComponent implements OnInit {
   onExportValue(value: string) {
     this.finallyResult = Number(value)
     this.dataService.calcResult$.next(this.finallyResult)
-    console.log('finallyResult', this.finallyResult)
     this.showSteps = true
   }
 

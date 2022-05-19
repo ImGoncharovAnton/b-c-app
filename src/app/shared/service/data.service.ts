@@ -80,7 +80,7 @@ export class DataService {
     return jsonData !== null ? JSON.parse(jsonData) : []
   }
 
-  _fetchNormalizedIncomesArr(userId?: string | null, monthId?: string | null) {
+  _fetchNormalizedIncomesArr(userId?: string | null, monthId?: string | null, monthIndex?: number) {
     let totalIncomes: number = 0;
     this.fetchNormalizedIncomesArr(userId, monthId)
       .pipe(takeUntil(this.destroy$))
@@ -90,11 +90,11 @@ export class DataService {
         }
         this.itemsChangedInc$.next(incomesArr)
         this.totalCounterInc$.next(totalIncomes)
-        this._updateIncomeValue(totalIncomes)
+        this._updateIncomeValue(totalIncomes, monthIndex, userId, monthId)
       })
   }
 
-  _fetchNormalizedExpensesArr(userId?: string | null, monthId?: string | null) {
+  _fetchNormalizedExpensesArr(userId?: string | null, monthId?: string | null, monthIndex?: number) {
     let totalExpenses: number = 0;
     this.fetchNormalizedExpensesArr(userId, monthId)
       .pipe(takeUntil(this.destroy$))
@@ -104,7 +104,7 @@ export class DataService {
         }
         this.itemsChangedExp$.next(expensesArr)
         this.totalCounterExp$.next(totalExpenses)
-        this._updateExpenseValue(totalExpenses)
+        this._updateExpenseValue(totalExpenses, monthIndex, userId, monthId)
       })
   }
 
@@ -135,26 +135,37 @@ export class DataService {
     return this.http.post(this.baseUrl + `users/${userId}/months.json`, month)
   }
 
-  addIncomeItem(incomeItem: BudgetItem) {
+  addIncomeItem(incomeItem: BudgetItem, userKey?: string, monthKey?: string, monthIndex?: number) {
     let key = this._getLocalStoreData()
-    const userId: string = this.setUserId()
+    let userId: string = this.setUserId()
+    if (userKey && monthKey) {
+      userId = userKey
+      key = monthKey
+    }
     this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, incomeItem).subscribe(data => {
-      this._fetchNormalizedIncomesArr()
+      this._fetchNormalizedIncomesArr(userKey, monthKey, monthIndex)
     })
   }
 
-  addExpenseItem(expenseItem: BudgetItem) {
+  addExpenseItem(expenseItem: BudgetItem, userKey?: string, monthKey?: string, monthIndex?: number) {
     let key = this._getLocalStoreData()
-    const userId: string = this.setUserId()
+    let userId: string = this.setUserId()
+    if (userKey && monthKey) {
+      userId = userKey
+      key = monthKey
+    }
     this.http.post(this.baseUrl + `users/${userId}/months/${key}/expensesArr.json`, expenseItem).subscribe(data => {
-      this._fetchNormalizedExpensesArr()
+      this._fetchNormalizedExpensesArr(userKey, monthKey, monthIndex)
     })
   }
 
-  _updateIncomeValue(value: number) {
+  _updateIncomeValue(value: number, monthIndex?: number, userKey?: string | null, monthKey?: string | null) {
     let pageId: number = this.pageId
     let userId: string = this.setUserId()
     let key = this._getLocalStoreData()
+    if (monthIndex) {
+      pageId = monthIndex
+    }
     this.userKey$
       .pipe(takeUntil(this.destroy$))
       .subscribe(userKey => {
@@ -166,6 +177,10 @@ export class DataService {
         this.monthKeyId = monthKey
       })
     let totalBudget: number;
+    if (userKey && monthKey) {
+      userId = userKey
+      key = monthKey
+    }
     if (this.userKeyId && this.monthKeyId) {
       key = this.monthKeyId
       userId = this.userKeyId
@@ -173,9 +188,9 @@ export class DataService {
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/income.json`, value)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this.fetchUserMonths(this.userKeyId)
+        this.fetchUserMonths(userId)
           .subscribe(months => {
-              let month = months[pageId]
+            let month = months[pageId]
               totalBudget = month.income - month.expense
               this.totalBudgetCounter$.next(totalBudget)
             }
@@ -183,7 +198,7 @@ export class DataService {
       })
   }
 
-  _updateExpenseValue(value: number) {
+  _updateExpenseValue(value: number, monthIndex?: number, userKey?: string | null, monthKey?: string | null) {
     let totalBudget: number;
     let key = this._getLocalStoreData()
     let userId: string = this.setUserId()
@@ -202,10 +217,17 @@ export class DataService {
       key = this.monthKeyId
       userId = this.userKeyId
     }
+    if (monthIndex) {
+      pageId = monthIndex
+    }
+    if (userKey && monthKey) {
+      userId = userKey
+      key = monthKey
+    }
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/expense.json`, value)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this.fetchUserMonths(this.userKeyId)
+        this.fetchUserMonths(userId)
           .subscribe(months => {
               let month = months[pageId]
               totalBudget = month.income - month.expense

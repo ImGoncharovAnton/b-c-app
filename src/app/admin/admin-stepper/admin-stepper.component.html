@@ -1,4 +1,4 @@
-<div class="calc-steppers">
+<div class="calc-stepper">
   <mat-stepper orientation="vertical" linear #stepper>
     <mat-step [completed]="false" disabled="true">
       <ng-template matStepLabel>Step 1</ng-template>
@@ -76,52 +76,78 @@
               </div>
             </div>
           </div>
+          <div class="step-nav-buttons">
+            <button
+              mat-raised-button
+              color="warn"
+              matStepperPrevious>Back
+            </button>
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="onNextStep2()">Next
+            </button>
+          </div>
         </div>
-        <button mat-raised-button matStepperPrevious>Back</button>
-        <button mat-raised-button color="accent" (click)="onNextStep2()">Next</button>
+
       </ng-template>
     </mat-step>
     <mat-step [completed]="false">
       <ng-template matStepLabel>Step 3</ng-template>
       <div class="step-content">
-        <div>
-
-          <div>
-            <h4>Selected Users:</h4>
-            <span *ngFor="let item of selectedValue">
-                {{item.username}},
-             </span>
-          </div>
-          <h4>Type: {{buttonData}}</h4>
+        <div class="selected-users">
+          <h3 class="selected-users__heading">Selected Data:</h3>
+          <ul class="selected-users__list"
+              *ngFor="let item of selectedValue">
+            <li class="selected-users__item">
+              <div class="selected-users__item-username">
+                {{item.username}} |
+              </div>
+              <div class="selected-users__item-months">
+                  <span *ngFor="let mon of item.editedMonths">
+                    {{mon[0].month}}
+                  </span>
+              </div>
+            </li>
+          </ul>
+          <div class="selected-users__type">
+            <p>Operation type |</p> <span>{{buttonData}}</span></div>
         </div>
-        <form [formGroup]="form">
-          <mat-form-field appearance="outline" style="width: 65%; font-size: 1.2rem;">
-            <mat-label>Description</mat-label>
-            <input matInput
-                   type="text"
-                   class="input-desc"
-                   placeholder="Enter a description"
-                   formControlName="description">
-            <mat-hint>Fill in the description</mat-hint>
-          </mat-form-field>
-          <mat-form-field appearance="outline" style="width: 35%; font-size: 1.2rem;">
-            <mat-label>Amount</mat-label>
-            <input matInput
-                   type="number"
-                   class="input-amount"
-                   placeholder="0"
-                   formControlName="amount">
-            <span matPrefix class="mat-prefix">$&nbsp;</span>
-            <mat-hint align="end">Enter a positive value</mat-hint>
-          </mat-form-field>
+        <form [formGroup]="form" class="selected-users__form">
+          <div class="selected-users-form-inputs">
+            <mat-form-field appearance="outline" style="width: 65%; font-size: 1.2rem;">
+              <mat-label>Description</mat-label>
+              <input matInput
+                     type="text"
+                     placeholder="Enter a description"
+                     formControlName="description">
+              <mat-hint>Fill in the description</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="width: 35%; font-size: 1.2rem;">
+              <mat-label>Amount</mat-label>
+              <input matInput
+                     type="number"
+                     placeholder="0"
+                     formControlName="amount">
+              <span matPrefix class="mat-prefix">$&nbsp;</span>
+              <mat-hint align="end">Enter a positive value</mat-hint>
+            </mat-form-field>
+          </div>
           <button
+            class="mb-1"
+            mat-raised-button
+            color="primary"
             type="button"
             [disabled]="!form.valid"
-            (click)="onSubmit()">Save
+            (click)="onSubmit()">
+            <mat-icon>save</mat-icon>
+            Save
           </button>
         </form>
+        <div class="step-nav-buttons">
+          <button mat-button matStepperPrevious (click)="onBack()">Back</button>
+        </div>
       </div>
-      <button mat-button matStepperPrevious (click)="onBack()">Back</button>
     </mat-step>
   </mat-stepper>
 </div>

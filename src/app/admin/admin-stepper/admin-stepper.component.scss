@@ -1,4 +1,8 @@
 
+.calc-stepper {
+  max-width: 550px;
+}
+
 .selected-users {
   border-top: 1px solid #0f0f0f;
   border-bottom: 1px solid #0f0f0f;
@@ -42,6 +46,31 @@
     align-items: center;
     justify-content: center;
   }
+
+  &__item-months {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  &__type {
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    p {
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  &__form {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+  }
 }
 
 .select-input {
@@ -67,3 +96,18 @@
   }
 }
 
+.step-nav-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.selected-users-form-inputs {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
