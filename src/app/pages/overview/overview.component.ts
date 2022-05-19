@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {DataService} from "../../shared/service/data.service";
+import {BudgetItem} from 'src/app/shared/model/budget-item.model';
 
 @Component({
   selector: 'app-overview',
@@ -15,6 +16,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   monthsArr: MonthItem[] = [];
   id: number = 0;
   monthNow: number;
+  changedDetected: boolean = false;
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -36,7 +38,16 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.dataService.fetchUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
-        this.monthsArr = this.monthsArr.concat(months);
+          this.monthsArr = this.monthsArr.concat(months);
+          let incomesArr: BudgetItem[] = []
+          let expensesArr: BudgetItem[] = []
+          months.map(item => {
+            incomesArr = Object.values(item.incomesArr)
+            expensesArr = Object.values(item.expensesArr)
+            item.incomesArr = incomesArr
+            item.expensesArr = expensesArr
+            console.log(item)
+          })
         }
       )
     this.dataService.monthsChanged$

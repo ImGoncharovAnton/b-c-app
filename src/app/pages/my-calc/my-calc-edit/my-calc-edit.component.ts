@@ -19,6 +19,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   editedItem: BudgetItem;
   userKeyId: string | null;
   monthKeyId: string | null;
+  changedState: boolean = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private dialogRef: DialogRef,
@@ -33,10 +34,15 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
         .subscribe(key => {
           this.userKeyId = key
         })
+      this.dataService.changedState$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(changed => {
+          this.changedState = changed
+        })
       this.dataService.monthKeyId$
         .pipe(takeUntil(this.destroy$))
-        .subscribe(monthkey => {
-          this.monthKeyId = monthkey
+        .subscribe(monthKey => {
+          this.monthKeyId = monthKey
         })
       this.identityIncome = true;
       this.dataService.fetchNormalizedIncomesArr(this.userKeyId, this.monthKeyId)
@@ -59,8 +65,13 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
         })
       this.dataService.monthKeyId$
         .pipe(takeUntil(this.destroy$))
-        .subscribe(monthkey => {
-          this.monthKeyId = monthkey
+        .subscribe(monthKey => {
+          this.monthKeyId = monthKey
+        })
+      this.dataService.changedState$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(changed => {
+          this.changedState = changed
         })
       this.identityExpense = true;
       this.dataService.fetchNormalizedExpensesArr(this.userKeyId, this.monthKeyId)
@@ -89,7 +100,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
 
   onSubmitIncome() {
     if (this.identityIncome) {
-      this.dataService.updateIncomeItem(this.formGroup.value, this.userKeyId, this.monthKeyId)
+      this.dataService.updateIncomeItem(this.formGroup.value, this.userKeyId, this.monthKeyId, this.changedState)
     } else {
       this.dataService.addIncomeItem(this.formGroup.value)
     }
@@ -101,7 +112,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
 
   onSubmitExpense() {
     if (this.identityExpense) {
-      this.dataService.updateExpenseItem(this.formGroup.value, this.userKeyId, this.monthKeyId)
+      this.dataService.updateExpenseItem(this.formGroup.value, this.userKeyId, this.monthKeyId, this.changedState)
     } else {
       this.dataService.addExpenseItem(this.formGroup.value)
     }

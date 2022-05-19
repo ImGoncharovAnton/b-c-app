@@ -19,6 +19,7 @@ export class DataService {
   userKey$ = new BehaviorSubject<string | null>(null)
   calcResult$ = new BehaviorSubject<number>(0)
   monthKeyId$ = new BehaviorSubject<string | null>(null)
+  changedState$ = new BehaviorSubject<boolean>(false)
   pageId: number
   idEditIncomeItem: number
   idEditExpenseItem: number
@@ -135,7 +136,8 @@ export class DataService {
     return this.http.post(this.baseUrl + `users/${userId}/months.json`, month)
   }
 
-  addIncomeItem(incomeItem: BudgetItem, userKey?: string, monthKey?: string, monthIndex?: number) {
+  addIncomeItem(incomeItem: BudgetItem, userKey?: string, monthKey?: string, monthIndex?: number, changed?: boolean) {
+    incomeItem.adminChanged = !!changed;
     let key = this._getLocalStoreData()
     let userId: string = this.setUserId()
     if (userKey && monthKey) {
@@ -147,7 +149,8 @@ export class DataService {
     })
   }
 
-  addExpenseItem(expenseItem: BudgetItem, userKey?: string, monthKey?: string, monthIndex?: number) {
+  addExpenseItem(expenseItem: BudgetItem, userKey?: string, monthKey?: string, monthIndex?: number, changed?: boolean) {
+    expenseItem.adminChanged = !!changed;
     let key = this._getLocalStoreData()
     let userId: string = this.setUserId()
     if (userKey && monthKey) {
@@ -291,7 +294,8 @@ export class DataService {
       })
   }
 
-  updateIncomeItem(item: BudgetItem, userIdKey?: string | null, monthKeyId?: string | null) {
+  updateIncomeItem(item: BudgetItem, userIdKey?: string | null, monthKeyId?: string | null, changed?: boolean) {
+    item.adminChanged = !!changed;
     let keyEditItem = this.keyEditIncomeItem
     let userId: string = this.setUserId()
     let key = this._getLocalStoreData()
@@ -306,7 +310,8 @@ export class DataService {
       })
   }
 
-  updateExpenseItem(item: BudgetItem, userIdKey?: string | null, monthKeyId?: string | null) {
+  updateExpenseItem(item: BudgetItem, userIdKey?: string | null, monthKeyId?: string | null, changed?: boolean) {
+    item.adminChanged = !!changed;
     let keyEditItem = this.keyEditExpenseItem
     let userId: string = this.setUserId()
     let key = this._getLocalStoreData()

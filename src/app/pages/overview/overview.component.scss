@@ -55,6 +55,18 @@
   }
 }
 
+.change-message {
+  position: absolute;
+  top: 0.3rem;
+  left: 0.3rem;
+  font-style: italic;
+  color: #333;
+  padding: 0.3rem;
+  border-radius: 3px;
+  border: 1px solid #0f0f0f;
+  background-color: #bcbcbc;
+}
+
 .del-icon {
   color: black !important;
   display: none;
@@ -62,6 +74,7 @@
   top: 0;
   right: 0;
   font-size: 3rem;
+  cursor: pointer;
 }
 
 .month-icon {

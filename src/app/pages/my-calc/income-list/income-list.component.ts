@@ -15,6 +15,7 @@ export class IncomeListComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   pageId: number;
   totalIncomes: number;
+  changedDetected: boolean = false;
 
   constructor(private dialog: DialogService,
               private dataService: DataService) {
@@ -23,6 +24,7 @@ export class IncomeListComponent implements OnInit, OnDestroy {
   onEditItem(item: BudgetItem, index: number) {
     this.dataService.setIdEditIncomeItem(index)
     this.dataService.setKeyEditIncomeItem(item.key)
+    this.dataService.changedState$.next(false)
     this.dialog.open(MyCalcEditComponent, {data: 'income'});
   }
 
@@ -39,7 +41,6 @@ export class IncomeListComponent implements OnInit, OnDestroy {
             normalizedIncomesArr.push({...origIncomesArr[key], key})
           }
           this.incomeItems = normalizedIncomesArr
-          console.log("Income-list component | Month", month)
         }
       )
     this.dataService.itemsChangedInc$

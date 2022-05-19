@@ -15,6 +15,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   pageId: number;
   totalExpenses: number;
+  changedDetected: boolean = false;
 
   constructor(private dataService: DataService,
               private dialog: DialogService) {
@@ -23,6 +24,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   onEditItem(item: BudgetItem, index: number) {
     this.dataService.setIdEditExpenseItem(index);
     this.dataService.setKeyEditExpenseItem(item.key)
+    this.dataService.changedState$.next(false)
     this.dialog.open(MyCalcEditComponent, {data: 'expense'});
   }
 
@@ -31,7 +33,6 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     this.dataService.fetchUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe(months => {
-          console.log('this.pageId', this.pageId)
           const month = months[this.pageId]
           this.totalExpenses = month.expense
           const origExpensesArr = month.expensesArr
@@ -39,8 +40,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
           for (let key in origExpensesArr) {
             normalizedExpensesArr.push({...origExpensesArr[key], key})
           }
-          this.expenseItems = normalizedExpensesArr
-          console.log("Expense-list component | Month", month)
+        this.expenseItems = normalizedExpensesArr
         }
       )
     this.dataService.itemsChangedExp$

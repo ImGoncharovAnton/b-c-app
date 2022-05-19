@@ -7,11 +7,13 @@
     <ng-container *ngIf="incomeItems">
       <li
         class="income-list-item"
+        [ngClass]="[item.adminChanged ? 'gray' : '']"
         *ngFor="let item of incomeItems; let i = index">
         <div (click)="onEditItem(item, i)">
           <p>{{item.description}}: </p>
           <span>{{item.amount}}</span>
         </div>
+        <p class="modified-message" *ngIf="item.adminChanged">Added or modified by admin</p>
         <mat-icon
           class="income-list-icon"
           (click)="onDelete(item.key)">delete

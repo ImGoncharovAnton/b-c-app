@@ -83,6 +83,22 @@
   }
 }
 
+.gray {
+  background-color: darkgray;
+  border: 1px solid #0f0f0f;
+
+  &:hover {
+    background-color: #616161;
+  }
+}
+
+.modified-message {
+  margin: 0;
+  font-size: 0.7rem;
+  font-style: italic;
+  text-align: right;
+}
+
 .income-list-icon {
   display: none;
   position: absolute;
@@ -92,3 +108,4 @@
   font-size: 1.7rem;
   cursor: pointer;
 }
+

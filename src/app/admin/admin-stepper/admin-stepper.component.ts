@@ -149,6 +149,7 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
     const selectedValue: UserInfo[] = this.selectedValue
     const arrForSend: DataForSend[] = []
     const arrForSendNormalized: NormalizedDataForSend[] = []
+    let changed: boolean = true
 
     for (let item of selectedValue) {
       const userObj: any = {}
@@ -176,7 +177,7 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
     if (this.buttonData === 'income') {
       for (let item of arrForSendNormalized) {
         this.dataService.setPageId(item.monthIndex)
-        this.dataService.addIncomeItem(this.form.value, item.userKey, item.monthKey, item.monthIndex)
+        this.dataService.addIncomeItem(this.form.value, item.userKey, item.monthKey, item.monthIndex, changed)
       }
     }
 
@@ -186,6 +187,8 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
         this.dataService.addExpenseItem(this.form.value, item.userKey, item.monthKey, item.monthIndex)
       }
     }
+
+
   }
 
   onBack() {

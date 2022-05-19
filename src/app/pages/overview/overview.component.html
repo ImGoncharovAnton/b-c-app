@@ -7,6 +7,7 @@
             class="months-item"
             *ngFor="let item of monthsArr; let i = index"
             [ngClass]="[item.monthId > monthNow + 1 ? 'locked' : '']">
+            <div *ngIf="changedDetected" class="change-message">admin made changes *</div>
             <mat-icon
               *ngIf="item.monthId > monthNow + 1"
               class="month-icon">lock

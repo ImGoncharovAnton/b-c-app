@@ -62,6 +62,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.dataService.setKeyEditExpenseItem(key)
     this.dataService.monthKeyId$.next(monthKey)
     this.dataService.setPageId(idMonth)
+    this.dataService.changedState$.next(true)
     this.dialog.open(MyCalcEditComponent, {data: 'expense'})
   }
 
@@ -70,6 +71,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.dataService.setKeyEditIncomeItem(key)
     this.dataService.monthKeyId$.next(monthKey)
     this.dataService.setPageId(idMonth)
+    this.dataService.changedState$.next(true)
     this.dialog.open(MyCalcEditComponent, {data: 'income'})
   }
 }
