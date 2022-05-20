@@ -15,7 +15,6 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   pageId: number;
   totalExpenses: number;
-  changedDetected: boolean = false;
 
   constructor(private dataService: DataService,
               private dialog: DialogService) {

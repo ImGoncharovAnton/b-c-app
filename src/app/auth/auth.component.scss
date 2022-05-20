@@ -25,3 +25,17 @@
   justify-content: space-between;
   gap: 1rem;
 }
+
+.alert-danger {
+  border: 1px solid red;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: lightcoral;
+  font-size: 1rem;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}

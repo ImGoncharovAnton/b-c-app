@@ -16,6 +16,9 @@
   border-radius: 3px;
   border: 1px solid #0f0f0f;
   background-color: #7dd688;
+  @media (max-width: 767.98px) {
+    width: 90%;
+  }
 
   h3 {
     margin: 0;
@@ -43,6 +46,7 @@
   flex-direction: column;
   position: relative;
   padding: 0.5rem 1rem;
+  align-items: center;
   justify-content: center;
   gap: 0.5rem;
   background-color: #b8d6bc;
@@ -80,6 +84,10 @@
       box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
       border-radius: 3px;
     }
+  }
+
+  @media (max-width: 767.98px) {
+    width: 90%;
   }
 }
 

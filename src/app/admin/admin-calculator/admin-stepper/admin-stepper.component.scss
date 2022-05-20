@@ -1,6 +1,10 @@
 
 .calc-stepper {
-  max-width: 550px;
+  width: 60vw;
+  max-width: 900px;
+  @media (max-width: 991.98px) {
+    width: 95vw;
+  }
 }
 
 .selected-users {

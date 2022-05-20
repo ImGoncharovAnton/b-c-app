@@ -15,7 +15,6 @@ export class IncomeListComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
   pageId: number;
   totalIncomes: number;
-  changedDetected: boolean = false;
 
   constructor(private dialog: DialogService,
               private dataService: DataService) {

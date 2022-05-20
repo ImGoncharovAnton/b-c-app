@@ -16,14 +16,21 @@
     border: 1px solid #0f0f0f;
     box-shadow: 0 4px 5px rgba(0, 0, 0, 0.8);
     border-radius: 5px;
+
+
+    @media (max-width: 767.98px) {
+      padding: 0.5rem 1rem;
+    }
+
+    &_content {
+      @media (max-width: 425px) {
+        padding: 0.3rem;
+      }
+    }
   }
 
   &__bottom {
   }
-}
-
-.middle-my-calc {
-  min-height: 20rem;
 }
 
 .btn-calc-page {
@@ -75,9 +82,12 @@
 }
 
 .middle-my-calc {
+  min-height: 20rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
 
   &__column {
     padding: 1rem;

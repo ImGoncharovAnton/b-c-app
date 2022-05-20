@@ -46,6 +46,12 @@
     margin: 0;
     font-size: 2rem;
     cursor: pointer;
+    @media (max-width: 767.98px) {
+      font-size: 1.5rem;
+    }
+    @media (max-width: 450px) {
+      padding: 0.8rem;
+    }
   }
 
   &:hover {
@@ -53,6 +59,12 @@
       display: block;
     }
   }
+
+  @media (max-width: 430px) {
+    gap: 0.5rem;
+    flex-direction: column;
+  }
+
 }
 
 .change-message {
@@ -79,6 +91,9 @@
 
 .month-icon {
   font-size: 2rem;
+  @media (max-width: 767.98px) {
+    font-size: 1.5rem;
+  }
 }
 
 .right-month-item {
@@ -104,6 +119,9 @@
   &__title {
     padding: 0.2rem;
     font-size: 1.3rem;
+    @media (max-width: 767.98px) {
+      font-size: 1rem;
+    }
   }
 
   &__value {
@@ -113,6 +131,9 @@
     font-size: 1rem;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+    @media (max-width: 767.98px) {
+      font-size: 0.8rem;
+    }
   }
 }
 

@@ -1,9 +1,11 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UserInfo} from "../../admin.component";
-import {Subject, takeUntil} from "rxjs";
+import {map, Observable, Subject, takeUntil} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {DataService} from "../../../shared/service/data.service";
-import {MatStepper} from "@angular/material/stepper";
+import {MatStepper, StepperOrientation} from "@angular/material/stepper";
+import {BreakpointObserver} from "@angular/cdk/layout";
+import {BudgetItem} from "../../../shared/model/budget-item.model";
 
 export interface DataForSend {
   userKey: string
@@ -14,6 +16,8 @@ export interface NormalizedDataForSend {
   userKey: string
   monthKey: string
   monthIndex: number
+  expenseItem?: BudgetItem
+  incomesItem?: BudgetItem
 }
 
 @Component({
@@ -23,6 +27,7 @@ export interface NormalizedDataForSend {
 })
 export class AdminStepperComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>()
+  stepperOrientation$: Observable<StepperOrientation>;
   selectedValue: UserInfo[]
   trueProperty: boolean = false
   usersArray: UserInfo[] = []
@@ -31,9 +36,14 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   buttonData: string
   showSteps: boolean
 
+
   @ViewChild(MatStepper) stepper: MatStepper;
 
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService,
+              private breakpointObserver: BreakpointObserver) {
+    this.stepperOrientation$ = breakpointObserver
+      .observe('(min-width: 500px)')
+      .pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
   }
 
   ngOnInit(): void {
@@ -189,7 +199,7 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
     if (this.buttonData === 'expense') {
       for (let item of arrForSendNormalized) {
         this.dataService.setPageId(item.monthIndex)
-        this.dataService.addExpenseItem(this.form.value, item.userKey, item.monthKey, item.monthIndex)
+        this.dataService.addExpenseItem(this.form.value, item.userKey, item.monthKey, item.monthIndex, changed)
       }
     }
     alert('Successfully added!')

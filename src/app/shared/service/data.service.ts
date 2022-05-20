@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {MonthItem} from "../model/month-item.model";
 import {BehaviorSubject, map, Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
+import {DataForAdminPanel} from "../../admin/admin.component";
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,7 @@ export class DataService {
   monthKeyId$ = new BehaviorSubject<string | null>(null)
   changedState$ = new BehaviorSubject<boolean>(false)
   showSteps$ = new BehaviorSubject<boolean>(false)
+  userChanged$ = new BehaviorSubject<DataForAdminPanel | null>(null)
   pageId: number
   idEditIncomeItem: number
   idEditExpenseItem: number
@@ -56,27 +58,6 @@ export class DataService {
   ngOnDestroy(): void {
     this.destroy$.next(true);
   }
-
-  // test
-
-  createPost(data: any) {
-    return this.http.post(this.baseUrl + `test.json`, data)
-  }
-
-  fetchPost() {
-    return this.http.get<any>(this.baseUrl + `test.json`).pipe(
-      map(response => {
-        let posts = []
-        for (let key in response) {
-          posts.push({...response[key], key})
-        }
-        return posts
-      })
-    )
-  }
-
-  // end test
-
   _getLocalStoreData() {
     let jsonData = localStorage.getItem('MonthKey')
     return jsonData !== null ? JSON.parse(jsonData) : []
@@ -106,11 +87,10 @@ export class DataService {
         }
         this.itemsChangedExp$.next(expensesArr)
         this.totalCounterExp$.next(totalExpenses)
+
         this._updateExpenseValue(totalExpenses, monthIndex, userId, monthId)
       })
   }
-
-
   // Create userData in Database
   storeUser(username: string, email: string, userId: string) {
     const lockData = {
@@ -160,6 +140,7 @@ export class DataService {
     }
     this.http.post(this.baseUrl + `users/${userId}/months/${key}/expensesArr.json`, expenseItem).subscribe(data => {
       this._fetchNormalizedExpensesArr(userKey, monthKey, monthIndex)
+      // Сюда прокинуть параметром expenseItem, чтобы потом работать с полным объектом, который собирается в _updateExpenseValue
     })
   }
 
@@ -189,14 +170,21 @@ export class DataService {
       key = this.monthKeyId
       userId = this.userKeyId
     }
+    let techObjInc: any = {}
+    techObjInc.userKey = userId
+    techObjInc.monthKey = key
+    techObjInc.monthIndex = pageId
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/income.json`, value)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.fetchUserMonths(userId)
           .subscribe(months => {
-            let month = months[pageId]
+              let month = months[pageId]
+              techObjInc.expense = month.expense
+              techObjInc.income = month.income
               totalBudget = month.income - month.expense
               this.totalBudgetCounter$.next(totalBudget)
+              this.userChanged$.next(techObjInc)
             }
           )
       })
@@ -228,14 +216,23 @@ export class DataService {
       userId = userKey
       key = monthKey
     }
+
+    let techObjExp: any = {}
+    techObjExp.userKey = userId
+    techObjExp.monthKey = key
+    techObjExp.monthIndex = pageId
+
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/expense.json`, value)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.fetchUserMonths(userId)
           .subscribe(months => {
               let month = months[pageId]
+              techObjExp.expense = month.expense
+              techObjExp.income = month.income
               totalBudget = month.income - month.expense
               this.totalBudgetCounter$.next(totalBudget)
+              this.userChanged$.next(techObjExp)
             }
           )
       })

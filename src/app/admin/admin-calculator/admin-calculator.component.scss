@@ -10,7 +10,8 @@
 .calc-container {
   align-self: baseline;
   font-family: 'Audiowide', cursive;
-  width: 300px;
+  min-width: 290px;
+  max-width: 300px;
   border: 2px solid white;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -153,4 +154,10 @@ button {
 
 .stepper-container {
   //outline: 1px solid coral;
+}
+
+@media (max-width: 991.98px) {
+  .calc-page {
+    flex-direction: column;
+  }
 }

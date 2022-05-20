@@ -64,16 +64,13 @@
         </tr>
       </table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page of users"></mat-paginator>
     </div>
 
 
     <app-user-info *ngIf="isOpenTab" [username]="username"></app-user-info>
-
-    <!--<ng-template matTabContent>-->
-    <!--            Content 1-->
-    <!--            <div class="block-test"></div>-->
-    <!--          </ng-template>-->
   </div>
 </div>
 

@@ -1,5 +1,7 @@
 <div *ngIf="showSteps" class="calc-stepper">
-  <mat-stepper orientation="vertical" linear #stepper>
+  <mat-stepper
+    [orientation]="(stepperOrientation$ | async)!"
+    linear #stepper>
     <mat-step [completed]="false" disabled="true">
       <ng-template matStepLabel>Step 1</ng-template>
       <ng-template matStepContent>
@@ -146,7 +148,6 @@
         </form>
         <div class="step-nav-buttons">
           <button mat-button matStepperPrevious (click)="onBack()">Back</button>
-          <button mat-raised-button (click)="stepper.reset()">Reset</button>
         </div>
       </div>
     </mat-step>

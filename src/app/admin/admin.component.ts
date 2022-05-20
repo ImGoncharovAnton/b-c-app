@@ -5,6 +5,7 @@ import {MatSort} from "@angular/material/sort";
 import {DataService} from '../shared/service/data.service';
 import {Subject, takeUntil} from "rxjs";
 import {MonthItem} from "../shared/model/month-item.model";
+import {BudgetItem} from "../shared/model/budget-item.model";
 
 export interface UserInfo {
   username: string
@@ -16,6 +17,16 @@ export interface UserInfo {
   expense?: number
   beautyMonths?: any
   editedMonths?: any;
+}
+
+export interface DataForAdminPanel {
+  userKey: string
+  monthKey: string
+  monthIndex: number
+  income?: number
+  expense?: number
+  incomeItem?: BudgetItem
+  expenseItem?: BudgetItem
 }
 
 @Component({
@@ -48,7 +59,6 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getAllUsers()
-
   }
 
   ngOnDestroy() {
@@ -60,31 +70,46 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          let dataMonths: MonthItem[] = []
-          let income: number
-          let expense: number
+          this.dataService.userChanged$.subscribe(techData => {
+            console.log('orig res', res)
+            console.log('techData from userChanged$', techData)
+            let dataMonths: MonthItem[] = []
+            let income: number
+            let expense: number
 
-          res.map(data => {
-            if (data.months) {
-              dataMonths = Object.values(data.months)
-              data.months = dataMonths
-              income = dataMonths.map((p: MonthItem) => {
-                return p.income
-              }).reduce((a, b) => {
-                return a + b;
-              })
-              expense = dataMonths.map((p: MonthItem) => {
-                return p.expense
-              }).reduce((a, b) => {
-                return a + b;
-              })
-              data.expense = expense
-              data.income = income
-            }
+            res.map(data => {
+              if (data.months) {
+                dataMonths = Object.values(data.months)
+                if (techData && data.key === techData.userKey) {
+                  console.log('after if res.map data', data)
+                  for (let key in data.months) {
+                    if (key === techData.monthKey) {
+                      console.log(data.months[key])
+                      data.months[key].income = techData.income
+                      data.months[key].expense = techData.expense
+                    }
+                  }
+                }
+                income = dataMonths.map((p: MonthItem) => {
+                  return p.income
+                }).reduce((a, b) => {
+                  return a + b;
+                })
+                expense = dataMonths.map((p: MonthItem) => {
+                  return p.expense
+                }).reduce((a, b) => {
+                  return a + b;
+                })
+                data.expense = expense
+                data.income = income
+              }
+            })
+            this.dataSource = new MatTableDataSource<any>(res)
+            this.dataSource.paginator = this.paginator
+            this.dataSource.sort = this.sort
+            console.log('finished res', res)
           })
-          this.dataSource = new MatTableDataSource<any>(res)
-          this.dataSource.paginator = this.paginator
-          this.dataSource.sort = this.sort
+
         },
         error: (err) => {
           alert('error while fetching the records')
