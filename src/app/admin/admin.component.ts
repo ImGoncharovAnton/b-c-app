@@ -93,16 +93,16 @@ export class AdminComponent implements OnInit, OnDestroy {
                     return p.income
                   }).reduce((a, b) => {
                     return a + b;
-                })
-                expense = dataMonths.map((p: MonthItem) => {
-                  return p.expense
-                }).reduce((a, b) => {
-                  return a + b;
-                })
-                data.expense = expense
-                data.income = income
-              }
-            })
+                  })
+                  expense = dataMonths.map((p: MonthItem) => {
+                    return p.expense
+                  }).reduce((a, b) => {
+                    return a + b;
+                  })
+                  data.expense = expense
+                  data.income = income
+                }
+              })
             this.dataSource = new MatTableDataSource<any>(res)
             this.dataSource.paginator = this.paginator
             this.dataSource.sort = this.sort

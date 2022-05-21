@@ -165,11 +165,11 @@ export class DataService {
       .subscribe(data => {
         this.fetchUserMonths(userId)
           .subscribe(months => {
-              let month = months[pageId]
-              techObjInc.expense = month.expense
-              techObjInc.income = month.income
-              totalBudget = month.income - month.expense
-              this.totalBudgetCounter$.next(totalBudget)
+            let month = months[pageId]
+            techObjInc.expense = month.expense
+            techObjInc.income = month.income
+            totalBudget = month.income - month.expense
+            this.totalBudgetCounter$.next(totalBudget)
               this.userChanged$.next(techObjInc)
             }
           )
@@ -216,10 +216,10 @@ export class DataService {
       .subscribe(data => {
         this.fetchUserMonths(userId)
           .subscribe(months => {
-              let month = months[pageId]
-              techObjExp.expense = month.expense
-              techObjExp.income = month.income
-              totalBudget = month.income - month.expense
+            let month = months[pageId]
+            techObjExp.expense = month.expense
+            techObjExp.income = month.income
+            totalBudget = month.income - month.expense
               this.totalBudgetCounter$.next(totalBudget)
               this.userChanged$.next(techObjExp)
             }
