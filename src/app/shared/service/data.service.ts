@@ -34,22 +34,6 @@ export class DataService {
   userName: string
   month: MonthItem
   userId: string
-  monthStoreExample = {
-    '-Nslksldf-sdfkkk;l': {
-      monthId: 4,
-      month: 'May',
-      incomesArr: [
-        {amount: 1, description: 'qwe'},
-        {amount: 2, description: 'ewq'}
-      ],
-      income: 30,
-      expensesArr: [
-        {amount: 3, description: 'rew'},
-        {amount: 4, description: 'fasd'}
-      ],
-      expense: 10
-    }
-  }
 
   constructor(private http: HttpClient) {
     console.log('DataService Works!')
@@ -63,7 +47,7 @@ export class DataService {
     return jsonData !== null ? JSON.parse(jsonData) : []
   }
 
-  _fetchNormalizedIncomesArr(userId?: string | null, monthId?: string | null, monthIndex?: number) {
+  _fetchNormalizedIncomesArr(userId?: string | null, monthId?: string | null, monthIndex?: number, incomeItem?: BudgetItem) {
     let totalIncomes: number = 0;
     this.fetchNormalizedIncomesArr(userId, monthId)
       .pipe(takeUntil(this.destroy$))
@@ -73,11 +57,11 @@ export class DataService {
         }
         this.itemsChangedInc$.next(incomesArr)
         this.totalCounterInc$.next(totalIncomes)
-        this._updateIncomeValue(totalIncomes, monthIndex, userId, monthId)
+        this._updateIncomeValue(totalIncomes, monthIndex, userId, monthId, incomeItem)
       })
   }
 
-  _fetchNormalizedExpensesArr(userId?: string | null, monthId?: string | null, monthIndex?: number) {
+  _fetchNormalizedExpensesArr(userId?: string | null, monthId?: string | null, monthIndex?: number, expenseItem?: BudgetItem) {
     let totalExpenses: number = 0;
     this.fetchNormalizedExpensesArr(userId, monthId)
       .pipe(takeUntil(this.destroy$))
@@ -88,7 +72,7 @@ export class DataService {
         this.itemsChangedExp$.next(expensesArr)
         this.totalCounterExp$.next(totalExpenses)
 
-        this._updateExpenseValue(totalExpenses, monthIndex, userId, monthId)
+        this._updateExpenseValue(totalExpenses, monthIndex, userId, monthId, expenseItem)
       })
   }
   // Create userData in Database
@@ -126,7 +110,7 @@ export class DataService {
       key = monthKey
     }
     this.http.post(this.baseUrl + `users/${userId}/months/${key}/incomesArr.json`, incomeItem).subscribe(data => {
-      this._fetchNormalizedIncomesArr(userKey, monthKey, monthIndex)
+      this._fetchNormalizedIncomesArr(userKey, monthKey, monthIndex, incomeItem)
     })
   }
 
@@ -139,12 +123,11 @@ export class DataService {
       key = monthKey
     }
     this.http.post(this.baseUrl + `users/${userId}/months/${key}/expensesArr.json`, expenseItem).subscribe(data => {
-      this._fetchNormalizedExpensesArr(userKey, monthKey, monthIndex)
-      // Сюда прокинуть параметром expenseItem, чтобы потом работать с полным объектом, который собирается в _updateExpenseValue
+      this._fetchNormalizedExpensesArr(userKey, monthKey, monthIndex, expenseItem)
     })
   }
 
-  _updateIncomeValue(value: number, monthIndex?: number, userKey?: string | null, monthKey?: string | null) {
+  _updateIncomeValue(value: number, monthIndex?: number, userKey?: string | null, monthKey?: string | null, incomeItem?: BudgetItem) {
     let pageId: number = this.pageId
     let userId: string = this.setUserId()
     let key = this._getLocalStoreData()
@@ -174,6 +157,9 @@ export class DataService {
     techObjInc.userKey = userId
     techObjInc.monthKey = key
     techObjInc.monthIndex = pageId
+    if (incomeItem) {
+      techObjInc.incomeItem = incomeItem
+    }
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/income.json`, value)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -190,7 +176,7 @@ export class DataService {
       })
   }
 
-  _updateExpenseValue(value: number, monthIndex?: number, userKey?: string | null, monthKey?: string | null) {
+  _updateExpenseValue(value: number, monthIndex?: number, userKey?: string | null, monthKey?: string | null, expenseItem?: BudgetItem) {
     let totalBudget: number;
     let key = this._getLocalStoreData()
     let userId: string = this.setUserId()
@@ -221,6 +207,9 @@ export class DataService {
     techObjExp.userKey = userId
     techObjExp.monthKey = key
     techObjExp.monthIndex = pageId
+    if (expenseItem) {
+      techObjExp.expenseItem = expenseItem
+    }
 
     this.http.put(this.baseUrl + `users/${userId}/months/${key}/expense.json`, value)
       .pipe(takeUntil(this.destroy$))
@@ -324,19 +313,6 @@ export class DataService {
       })
   }
 
-
-  // get userData by key from database
-  fetchUser() {
-    const userId: string = this.setUserId()
-    return this.http.get<any>(this.baseUrl + `users/${userId}.json`)
-      .pipe(map(resData => {
-          return {
-            ...resData,
-            months: resData.months ? resData.months : []
-          }
-        }
-      ))
-  }
 
   // get userData by key months from database
   fetchUserMonths(idUser?: string | null) {

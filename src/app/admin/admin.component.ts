@@ -70,30 +70,29 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          this.dataService.userChanged$.subscribe(techData => {
-            console.log('orig res', res)
-            console.log('techData from userChanged$', techData)
-            let dataMonths: MonthItem[] = []
-            let income: number
-            let expense: number
+          this.dataService.userChanged$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(techData => {
+              let dataMonths: MonthItem[] = []
+              let income: number
+              let expense: number
 
-            res.map(data => {
-              if (data.months) {
-                dataMonths = Object.values(data.months)
-                if (techData && data.key === techData.userKey) {
-                  console.log('after if res.map data', data)
-                  for (let key in data.months) {
-                    if (key === techData.monthKey) {
-                      console.log(data.months[key])
-                      data.months[key].income = techData.income
-                      data.months[key].expense = techData.expense
+              res.map(data => {
+                if (data.months) {
+                  dataMonths = Object.values(data.months)
+                  if (techData && data.key === techData.userKey) {
+                    for (let key in data.months) {
+                      if (key === techData.monthKey) {
+                        console.log(data.months[key])
+                        data.months[key].income = techData.income
+                        data.months[key].expense = techData.expense
+                      }
                     }
                   }
-                }
-                income = dataMonths.map((p: MonthItem) => {
-                  return p.income
-                }).reduce((a, b) => {
-                  return a + b;
+                  income = dataMonths.map((p: MonthItem) => {
+                    return p.income
+                  }).reduce((a, b) => {
+                    return a + b;
                 })
                 expense = dataMonths.map((p: MonthItem) => {
                   return p.expense
@@ -107,9 +106,7 @@ export class AdminComponent implements OnInit, OnDestroy {
             this.dataSource = new MatTableDataSource<any>(res)
             this.dataSource.paginator = this.paginator
             this.dataSource.sort = this.sort
-            console.log('finished res', res)
           })
-
         },
         error: (err) => {
           alert('error while fetching the records')
@@ -127,7 +124,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   onOpenUser(row: UserInfo) {
-    console.log('ROW | ON_OPEN_USER', row)
     this.username = row.username
     this.isOpenTab = true
     this.dataService.userKey$.next(row.key)

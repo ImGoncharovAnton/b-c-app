@@ -24,7 +24,6 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.dataService.userKey$
       .pipe(takeUntil(this.destroy$))
       .subscribe(key => {
-        this.monthNameArr = [];
         this.userKey = key
         this.fetchUserMonths(this.userKey)
       })
@@ -35,26 +34,41 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   }
 
   fetchUserMonths(idUser: string | null) {
-    this.dataService.fetchUserMonths(idUser)
+    this.dataService.userChanged$
       .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: data => {
-          if (data) {
-            let incomesArr: [string, unknown][] = []
-            let expensesArr: [string, unknown][] = []
-            data.map(item => {
-              expensesArr = Object.entries(item.expensesArr)
-              incomesArr = Object.entries(item.incomesArr)
-              item.incomesArr = incomesArr
-              item.expensesArr = expensesArr
-              this.monthNameArr.push(item)
+      .subscribe(techData => {
+        if (techData && techData.userKey === idUser) {
+          this.dataService.fetchUserMonths(idUser)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(data => {
+              this._transformData(data)
             })
-          }
-        },
-        error: (err) => {
-          alert('error fetching userdata')
+        } else {
+          this.dataService.fetchUserMonths(idUser)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: data => {
+                this._transformData(data)
+              },
+              error: (err) => {
+                alert('error fetching userdata')
+              }
+            })
         }
       })
+  }
+
+  _transformData(data: any[]) {
+    this.monthNameArr = [];
+    let incomesArr: [string, unknown][] = []
+    let expensesArr: [string, unknown][] = []
+    data.map(item => {
+      expensesArr = Object.entries(item.expensesArr)
+      incomesArr = Object.entries(item.incomesArr)
+      item.incomesArr = incomesArr
+      item.expensesArr = expensesArr
+      this.monthNameArr.push(item)
+    })
   }
 
   onEditItemExpense(index: number, key: string, monthKey: string, idMonth: number) {
