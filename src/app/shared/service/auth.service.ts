@@ -36,25 +36,27 @@ export class AuthService {
   }
 
   public refreshToken(): Observable<any> {
-   return this.http.post<ResponseAuthData>(this._authPath + 'refreshtoken', {
-     token: this.getToken().token,
-     refreshToken: this.getToken().refreshToken}).pipe(
-       tap(response => {
-         console.log(response)
-         this.handleAuthentication1(
-           response.token,
-           response.refreshToken
-         )
-       })
-   )
- }
+    return this.http.post<ResponseAuthData>(this._authPath + 'refreshtoken', {
+      token: this.getToken().token,
+      refreshToken: this.getToken().refreshToken
+    }).pipe(
+      tap(response => {
+        console.log(response)
+        this.handleAuthentication1(
+          response.token,
+          response.refreshToken
+        )
+      })
+    )
+  }
 
   public getToken() {
     let jsonData = localStorage.getItem('userData')
     let obj = jsonData !== null ? JSON.parse(jsonData) : []
     return {
       token: obj.token,
-      refreshToken: obj.refreshToken}
+      refreshToken: obj.refreshToken
+    }
   }
 
   public register1(data: any) {
@@ -68,24 +70,24 @@ export class AuthService {
   public login1(email: string, password: string) {
     return this.http.post<ResponseAuthData>(this._authPath + 'login', {email: email, password: password})
       .pipe(tap(resData => {
-      this.handleAuthentication1(
-        resData.token,
-        resData.refreshToken
-      )
-    }))
+        this.handleAuthentication1(
+          resData.token,
+          resData.refreshToken
+        )
+      }))
   }
 
-  handleAuthentication1(token: string, refreshToken: string){
+  handleAuthentication1(token: string, refreshToken: string) {
     const decodedToken = JSON.parse(atob(token.split('.')[1]))
     console.log(decodedToken)
     const userId: string = decodedToken.id
     const role: string = decodedToken.role
     const dif: number = decodedToken.exp - decodedToken.iat
-    const expireDate: Date = new Date(decodedToken.exp*1000); // Tue Jun 07 2022 15:58:25 GMT+0300 (Msc)
-    console.log(dif*1000)
+    const expireDate: Date = new Date(decodedToken.exp * 1000); // Tue Jun 07 2022 15:58:25 GMT+0300 (Msc)
+    console.log(dif * 1000)
     console.log(expireDate)
 
-    const user = new User1 (
+    const user = new User1(
       userId,
       role,
       refreshToken,
