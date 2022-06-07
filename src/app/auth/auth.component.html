@@ -16,11 +16,11 @@
                      type="text"
                      placeholder="username"
                      ngModel
-                     name="user"
+                     name="username"
                      required
-                     #user="ngModel">
-              <mat-error *ngIf="user.touched && !user.valid">
-                <span *ngIf="user.errors?.['required']">Username is required</span>
+                     #username="ngModel">
+              <mat-error *ngIf="username.touched && !username.valid">
+                <span *ngIf="username.errors?.['required']">Username is required</span>
               </mat-error>
             </mat-form-field>
 

@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, catchError, tap} from "rxjs";
-import {User} from "../model/user.model";
+import {BehaviorSubject, catchError, Observable, tap} from "rxjs";
+import {User, User1} from "../model/user.model";
 import {Router} from "@angular/router";
+import {environment} from "../../../environments/environment";
 
 export interface AuthResponseData {
   idToken: string,
@@ -13,10 +14,18 @@ export interface AuthResponseData {
   registered?: boolean;
 }
 
+export interface ResponseAuthData {
+  errors: string[] | null,
+  refreshToken: string,
+  success: boolean,
+  token: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private authPath: string = environment.apiUrl // "https://localhost:7206/api/authmanagement/"
   userName: string;
   userSub$ = new BehaviorSubject<any>(null);
   private tokenExpirationTimer: any;
@@ -24,6 +33,54 @@ export class AuthService {
   constructor(private http: HttpClient,
               private router: Router) {
     console.log('AuthService Works!')
+  }
+
+  public getToken(): string {
+    let jsonData = localStorage.getItem('userData')
+    let obj = jsonData !== null ? JSON.parse(jsonData) : []
+    return obj.token
+  }
+
+  public register1(data: any) {
+    return this.http.post<ResponseAuthData>(this.authPath + 'register', data).pipe(tap(resData => {
+      this.handleAuthentication1(
+        resData.token,
+        resData.refreshToken)
+    }))
+  }
+
+  public login1(email: string, password: string) {
+    return this.http.post<ResponseAuthData>(this.authPath + 'login', {email: email, password: password})
+      .pipe(tap(resData => {
+      this.handleAuthentication1(
+        resData.token,
+        resData.refreshToken
+      )
+    }))
+  }
+
+  handleAuthentication1(token: string, refreshToken: string){
+    const decodedToken = JSON.parse(atob(token.split('.')[1]))
+    console.log(decodedToken)
+    const userId: string = decodedToken.id
+    const role: string = decodedToken.role
+    const dif: number = decodedToken.exp - decodedToken.iat
+    const expireDate: Date = new Date(decodedToken.exp * 1000); // Tue Jun 07 2022 15:58:25 GMT+0300 (Msc)
+    console.log(dif*1000)
+    console.log(expireDate)
+
+    const user = new User1 (
+      userId,
+      role,
+      refreshToken,
+      token,
+      expireDate
+    )
+
+    // this.userSub$.next(user)
+    // this.autoLogout(dif*10000)
+    localStorage.setItem('userData', JSON.stringify(user))
+    console.log(this.getToken())
   }
 
   signUp(email: string, password: string) {

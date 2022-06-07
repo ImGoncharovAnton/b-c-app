@@ -20,7 +20,7 @@ export class RoleGuard implements CanActivate {
     return this.authService.userSub$.pipe(
       take(1),
       map(user => {
-        if (user.role === 'immortal') {
+        if (user.role === 'Immortal') {
           return true
         } else {
           alert('Access is denied! We need an admin role')

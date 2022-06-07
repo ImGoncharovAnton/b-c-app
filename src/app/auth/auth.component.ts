@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {AuthResponseData, AuthService} from '../shared/service/auth.service';
+import {AuthResponseData, AuthService, ResponseAuthData} from '../shared/service/auth.service';
 import {NgForm, NgModel} from "@angular/forms";
 import {Observable} from "rxjs";
 import {DataService} from '../shared/service/data.service';
@@ -32,19 +32,21 @@ export class AuthComponent implements OnInit {
     if (!form.valid) {
       return
     }
-    const username = form.value.user;
+    const username = form.value.username;
     const email = form.value.email;
     const password = form.value.password;
     // Checking for word "admin" at registration
     const result = email.match(/admin/)
 
-    let authObs: Observable<AuthResponseData>
+    // let authObs: Observable<AuthResponseData>
+    let authObs: Observable<ResponseAuthData>
 
     this.isLoading = true;
     this.error = '';
 
     if (this.isLoginMode) {
-      authObs = this.authService.login(email, password)
+      authObs = this.authService.login1(email, password)
+      // authObs = this.authService.login(email, password)
     } else {
       // Checking for word "admin" at registration
       if (result) {
@@ -52,24 +54,27 @@ export class AuthComponent implements OnInit {
         form.reset()
         return alert('E-mail with the word "admin" cannot be used, please use another email')
       } else {
-        authObs = this.authService.signUp(email, password)
+        authObs = this.authService.register1(form.value);
+        // authObs = this.authService.signUp(email, password)
       }
     }
 
     authObs.subscribe({
       next: (response) => {
-        if (!this.isLoginMode) {
-          console.log('register true')
-          this.dataService.storeUser(username, response.email, response.localId)
-        } else {
-          console.log('login true')
-          this.dataService.getUserId(response.localId)
-        }
-        this.isLoading = false;
-        this.router.navigate(['/overview-page']);
+        console.log(response)
+        // if (!this.isLoginMode) {
+        //   console.log('register true')
+        //   this.dataService.storeUser(username, response.email, response.localId)
+        // } else {
+        //   console.log('login true')
+        //   this.dataService.getUserId(response.localId)
+        // }
+        // this.isLoading = false;
+        // this.router.navigate(['/overview-page']);
       },
       error: (errorMessage) => {
-        this.error = errorMessage
+        console.log(errorMessage)
+        this.error = errorMessage.error.errors
         this.isLoading = false
       },
       complete: () => console.log('authService subscribe observable complete')
