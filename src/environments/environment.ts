@@ -4,7 +4,10 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://localhost:7206/api/authmanagement/"
+  apiAuthUrl: "https://localhost:7206/api/authmanagement/",
+  apiItemsUrl: "https://localhost:7206/api/items/",
+  apiMonthsUrl: "https://localhost:7206/api/months/"
+
 };
 
 /*

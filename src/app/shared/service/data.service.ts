@@ -4,12 +4,15 @@ import {MonthItem} from "../model/month-item.model";
 import {BehaviorSubject, map, Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
 import {DataForAdminPanel} from "../../admin/admin.component";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private _itemsPath: string = environment.apiItemsUrl // "https://localhost:7206/api/items/"
+  private _monthsPath: string = environment.apiMonthsUrl // "https://localhost:7206/api/months/"
+  private destroy$: Subject<boolean> = new Subject<boolean>()
   baseUrl: string = 'https://budget-calc-a-default-rtdb.europe-west1.firebasedatabase.app/'
   monthsChanged$ = new Subject<MonthItem[]>()
   totalBudgetCounter$ = new Subject<number>()
@@ -42,6 +45,11 @@ export class DataService {
   ngOnDestroy(): void {
     this.destroy$.next(true);
   }
+
+  getItems() {
+    return this.http.get(this._itemsPath + 'GetItems')
+  }
+
   _getLocalStoreData() {
     let jsonData = localStorage.getItem('MonthKey')
     return jsonData !== null ? JSON.parse(jsonData) : []
