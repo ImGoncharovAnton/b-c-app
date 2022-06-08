@@ -2,6 +2,8 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MonthItem} from "../../../shared/model/month-item.model";
 import {DataService} from "../../../shared/service/data.service";
 import {Subject, takeUntil} from "rxjs";
+import { ResponseMonth } from 'src/app/shared/model/response-month.model';
+import {RequestMonth} from "../../../shared/model/request-month.model";
 
 @Component({
   selector: 'app-overview-create',
@@ -9,9 +11,15 @@ import {Subject, takeUntil} from "rxjs";
   styleUrls: ['./overview-create.component.scss']
 })
 export class OverviewCreateComponent implements OnInit, OnDestroy {
-  private monthDate: string = new Date().toLocaleString('en', {month: "long"})
-  months: MonthItem[]
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+
+  months: ResponseMonth[]
+  private destroy$: Subject<boolean> = new Subject<boolean>()
+
+
+  // ===============old===========================================================
+  //   private monthDate: string = new Date().toLocaleString('en', {month: "long"})
+  // months: MonthItem[]
+
 
   constructor(private dataService: DataService) {
   }
@@ -21,46 +29,55 @@ export class OverviewCreateComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
+    this.destroy$.next(true)
   }
 
   private _getDataMonths() {
-    this.dataService.fetchUserMonths()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(months => {
-        this.months = months
-        this.dataService.monthsChanged$.next(months)
-      })
-
+   this.dataService.getUserMonths()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(months => {
+          this.months = months
+        })
   }
 
   onCreate() {
-    const monthLocalizedString = function (month: number, locale: string) {
-      return new Date(new Date().getFullYear(), month).toLocaleString(locale, {month: "long"});
-    };
-    let monthsArr = this.months;
+    const yearNow = new Date().getFullYear()
+    let monthsArr = this.months
 
-    console.log('this.months', this.months)
+    console.log('monthsArr', monthsArr)
+
+    // Добавить проверку на год и номер месяца больше 12
 
     if (monthsArr.length > 0) {
       console.log('not empty monthsArr')
       let prevMonth = monthsArr[monthsArr.length - 1];
-      let prevMonthId = prevMonth.monthId
-      const newMonthItem = new MonthItem(prevMonthId + 1, monthLocalizedString(prevMonthId + 1, 'en'), 0, 0, [], []);
+      const userId = this.dataService.getLocalUserId()
+      if (userId) {
+        const newMonthItem = new RequestMonth(prevMonth.monthNum + 1, yearNow, userId);
+        this.dataService.addUserMonth(newMonthItem)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((res: any) => {
+            this._getDataMonths()
+            this.dataService.monthsChanged1$.next(res)
+          })
 
-      this.dataService.addUserMonths(newMonthItem)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((data) => {
-          this._getDataMonths()
-        })
+      }
+
+
+
+      // this.dataService.addUserMonths(newMonthItem)
+      //   .pipe(takeUntil(this.destroy$))
+      //   .subscribe((data) => {
+      //     this._getDataMonths()
+      //   })
     } else {
       console.log('empty monthsArr')
-      const newMonthItem = new MonthItem(new Date().getMonth(), this.monthDate, 0, 0, [], [])
-      this.dataService.addUserMonths(newMonthItem)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((data) => {
-          this._getDataMonths()
-        })
+      // const newMonthItem = new MonthItem(new Date().getMonth(), this.monthDate, 0, 0, [], [])
+      // this.dataService.addUserMonths(newMonthItem)
+      //   .pipe(takeUntil(this.destroy$))
+      //   .subscribe((data) => {
+      //     this._getDataMonths()
+      //   })
     }
   }
 

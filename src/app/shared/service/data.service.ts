@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MonthItem} from "../model/month-item.model";
-import {BehaviorSubject, map, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, map, Observable, Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
 import {DataForAdminPanel} from "../../admin/admin.component";
 import {environment} from "../../../environments/environment";
@@ -16,6 +16,8 @@ export class DataService {
   private _monthsPath: string = environment.apiMonthsUrl // "https://localhost:7206/api/months/"
   private destroy$: Subject<boolean> = new Subject<boolean>()
   userId1: string
+  // monthsChanged1$ = new Subject<ResponseMonth[]>()
+  monthsChanged1$ = new BehaviorSubject<ResponseMonth | null>(null)
 
   ////////////// == old version =======================================
 
@@ -59,12 +61,12 @@ export class DataService {
   }
 
   getUserMonths() {
-    let userId: string = this._getUserId();
+    let userId: string = this.getLocalUserId();
     // return this.http.get<any>(this._monthsPath + 'getMonthForUser/a00c441e-59b0-4162-a1d7-597d45772a53')
     return this.http.get<ResponseMonth[]>(this._monthsPath + 'getMonthForUser/' + userId)
   }
 
-  _getUserId() {
+  getLocalUserId() {
     let jsonData = localStorage.getItem('userData')
     const userData = jsonData !== null ? JSON.parse(jsonData) : []
     return userData.userId
@@ -74,7 +76,7 @@ export class DataService {
     return this.http.post(this._monthsPath + 'createMonth', month)
   }
 
-  removeMonth(id: number) {
+  deleteUserMonth(id: number) {
     return this.http.delete(this._monthsPath + 'deleteMonth/' + id)
   }
 
@@ -425,9 +427,9 @@ export class DataService {
   }
 
   // get localId from auth service
-  getUserId(id: string) {
-    this.userId = id
-  }
+  // getUserId(id: string) {
+  //   this.userId = id
+  // }
 
   // set userId from local storage and return value
   setUserId() {

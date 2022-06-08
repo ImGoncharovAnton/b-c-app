@@ -85,6 +85,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.monthNow = new Date().getMonth();
   }
 
+  // monthsChanged1$ перекинуть внутрь, и скорее всего он будет принимать в себя один месяц, а не массив
+
   // -------------------old------------------------
 
   // private _getDataMonths() {
@@ -141,6 +143,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
     //   }
     // });
     //
+    // возможно получится тут просто передать в некст месяц,
+    // и потом в overview сравнивать месяц и удалять его из массива на рендер
+
+
     // dialogRef.afterClosed()
     //   .subscribe((result) => {
     //     if (result === true) {

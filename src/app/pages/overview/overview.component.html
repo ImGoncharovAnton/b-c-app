@@ -30,7 +30,7 @@
                 <h3 class="right-month-item__title">Expense</h3>
                 <p
                   class="right-month-item__value"
-                  [ngClass]="[item.income>=item.expense ? 'green' : 'red']">
+                  [ngClass]="[item.income >= item.expense ? 'green' : 'red']">
                   {{item.expense}}
                 </p>
               </div>
@@ -42,7 +42,7 @@
           </li>
 
         </ng-container>
-<!--        <app-overview-create></app-overview-create>-->
+        <app-overview-create></app-overview-create>
       </ul>
     </div>
   </div>
