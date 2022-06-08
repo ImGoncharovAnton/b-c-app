@@ -3,9 +3,7 @@ import {MonthItem} from "../../shared/model/month-item.model";
 import {Subject, takeUntil} from 'rxjs';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
-import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {DataService} from "../../shared/service/data.service";
-import {BudgetItem} from 'src/app/shared/model/budget-item.model';
 import {ResponseMonth} from "../../shared/model/response-month.model";
 import {ResponseItem} from "../../shared/model/response-item.model";
 

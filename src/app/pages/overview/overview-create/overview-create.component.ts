@@ -1,8 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MonthItem} from "../../../shared/model/month-item.model";
 import {DataService} from "../../../shared/service/data.service";
 import {Subject, takeUntil} from "rxjs";
-import { ResponseMonth } from 'src/app/shared/model/response-month.model';
+import {ResponseMonth} from 'src/app/shared/model/response-month.model';
 import {RequestMonth} from "../../../shared/model/request-month.model";
 
 @Component({
@@ -33,11 +32,11 @@ export class OverviewCreateComponent implements OnInit, OnDestroy {
   }
 
   private _getDataMonths() {
-   this.dataService.getUserMonths()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(months => {
-          this.months = months
-        })
+    this.dataService.getUserMonths()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(months => {
+        this.months = months
+      })
   }
 
   onCreate() {
@@ -62,7 +61,6 @@ export class OverviewCreateComponent implements OnInit, OnDestroy {
           })
 
       }
-
 
 
       // this.dataService.addUserMonths(newMonthItem)

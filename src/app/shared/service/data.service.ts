@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {MonthItem} from "../model/month-item.model";
-import {BehaviorSubject, map, Observable, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, map, Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
 import {DataForAdminPanel} from "../../admin/admin.component";
 import {environment} from "../../../environments/environment";
