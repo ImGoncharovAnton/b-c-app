@@ -1,18 +1,18 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, catchError, Observable, tap} from "rxjs";
-import {User, User1} from "../model/user.model";
+import {User1} from "../model/user.model";
 import {Router} from "@angular/router";
 import {environment} from "../../../environments/environment";
 
-export interface AuthResponseData {
+/*export interface AuthResponseData {
   idToken: string,
   email: string,
   refreshToken: string,
   expiresIn: string,
   localId: string,
   registered?: boolean;
-}
+}*/
 
 export interface ResponseAuthData {
   errors: string[] | null,
@@ -41,7 +41,6 @@ export class AuthService {
       refreshToken: this.getToken().refreshToken
     }).pipe(
       tap(response => {
-        console.log(response)
         this.handleAuthentication1(
           response.token,
           response.refreshToken
@@ -79,13 +78,10 @@ export class AuthService {
 
   handleAuthentication1(token: string, refreshToken: string) {
     const decodedToken = JSON.parse(atob(token.split('.')[1]))
-    console.log(decodedToken)
     const userId: string = decodedToken.id
     const role: string = decodedToken.role
     const dif: number = decodedToken.exp - decodedToken.iat
     const expireDate: Date = new Date(decodedToken.exp * 1000); // Tue Jun 07 2022 15:58:25 GMT+0300 (Msc)
-    console.log(dif * 1000)
-    console.log(expireDate)
 
     const user = new User1(
       userId,
@@ -95,15 +91,13 @@ export class AuthService {
       expireDate
     )
 
-    // this.userSub$.next(user)
-    // this.autoLogout(dif*10000)
+    this.userSub$.next(user)
+    this.autoLogout(dif*1000)
     localStorage.setItem('userData', JSON.stringify(user))
-    console.log(this.getToken().token)
-    console.log(this.getToken().refreshToken)
   }
 
 
-  signUp(email: string, password: string) {
+  /*signUp(email: string, password: string) {
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBRB16qVU9P_RHIUrkFQNXd_8hUm61nPjk`,
       {
         email: email,
@@ -138,9 +132,9 @@ export class AuthService {
       })
     )
 
-  }
+  }*/
 
-  login(email: string, password: string) {
+  /*login(email: string, password: string) {
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBRB16qVU9P_RHIUrkFQNXd_8hUm61nPjk`,
       {
         email: email,
@@ -173,35 +167,39 @@ export class AuthService {
           +resData.expiresIn)
       })
     )
-  }
+  }*/
 
   autoLogin() {
     let jsonData = localStorage.getItem('userData')
     const userData: {
-      email: string;
-      id: string;
-      _token: string;
-      _tokenExpirationDate: Date,
-      role: string
+      userId: string;
+      role: string;
+      refreshToken: string;
+      token: string,
+      tokenExpirationDate: Date
     } = jsonData !== null ? JSON.parse(jsonData) : [];
+
     if (!userData) {
       return;
     }
-    const loadedUser = new User(
-      userData.email,
-      userData.id,
-      userData._token,
-      new Date(userData._tokenExpirationDate),
-      userData.role,
-    )
-    if (loadedUser.token) {
-      this.userSub$.next(loadedUser);
-      const expirationDuration =
-        new Date(userData._tokenExpirationDate).getTime() -
-        new Date().getTime()
 
-      this.autoLogout(expirationDuration)
+    if (new Date(userData.tokenExpirationDate) > new Date()) { // check valid expiration
+      const loadedUser = new User1(
+        userData.userId,
+        userData.role,
+        userData.refreshToken,
+        userData.token,
+        new Date(userData.tokenExpirationDate)
+      )
+      if (loadedUser.token) {
+        this.userSub$.next(loadedUser);
+        const expirationDuration =
+          new Date(userData.tokenExpirationDate).getTime() -
+          new Date().getTime()
+        this.autoLogout(expirationDuration)
+      }
     }
+
   }
 
   logout() {
@@ -222,7 +220,7 @@ export class AuthService {
     }, expirationDuration);
   }
 
-  private handleAuthentication(
+/*  private handleAuthentication(
     email: string,
     userId: string,
     token: string,
@@ -245,5 +243,5 @@ export class AuthService {
     this.userSub$.next(user)
     this.autoLogout(expiresIn * 1000)
     localStorage.setItem('userData', JSON.stringify(user))
-  }
+  }*/
 }

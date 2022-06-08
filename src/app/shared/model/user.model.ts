@@ -1,4 +1,4 @@
-export class User {
+/*export class User {
   constructor(
     public email: string,
     public id: string,
@@ -16,20 +16,15 @@ export class User {
     }
     return this._token;
   }
-}
-
-// Нужен для интерсептора, его я переписывать буду,
-// ибо нужно добавить функцию refresh token проверки, и bearer аутентификации
-
-
+}*/
 
 export class User1 {
   constructor(
    public userId: string,
    public role: string,
    public refreshToken: string,
-   private token: string,
-   private tokenExpirationDate: Date
+   public token: string,
+   public tokenExpirationDate: Date
   )
   {}
 

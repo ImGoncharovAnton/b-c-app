@@ -23,4 +23,10 @@ export class AppComponent implements OnInit {
       console.log(res)
     })
   }
+
+  getUserMonths() {
+    this.dataService.getUserMonths().subscribe(res => {
+      console.log('getUserMonths response', res)
+    })
+  }
 }

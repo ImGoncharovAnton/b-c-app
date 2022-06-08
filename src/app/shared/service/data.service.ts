@@ -5,6 +5,8 @@ import {BehaviorSubject, map, Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../model/budget-item.model";
 import {DataForAdminPanel} from "../../admin/admin.component";
 import {environment} from "../../../environments/environment";
+import {RequestMonth} from "../model/request-month.model";
+import {ResponseMonth} from "../model/response-month.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +15,10 @@ export class DataService {
   private _itemsPath: string = environment.apiItemsUrl // "https://localhost:7206/api/items/"
   private _monthsPath: string = environment.apiMonthsUrl // "https://localhost:7206/api/months/"
   private destroy$: Subject<boolean> = new Subject<boolean>()
+  userId1: string
+
+  ////////////// == old version =======================================
+
   baseUrl: string = 'https://budget-calc-a-default-rtdb.europe-west1.firebasedatabase.app/'
   monthsChanged$ = new Subject<MonthItem[]>()
   totalBudgetCounter$ = new Subject<number>()
@@ -33,22 +39,49 @@ export class DataService {
   keyEditExpenseItem: string | undefined
   userKeyId: string | null
   monthKeyId: string | null
-
   userName: string
   month: MonthItem
   userId: string
+
 
   constructor(private http: HttpClient) {
     console.log('DataService Works!')
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
+    this.destroy$.next(true)
   }
+
+  /////////// ---------------------------- new version
 
   getItems() {
     return this.http.get(this._itemsPath + 'GetItems')
   }
+
+  getUserMonths() {
+    let userId: string = this._getUserId();
+    // return this.http.get<any>(this._monthsPath + 'getMonthForUser/a00c441e-59b0-4162-a1d7-597d45772a53')
+    return this.http.get<ResponseMonth[]>(this._monthsPath + 'getMonthForUser/' + userId)
+  }
+
+  _getUserId() {
+    let jsonData = localStorage.getItem('userData')
+    const userData = jsonData !== null ? JSON.parse(jsonData) : []
+    return userData.userId
+  }
+
+  addUserMonth(month: RequestMonth) {
+    return this.http.post(this._monthsPath + 'createMonth', month)
+  }
+
+  removeMonth(id: number) {
+    return this.http.delete(this._monthsPath + 'deleteMonth/' + id)
+  }
+
+
+  // --------------------------------------------------------------------------------- old version---------
+
+
 
   _getLocalStoreData() {
     let jsonData = localStorage.getItem('MonthKey')

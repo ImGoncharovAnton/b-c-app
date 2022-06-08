@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {AuthResponseData, AuthService, ResponseAuthData} from '../shared/service/auth.service';
+import {AuthService, ResponseAuthData} from '../shared/service/auth.service';
 import {NgForm, NgModel} from "@angular/forms";
 import {Observable} from "rxjs";
 import {DataService} from '../shared/service/data.service';
@@ -61,7 +61,7 @@ export class AuthComponent implements OnInit {
 
     authObs.subscribe({
       next: (response) => {
-        console.log(response)
+        console.log('Auth response', response)
         // if (!this.isLoginMode) {
         //   console.log('register true')
         //   this.dataService.storeUser(username, response.email, response.localId)
@@ -69,8 +69,8 @@ export class AuthComponent implements OnInit {
         //   console.log('login true')
         //   this.dataService.getUserId(response.localId)
         // }
-        // this.isLoading = false;
-        // this.router.navigate(['/overview-page']);
+        this.isLoading = false;
+        this.router.navigate(['/overview-page']);
       },
       error: (errorMessage) => {
         console.log(errorMessage)
