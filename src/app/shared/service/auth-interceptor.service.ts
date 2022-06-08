@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
+import {HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
 import {AuthService} from './auth.service';
+import {catchError, switchMap, throwError} from "rxjs";
 
 
 @Injectable({
@@ -29,8 +30,8 @@ export class AuthInterceptorService implements HttpInterceptor {
       const clone = req.clone({
         headers: req.headers.append('Authorization', `Bearer ${this.authService.getToken().token}`)
       });
-      return next.handle(clone);
-      /* return next.handle(req).pipe(
+      // return next.handle(clone);
+       return next.handle(clone).pipe(
          catchError((error) => { // Отлавливаем ошибку
            if(error instanceof HttpErrorResponse && error.status === 401) { // Проверяем тип необходимой ошибки
              return this.authService.refreshToken().pipe( // Вызываем некую функцию по обновлению токена
@@ -44,7 +45,7 @@ export class AuthInterceptorService implements HttpInterceptor {
            }
            return throwError(error); // Пробрасываем необработанные ошибки дальше
          })
-       );*/
+       );
     }
     return next.handle(req);
   }
