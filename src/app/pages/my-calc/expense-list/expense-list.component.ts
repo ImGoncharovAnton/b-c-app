@@ -4,6 +4,8 @@ import {BudgetItem} from "../../../shared/model/budget-item.model";
 import {Subject, takeUntil} from "rxjs";
 import {MyCalcEditComponent} from "../my-calc-edit/my-calc-edit.component";
 import {DataService} from 'src/app/shared/service/data.service';
+import {ResponseItem} from "../../../shared/model/response-item.model";
+import {normalizedItems} from "../../../shared/functions/normalizedItems";
 
 @Component({
   selector: 'app-expense-list',
@@ -11,57 +13,57 @@ import {DataService} from 'src/app/shared/service/data.service';
   styleUrls: ['./expense-list.component.scss']
 })
 export class ExpenseListComponent implements OnInit, OnDestroy {
-  expenseItems: BudgetItem[];
+  expenseItems: ResponseItem[];
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  pageId: number;
-  totalExpenses: number;
+  monthId: number;
+  totalExpense: number;
 
   constructor(private dataService: DataService,
               private dialog: DialogService) {
   }
 
-  onEditItem(item: BudgetItem, index: number) {
-    this.dataService.setIdEditExpenseItem(index);
-    this.dataService.setKeyEditExpenseItem(item.key)
-    this.dataService.changedState$.next(false)
-    this.dialog.open(MyCalcEditComponent, {data: 'expense'});
+  onEditItem(item: ResponseItem) {
+    console.log('onEditItem', item)
+    // this.dataService.setIdEditExpenseItem(index);
+    // this.dataService.setKeyEditExpenseItem(item.key)
+    // this.dataService.changedState$.next(false)
+    // this.dialog.open(MyCalcEditComponent, {data: 'expense'});
   }
 
   ngOnInit(): void {
-    this.pageId = this.dataService.getPageId()
-    this.dataService.fetchUserMonths()
+    this.monthId = this.dataService.getMonthId()
+    this.dataService.getExpenseItemsForMonth(this.monthId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(months => {
-          const month = months[this.pageId]
-          this.totalExpenses = month.expense
-          const origExpensesArr = month.expensesArr
-          const normalizedExpensesArr: BudgetItem[] = []
-          for (let key in origExpensesArr) {
-            normalizedExpensesArr.push({...origExpensesArr[key], key})
-          }
-        this.expenseItems = normalizedExpensesArr
+      .subscribe(items => {
+        if (items.length > 0) {
+          this.expenseItems = items
+          this.totalExpense = normalizedItems(items)
         }
-      )
-    this.dataService.itemsChangedExp$
+      })
+    this.dataService.itemsChangesExpense$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (expenseItems: BudgetItem[]) => {
-          this.expenseItems = expenseItems;
-        })
-    this.dataService.totalCounterExp$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (totalExpenses: number) => {
-          this.totalExpenses = totalExpenses
+      .subscribe(items => {
+        if (items !== null) {
+          this.expenseItems = items
+          this.totalExpense = normalizedItems(items)
         }
-      )
+      })
   }
 
   ngOnDestroy() {
     this.destroy$.next(true)
   }
 
-  onDelete(key: string | undefined) {
-    this.dataService.deleteExpenseItem(key)
+  onDelete(id: number) {
+    this.dataService.deleteItem(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.dataService.getExpenseItemsForMonth(this.monthId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(data => {
+            this.dataService.itemsChangesExpense$.next(data)
+          })
+        console.log('Delete success', res)
+      })
   }
 }

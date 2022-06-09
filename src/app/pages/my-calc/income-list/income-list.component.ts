@@ -1,9 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BudgetItem} from "../../../shared/model/budget-item.model";
 import {Subject, takeUntil} from "rxjs";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {MyCalcEditComponent} from "../my-calc-edit/my-calc-edit.component";
 import {DataService} from 'src/app/shared/service/data.service';
+import {ResponseItem} from "../../../shared/model/response-item.model";
+import {normalizedItems} from "../../../shared/functions/normalizedItems";
 
 @Component({
   selector: 'app-income-list',
@@ -11,57 +12,56 @@ import {DataService} from 'src/app/shared/service/data.service';
   styleUrls: ['./income-list.component.scss']
 })
 export class IncomeListComponent implements OnInit, OnDestroy {
-  incomeItems: BudgetItem[];
+  incomeItems: ResponseItem[];
   private destroy$: Subject<boolean> = new Subject<boolean>();
-  pageId: number;
-  totalIncomes: number;
+  monthId: number;
+  totalIncome: number;
 
   constructor(private dialog: DialogService,
               private dataService: DataService) {
   }
 
-  onEditItem(item: BudgetItem, index: number) {
-    this.dataService.setIdEditIncomeItem(index)
-    this.dataService.setKeyEditIncomeItem(item.key)
-    this.dataService.changedState$.next(false)
-    this.dialog.open(MyCalcEditComponent, {data: 'income'});
+  onEditItem(id: number) {
+    console.log('onEditItem id', id)
+    this.dataService.setIdEditItemIncome(id)
+    // this.dataService.setKeyEditIncomeItem(item.key)
+    // this.dataService.changedState$.next(false)
+    // this.dialog.open(MyCalcEditComponent, {data: 'income'});
   }
 
   ngOnInit(): void {
-    this.pageId = this.dataService.getPageId()
-    this.dataService.fetchUserMonths()
+    this.monthId = this.dataService.getMonthId()
+    this.dataService.getIncomeItemsForMonth(this.monthId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(months => {
-          const month = months[this.pageId]
-          this.totalIncomes = month.income
-          const origIncomesArr = month.incomesArr
-          const normalizedIncomesArr: BudgetItem[] = []
-          for (let key in origIncomesArr) {
-            normalizedIncomesArr.push({...origIncomesArr[key], key})
-          }
-          this.incomeItems = normalizedIncomesArr
+      .subscribe(items => {
+        if (items.length > 0) {
+          this.incomeItems = items
+          this.totalIncome = normalizedItems(items)
         }
-      )
-    this.dataService.itemsChangedInc$
+      })
+    this.dataService.itemsChangesIncome$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (incomeItems: BudgetItem[]) => {
-          this.incomeItems = incomeItems;
-        })
-    this.dataService.totalCounterInc$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (totalIncomes: number) => {
-          this.totalIncomes = totalIncomes
+      .subscribe(items => {
+        if (items !== null) {
+          this.incomeItems = items
+          this.totalIncome = normalizedItems(items)
         }
-      )
+      })
   }
-
   ngOnDestroy(): void {
     this.destroy$.next(true)
   }
 
-  onDelete(key: string | undefined) {
-    this.dataService.deleteIncomeItem(key)
+  onDelete(id: number) {
+    this.dataService.deleteItem(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.dataService.getIncomeItemsForMonth(this.monthId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(data => {
+            this.dataService.itemsChangesIncome$.next(data)
+          })
+        console.log('Delete success', res)
+      })
   }
 }

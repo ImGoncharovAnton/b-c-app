@@ -2,10 +2,10 @@
   <div class="container">
     <div class="overview-page">
       <ul class="months-list">
-        <ng-container *ngIf="monthsArr1.length > 0">
+        <ng-container *ngIf="monthsArr.length > 0">
           <li
             class="months-item"
-            *ngFor="let item of monthsArr1; let i = index"
+            *ngFor="let item of monthsArr; let i = index"
             [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'locked' : '']">
 <!--            <div *ngIf="item.changedAdmin" class="change-message">admin made changes *</div>-->
             <mat-icon
@@ -18,7 +18,7 @@
             </mat-icon>
 <!--            [ngClass]="[item.changedAdmin ? 'indigo': '']"-->
             <h2
-              (click)="onMonthPage(i, item)">{{item.monthName}}</h2>
+              (click)="onMonthPage(item)">{{item.monthName}}</h2>
             <div
               class="months-item__right right-month-item"
               [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'gray' : '']">

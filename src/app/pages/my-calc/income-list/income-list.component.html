@@ -1,23 +1,24 @@
 <div class="income-list-container">
   <div class="income-list-heading">
     <h3>Income: </h3>
-    <span>{{totalIncomes}}</span>
+    <span>{{totalIncome}}</span>
   </div>
   <ul
     class="income-list-group">
     <ng-container *ngIf="incomeItems">
+<!--      [ngClass]="[item.adminChanged ? 'gray' : '']"-->
       <li
         class="income-list-item"
-        [ngClass]="[item.adminChanged ? 'gray' : '']"
+
         *ngFor="let item of incomeItems; let i = index">
-        <div (click)="onEditItem(item, i)">
+        <div (click)="onEditItem(item.id)">
           <p>{{item.description}}: </p>
-          <span>{{item.amount}}</span>
+          <span>{{item.value}}</span>
         </div>
-        <p class="modified-message" *ngIf="item.adminChanged">Added or modified by admin</p>
+<!--        <p class="modified-message" *ngIf="item.adminChanged">Added or modified by admin</p>-->
         <mat-icon
           class="income-list-icon"
-          (click)="onDelete(item.key)">delete
+          (click)="onDelete(item.id)">delete
         </mat-icon>
       </li>
     </ng-container>

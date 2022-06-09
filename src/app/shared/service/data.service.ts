@@ -7,6 +7,9 @@ import {DataForAdminPanel} from "../../admin/admin.component";
 import {environment} from "../../../environments/environment";
 import {RequestMonth} from "../model/request-month.model";
 import {ResponseMonth} from "../model/response-month.model";
+import {RequestCreateItem} from "../model/request-item.model";
+import {RequestUpdateItem} from "../model/request-update-item.model";
+import {ResponseItem} from "../model/response-item.model";
 
 @Injectable({
   providedIn: 'root'
@@ -15,14 +18,16 @@ export class DataService {
   private _itemsPath: string = environment.apiItemsUrl // "https://localhost:7206/api/items/"
   private _monthsPath: string = environment.apiMonthsUrl // "https://localhost:7206/api/months/"
   private destroy$: Subject<boolean> = new Subject<boolean>()
-  userId1: string
-  // monthsChanged1$ = new Subject<ResponseMonth[]>()
-  monthsChanged1$ = new BehaviorSubject<ResponseMonth | null>(null)
+  monthsChanged$ = new Subject<ResponseMonth[]>()
+  monthId: number
+  itemsChangesIncome$ = new BehaviorSubject<ResponseItem[] | null>(null)
+  itemsChangesExpense$ = new BehaviorSubject<ResponseItem[] | null>(null)
+
 
   ////////////// == old version =======================================
 
   baseUrl: string = 'https://budget-calc-a-default-rtdb.europe-west1.firebasedatabase.app/'
-  monthsChanged$ = new Subject<MonthItem[]>()
+  // monthsChanged$ = new Subject<MonthItem[]>()
   totalBudgetCounter$ = new Subject<number>()
   itemsChangedInc$ = new Subject<BudgetItem[]>()
   itemsChangedExp$ = new Subject<BudgetItem[]>()
@@ -56,20 +61,45 @@ export class DataService {
 
   /////////// ---------------------------- new version
 
-  getItems() {
-    return this.http.get(this._itemsPath + 'GetItems')
-  }
-
-  getUserMonths() {
-    let userId: string = this.getLocalUserId();
-    // return this.http.get<any>(this._monthsPath + 'getMonthForUser/a00c441e-59b0-4162-a1d7-597d45772a53')
-    return this.http.get<ResponseMonth[]>(this._monthsPath + 'getMonthForUser/' + userId)
-  }
-
   getLocalUserId() {
     let jsonData = localStorage.getItem('userData')
     const userData = jsonData !== null ? JSON.parse(jsonData) : []
     return userData.userId
+  }
+
+  setMonthId(id: number) {
+    this.monthId = id
+  }
+
+  getMonthId() {
+    return this.monthId
+  }
+
+  setIdEditItemIncome(idEditIncomeItem: number) {
+    this.idEditIncomeItem = idEditIncomeItem
+  }
+
+  setIdEditItemExpense(idEditExpenseItem: number) {
+    this.idEditExpenseItem = idEditExpenseItem
+  }
+
+  getIdEditItemIncome() {
+    return this.idEditIncomeItem
+  }
+
+  getIdEditItemExpense() {
+    return this.idEditExpenseItem
+  }
+
+  // -------------------Months start---------------------------------------------
+
+  getUserMonths() {
+    let userId: string = this.getLocalUserId();
+    return this.http.get<ResponseMonth[]>(this._monthsPath + 'getMonthForUser/' + userId)
+  }
+
+  getMonth(id: number) {
+    return this.http.get<ResponseMonth>(this._monthsPath + 'getMonth/' + id)
   }
 
   addUserMonth(month: RequestMonth) {
@@ -80,6 +110,37 @@ export class DataService {
     return this.http.delete(this._monthsPath + 'deleteMonth/' + id)
   }
 
+
+  // -------------------------Months end --------------------------------------
+
+  // --------------------------Items start-------------------------------------
+
+  // test request
+  getItems() {
+    return this.http.get(this._itemsPath + 'GetItems')
+  }
+
+  getIncomeItemsForMonth(monthId: number) {
+    return this.http.get<ResponseItem[]>(this._itemsPath + 'getIncomeItemsForMonth/' + monthId)
+  }
+
+  getExpenseItemsForMonth(monthId: number) {
+    return this.http.get<ResponseItem[]>(this._itemsPath + 'getExpenseItemsForMonth/' + monthId)
+  }
+
+  createItem(item:RequestCreateItem) {
+    return this.http.post(this._itemsPath + 'createItem', item)
+  }
+
+  updateItem(id: number, item: RequestUpdateItem) {
+    return this.http.put(this._itemsPath + 'updateItem/' + id, item)
+  }
+
+  deleteItem(id: number) {
+    return this.http.delete(this._itemsPath + 'deleteItem/' + id)
+  }
+
+  // --------------------------Items end-------------------------------------
 
   // --------------------------------------------------------------------------------- old version---------
 
@@ -134,15 +195,6 @@ export class DataService {
   }
 
   // delete item by key from database
-  deleteMonths(key: string | undefined) {
-    const userId: string = this.setUserId()
-    return this.http.delete(this.baseUrl + `users/${userId}/months/${key}.json`)
-  }
-
-  addUserMonths(month: MonthItem) {
-    const userId: string = this.setUserId()
-    return this.http.post(this.baseUrl + `users/${userId}/months.json`, month)
-  }
 
   addIncomeItem(incomeItem: BudgetItem, userKey?: string, monthKey?: string, monthIndex?: number, changed?: boolean) {
     incomeItem.adminChanged = !!changed;

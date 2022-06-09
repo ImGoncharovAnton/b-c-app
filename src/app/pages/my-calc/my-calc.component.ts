@@ -5,6 +5,8 @@ import {MyCalcEditComponent} from "./my-calc-edit/my-calc-edit.component";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {DataService} from 'src/app/shared/service/data.service';
 import {MonthItem} from "../../shared/model/month-item.model";
+import {normalizedMonth} from "../../shared/functions/normalizedMonth";
+import {normalizedItems} from "../../shared/functions/normalizedItems";
 
 @Component({
   selector: 'app-my-calc',
@@ -28,31 +30,46 @@ export class MyCalcComponent implements OnInit, OnDestroy {
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
-          this.parentId = params['id']
-        this.dataService.setPageId(params['id'])
+        this.parentId = params['id']
+        this.dataService.setMonthId(this.parentId)
         }
       )
-    this.dataService.fetchUserMonths()
+    // Если не делать отдельные запросы для income и expense, а получать все items месяца,
+    // и потом отфильтровывать нужные элементы для компонента, то можно потом объект передать целиком,
+    // это может сократить количество подписок на одну, но увеличит общее количество кода и усложнит запрос для базы :)
+    this.dataService.getMonth(this.parentId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(months => {
-          this.month = months[this.parentId]
-          this.monthName = this.month.month;
-        this.totalBudget = this.month.income - this.month.expense;
-        localStorage.setItem('MonthKey', JSON.stringify(this.month.key))
+      .subscribe(month => {
+        let incomeLocal: number = 0
+        let expenseLocal: number = 0
+        normalizedMonth(month)
+        this.monthName = month.monthName
+        incomeLocal = month.income
+        expenseLocal = month.expense
+        this.dataService.itemsChangesIncome$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(incomes => {
+            if (incomes !== null) {
+              incomeLocal = normalizedItems(incomes)
+              this.totalBudget = incomeLocal - expenseLocal
+            }
+          })
+        this.dataService.itemsChangesExpense$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(expenses => {
+            if (expenses !== null) {
+              expenseLocal = normalizedItems(expenses)
+              this.totalBudget = incomeLocal - expenseLocal
+            }
+          })
+        this.totalBudget = incomeLocal - expenseLocal
         }
       )
-    this.dataService.totalBudgetCounter$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (totalBudget: number) => {
-          this.totalBudget = totalBudget
-        }
-      )
+
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(true)
-    localStorage.removeItem('MonthKey')
   }
 
   onCreateItem() {
