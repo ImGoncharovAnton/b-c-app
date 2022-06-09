@@ -16,6 +16,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   monthsArr: MonthItem[] = []
   id: number = 0
   monthNow: number
+  yearNow: number = new Date().getFullYear()
 
   // -----------------new
   monthsArr1: ResponseMonth[] = []
@@ -76,8 +77,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
           }
           item.income = income
           item.expense = expense
-          console.log('months', months)
+
         })
+        console.log('months', months)
         this.monthsArr1 = this.monthsArr1.concat(months);
       })
     this.monthNow = new Date().getMonth();

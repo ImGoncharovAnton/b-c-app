@@ -6,14 +6,14 @@
           <li
             class="months-item"
             *ngFor="let item of monthsArr1; let i = index"
-            [ngClass]="[item.monthNum > monthNow + 2 ? 'locked' : '']">
+            [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'locked' : '']">
 <!--            <div *ngIf="item.changedAdmin" class="change-message">admin made changes *</div>-->
             <mat-icon
-              *ngIf="item.monthNum > monthNow + 2"
+              *ngIf="item.monthNum > monthNow + 2 || item.year !== yearNow"
               class="month-icon">lock
             </mat-icon>
             <mat-icon
-              *ngIf="item.monthNum <= monthNow + 2"
+              *ngIf="item.monthNum <= monthNow + 2 && item.year === yearNow"
               class="month-icon">lock_open
             </mat-icon>
 <!--            [ngClass]="[item.changedAdmin ? 'indigo': '']"-->
@@ -21,7 +21,7 @@
               (click)="onMonthPage(i, item)">{{item.monthName}}</h2>
             <div
               class="months-item__right right-month-item"
-              [ngClass]="[item.monthNum > monthNow + 2 ? 'gray' : '']">
+              [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'gray' : '']">
               <div class="right-month-item__block">
                 <h3 class="right-month-item__title">Income</h3>
                 <p class="right-month-item__value">{{item.income}}</p>
