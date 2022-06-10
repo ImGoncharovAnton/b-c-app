@@ -8,6 +8,7 @@ import {ResponseMonth} from "../../shared/model/response-month.model";
 import {ResponseItem} from "../../shared/model/response-item.model";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {normalizedMonth} from "../../shared/functions/normalizedMonth";
+import {ResponseMonthsForUser} from "../../shared/model/response-months-for-user";
 
 @Component({
   selector: 'app-overview',
@@ -15,7 +16,7 @@ import {normalizedMonth} from "../../shared/functions/normalizedMonth";
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit, OnDestroy {
-  monthsArr: ResponseMonth[] = []
+  monthsArr: ResponseMonthsForUser[] = []
   yearNow: number = new Date().getFullYear()
   monthNow = new Date().getMonth();
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -34,30 +35,29 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.destroy$.next(true)
   }
 
-  private _normalizedMonths(months: ResponseMonth[]) {
-    months.map(item => {
-      normalizedMonth(item)
-    })
-    return months
-  }
-
   private _getMonths() {
+    const monthLocalizedString = function (year: number, month: number, locale: string) {
+      return new Date(year, month - 1).toLocaleString(locale, {month: "long"});
+    };
     this.dataService.getUserMonths()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((months: ResponseMonth[]) => {
-        this._normalizedMonths(months)
+      .subscribe((months: ResponseMonthsForUser[]) => {
         console.log('months', months)
+        months.map(item => {
+          item.monthName = monthLocalizedString(item.year, item.monthNum, 'en')
+        })
         this.monthsArr = this.monthsArr.concat(months);
       })
     this.dataService.monthsChanged$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((months: ResponseMonth[]) => {
-        this._normalizedMonths(months)
+      .subscribe((months: ResponseMonthsForUser[]) => {
+        months.map(item => {
+          item.monthName = monthLocalizedString(item.year, item.monthNum, 'en')
+        })
         this.monthsArr = months
       })
   }
 
-  onMonthPage(item: ResponseMonth) {
+  onMonthPage(item: ResponseMonthsForUser) {
     if (item.monthNum > this.monthNow + 2 || item.year !== new Date().getFullYear()) {
       return
     } else {
@@ -70,7 +70,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  onDelete(item: ResponseMonth) {
+  onDelete(item: ResponseMonthsForUser) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Confirm Remove Month',

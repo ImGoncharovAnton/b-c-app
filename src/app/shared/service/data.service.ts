@@ -10,6 +10,7 @@ import {ResponseMonth} from "../model/response-month.model";
 import {RequestCreateItem} from "../model/request-item.model";
 import {RequestUpdateItem} from "../model/request-update-item.model";
 import {ResponseItem} from "../model/response-item.model";
+import {ResponseMonthsForUser} from "../model/response-months-for-user";
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +19,15 @@ export class DataService {
   private _itemsPath: string = environment.apiItemsUrl // "https://localhost:7206/api/items/"
   private _monthsPath: string = environment.apiMonthsUrl // "https://localhost:7206/api/months/"
   private destroy$: Subject<boolean> = new Subject<boolean>()
-  monthsChanged$ = new Subject<ResponseMonth[]>()
-  monthId: number
+  monthsChanged$ = new Subject<ResponseMonthsForUser[]>()
   itemsChangesIncome$ = new BehaviorSubject<ResponseItem[] | null>(null)
   itemsChangesExpense$ = new BehaviorSubject<ResponseItem[] | null>(null)
+  idUser$ = new BehaviorSubject<string | null>(null)
+  idMonth$ = new BehaviorSubject<number | null>(null)
+  IdEditItemIncome: number
+  IdEditItemExpense: number
 
+  testSubject$ = new BehaviorSubject<any>(null)
 
   ////////////// == old version =======================================
 
@@ -67,35 +72,27 @@ export class DataService {
     return userData.userId
   }
 
-  setMonthId(id: number) {
-    this.monthId = id
+  setIdEditItemIncome(IdEditItemIncome: number) {
+    this.IdEditItemIncome = IdEditItemIncome
   }
 
-  getMonthId() {
-    return this.monthId
-  }
-
-  setIdEditItemIncome(idEditIncomeItem: number) {
-    this.idEditIncomeItem = idEditIncomeItem
-  }
-
-  setIdEditItemExpense(idEditExpenseItem: number) {
-    this.idEditExpenseItem = idEditExpenseItem
+  setIdEditItemExpense(IdEditItemExpense: number) {
+    this.IdEditItemExpense = IdEditItemExpense
   }
 
   getIdEditItemIncome() {
-    return this.idEditIncomeItem
+    return this.IdEditItemIncome
   }
 
   getIdEditItemExpense() {
-    return this.idEditExpenseItem
+    return this.IdEditItemExpense
   }
 
   // -------------------Months start---------------------------------------------
 
   getUserMonths() {
     let userId: string = this.getLocalUserId();
-    return this.http.get<ResponseMonth[]>(this._monthsPath + 'getMonthForUser/' + userId)
+    return this.http.get<ResponseMonthsForUser[]>(this._monthsPath + 'getMonthForUser/' + userId)
   }
 
   getMonth(id: number) {
@@ -110,7 +107,6 @@ export class DataService {
     return this.http.delete(this._monthsPath + 'deleteMonth/' + id)
   }
 
-
   // -------------------------Months end --------------------------------------
 
   // --------------------------Items start-------------------------------------
@@ -118,6 +114,10 @@ export class DataService {
   // test request
   getItems() {
     return this.http.get(this._itemsPath + 'GetItems')
+  }
+
+  getItem(id: number) {
+    return this.http.get<ResponseItem>(this._itemsPath + 'GetItem/' + id)
   }
 
   getIncomeItemsForMonth(monthId: number) {
@@ -133,7 +133,7 @@ export class DataService {
   }
 
   updateItem(id: number, item: RequestUpdateItem) {
-    return this.http.put(this._itemsPath + 'updateItem/' + id, item)
+    return this.http.put<ResponseItem>(this._itemsPath + 'updateItem/' + id, item)
   }
 
   deleteItem(id: number) {

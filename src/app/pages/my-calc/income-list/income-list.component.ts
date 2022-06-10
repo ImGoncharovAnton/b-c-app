@@ -22,27 +22,33 @@ export class IncomeListComponent implements OnInit, OnDestroy {
   }
 
   onEditItem(id: number) {
-    console.log('onEditItem id', id)
     this.dataService.setIdEditItemIncome(id)
-    // this.dataService.setKeyEditIncomeItem(item.key)
-    // this.dataService.changedState$.next(false)
-    // this.dialog.open(MyCalcEditComponent, {data: 'income'});
+    this.dialog.open(MyCalcEditComponent, {data: 'income'});
   }
 
   ngOnInit(): void {
-    this.monthId = this.dataService.getMonthId()
-    this.dataService.getIncomeItemsForMonth(this.monthId)
+    this.dataService.idMonth$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(items => {
-        if (items.length > 0) {
-          this.incomeItems = items
-          this.totalIncome = normalizedItems(items)
+      .subscribe(monthId => {
+        if (monthId !== null) {
+          this.monthId = monthId
         }
       })
     this.dataService.itemsChangesIncome$
       .pipe(takeUntil(this.destroy$))
       .subscribe(items => {
-        if (items !== null) {
+        if (items !== null && items.length > 0) {
+          this.incomeItems = items
+          this.totalIncome = normalizedItems(items)
+        } else {
+          this.incomeItems = []
+          this.totalIncome = 0
+        }
+      })
+    this.dataService.getIncomeItemsForMonth(this.monthId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(items => {
+        if (items.length > 0) {
           this.incomeItems = items
           this.totalIncome = normalizedItems(items)
         }

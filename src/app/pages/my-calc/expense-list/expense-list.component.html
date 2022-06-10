@@ -12,7 +12,7 @@
         class="expense-list-item"
 
       >
-        <div (click)="onEditItem(item)">
+        <div (click)="onEditItem(item.id)">
           <p>{{item.description}}: </p>
           <span>{{item.value}}</span>
         </div>

@@ -22,28 +22,34 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
               private dialog: DialogService) {
   }
 
-  onEditItem(item: ResponseItem) {
-    console.log('onEditItem', item)
-    // this.dataService.setIdEditExpenseItem(index);
-    // this.dataService.setKeyEditExpenseItem(item.key)
-    // this.dataService.changedState$.next(false)
-    // this.dialog.open(MyCalcEditComponent, {data: 'expense'});
+  onEditItem(id: number) {
+    this.dataService.setIdEditItemExpense(id)
+    this.dialog.open(MyCalcEditComponent, {data: 'expense'});
   }
 
   ngOnInit(): void {
-    this.monthId = this.dataService.getMonthId()
-    this.dataService.getExpenseItemsForMonth(this.monthId)
+    this.dataService.idMonth$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(items => {
-        if (items.length > 0) {
-          this.expenseItems = items
-          this.totalExpense = normalizedItems(items)
+      .subscribe(monthId => {
+        if (monthId !== null) {
+          this.monthId = monthId
         }
       })
     this.dataService.itemsChangesExpense$
       .pipe(takeUntil(this.destroy$))
       .subscribe(items => {
-        if (items !== null) {
+        if (items !== null && items.length > 0) {
+          this.expenseItems = items
+          this.totalExpense = normalizedItems(items)
+        } else {
+          this.expenseItems = []
+          this.totalExpense = 0
+        }
+      })
+    this.dataService.getExpenseItemsForMonth(this.monthId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(items => {
+        if (items.length > 0) {
           this.expenseItems = items
           this.totalExpense = normalizedItems(items)
         }

@@ -3,6 +3,7 @@ import {DataService} from "../../../shared/service/data.service";
 import {Subject, takeUntil} from "rxjs";
 import {ResponseMonth} from 'src/app/shared/model/response-month.model';
 import {RequestMonth} from "../../../shared/model/request-month.model";
+import {ResponseMonthsForUser} from "../../../shared/model/response-months-for-user";
 
 @Component({
   selector: 'app-overview-create',
@@ -11,7 +12,7 @@ import {RequestMonth} from "../../../shared/model/request-month.model";
 })
 export class OverviewCreateComponent implements OnInit, OnDestroy {
 
-  months: ResponseMonth[]
+  months: ResponseMonthsForUser[]
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
   constructor(private dataService: DataService) {
