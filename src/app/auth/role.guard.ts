@@ -20,6 +20,8 @@ export class RoleGuard implements CanActivate {
     return this.authService.userSub$.pipe(
       take(1),
       map(user => {
+        // let adminTrue = user.role.some((r: string) => r === 'Immortal')
+        // Если админка будет выделываться, поменяем
         if (user.role === 'Immortal') {
           return true
         } else {

@@ -6,6 +6,7 @@ export class ResponseMonthsForUser {
     public userId: string,
     public income: number,
     public expense: number,
-    public monthName: string) {
+    public monthName: string,
+    public adminChanged: boolean) {
   }
 }

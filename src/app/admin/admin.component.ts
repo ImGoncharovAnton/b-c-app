@@ -3,9 +3,29 @@ import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {DataService} from '../shared/service/data.service';
-import {Subject, takeUntil} from "rxjs";
-import {MonthItem} from "../shared/model/month-item.model";
+import {Subject} from "rxjs";
 import {BudgetItem} from "../shared/model/budget-item.model";
+
+export interface allUsersForAdmin {
+  email: string;
+  id: string;
+  months: allUsersForAdminMonth[];
+  role: string;
+  username: string;
+  income?: number;
+  expense?: number;
+  selectedMonth?: allUsersForAdminMonth[];
+}
+
+export interface allUsersForAdminMonth {
+  monthId: number;
+  monthNum: number;
+  year: number;
+  income: number;
+  expense: number;
+  monthName: string;
+}
+
 
 export interface UserInfo {
   username: string
@@ -48,7 +68,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     'expense',
     'action',
   ];
-  dataSource: MatTableDataSource<UserInfo>;
+  dataSource: MatTableDataSource<allUsersForAdmin>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -58,14 +78,42 @@ export class AdminComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.getAllUsers()
+    this.gelAllData()
   }
 
   ngOnDestroy() {
     this.destroy$.next(true);
   }
 
-  getAllUsers() {
+  gelAllData() {
+    this.dataService.getAllUsers().subscribe({
+        next: (res: allUsersForAdmin[]) => {
+          res.map((item: allUsersForAdmin) => {
+            if (item.months.length > 0) {
+              item.income = item.months.map((p: any) => {
+                return p.income
+              }).reduce((a: number, b: number) => {
+                return a + b
+              });
+              item.expense = item.months.map((p: any) => {
+                return p.expense
+              }).reduce((a: number, b: number) => {
+                return a + b
+              });
+            }
+          })
+          this.dataSource = new MatTableDataSource<allUsersForAdmin>(res)
+          this.dataSource.paginator = this.paginator
+          this.dataSource.sort = this.sort
+        },
+        error: (err) => {
+          alert('error while fetching the records')
+        }
+      }
+    )
+  }
+
+  /*getAllUsers() {
     this.dataService.fetchData()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -103,16 +151,16 @@ export class AdminComponent implements OnInit, OnDestroy {
                   data.income = income
                 }
               })
-            this.dataSource = new MatTableDataSource<any>(res)
-            this.dataSource.paginator = this.paginator
-            this.dataSource.sort = this.sort
-          })
+              this.dataSource = new MatTableDataSource<any>(res)
+              this.dataSource.paginator = this.paginator
+              this.dataSource.sort = this.sort
+            })
         },
         error: (err) => {
           alert('error while fetching the records')
         }
       })
-  }
+  }*/
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -123,9 +171,9 @@ export class AdminComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOpenUser(row: UserInfo) {
+  onOpenUser(row: allUsersForAdmin) {
     this.username = row.username
     this.isOpenTab = true
-    this.dataService.userKey$.next(row.key)
+    this.dataService.idUser$.next(row.id)
   }
 }

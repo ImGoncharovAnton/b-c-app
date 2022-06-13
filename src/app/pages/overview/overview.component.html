@@ -4,10 +4,10 @@
       <ul class="months-list">
         <ng-container *ngIf="monthsArr.length > 0">
           <li
-            class="months-item"
             *ngFor="let item of monthsArr; let i = index"
-            [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'locked' : '']">
-<!--            <div *ngIf="item.changedAdmin" class="change-message">admin made changes *</div>-->
+            [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'locked' : '']"
+            class="months-item">
+            <div *ngIf="item.adminChanged" class="change-message">admin made changes *</div>
             <mat-icon
               *ngIf="item.monthNum > monthNow + 2 || item.year !== yearNow"
               class="month-icon">lock
@@ -16,12 +16,13 @@
               *ngIf="item.monthNum <= monthNow + 2 && item.year === yearNow"
               class="month-icon">lock_open
             </mat-icon>
-<!--            [ngClass]="[item.changedAdmin ? 'indigo': '']"-->
+
             <h2
-              (click)="onMonthPage(item)">{{item.monthName}}</h2>
+              (click)="onMonthPage(item)"
+              [ngClass]="[item.adminChanged ? 'indigo': '']">{{item.monthName}}</h2>
             <div
-              class="months-item__right right-month-item"
-              [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'gray' : '']">
+              [ngClass]="[(item.monthNum > monthNow + 2 || item.year !== yearNow) ? 'gray' : '']"
+              class="months-item__right right-month-item">
               <div class="right-month-item__block">
                 <h3 class="right-month-item__title">Income</h3>
                 <p class="right-month-item__value">{{item.income}}</p>
@@ -29,15 +30,15 @@
               <div class="right-month-item__block">
                 <h3 class="right-month-item__title">Expense</h3>
                 <p
-                  class="right-month-item__value"
-                  [ngClass]="[item.income >= item.expense ? 'green' : 'red']">
+                  [ngClass]="[item.income >= item.expense ? 'green' : 'red']"
+                  class="right-month-item__value">
                   {{item.expense}}
                 </p>
               </div>
             </div>
             <mat-icon
-              class="del-icon"
-              (click)="onDelete(item)">delete
+              (click)="onDelete(item)"
+              class="del-icon">delete
             </mat-icon>
           </li>
 

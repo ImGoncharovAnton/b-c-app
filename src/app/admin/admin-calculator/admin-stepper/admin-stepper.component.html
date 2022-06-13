@@ -43,14 +43,14 @@
                     <mat-label>Months</mat-label>
                     <mat-select
                       multiple
-                      [(ngModel)]="item.editedMonths"
+                      [(ngModel)]="item.selectedMonth"
                       placeholder="Months"
                       (ngModelChange)="checkValue($event)"
                       required>
                       <mat-option
-                        *ngFor="let mon of item.beautyMonths; let monthIndex = index"
-                        [value]="[mon, monthIndex]">
-                        {{mon.month}}
+                        *ngFor="let mon of item.months"
+                        [value]="mon">
+                        {{mon.monthName}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -106,8 +106,8 @@
                 {{item.username}} |
               </div>
               <div class="selected-users__item-months">
-                  <span *ngFor="let mon of item.editedMonths">
-                    {{mon[0].month}}
+                  <span *ngFor="let mon of item.months">
+                    {{mon.monthName}}
                   </span>
               </div>
             </li>

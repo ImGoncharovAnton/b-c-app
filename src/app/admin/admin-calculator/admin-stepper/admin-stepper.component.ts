@@ -1,24 +1,11 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {UserInfo} from "../../admin.component";
+import {allUsersForAdmin} from "../../admin.component";
 import {map, Observable, Subject, takeUntil} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {DataService} from "../../../shared/service/data.service";
 import {MatStepper, StepperOrientation} from "@angular/material/stepper";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {BudgetItem} from "../../../shared/model/budget-item.model";
-
-export interface DataForSend {
-  userKey: string
-  months: [{ monthKey: string, monthIndex: number }]
-}
-
-export interface NormalizedDataForSend {
-  userKey: string
-  monthKey: string
-  monthIndex: number
-  expenseItem?: BudgetItem
-  incomesItem?: BudgetItem
-}
+import {RequestCreateItem} from "../../../shared/model/request-item.model";
 
 @Component({
   selector: 'app-admin-stepper',
@@ -28,13 +15,13 @@ export interface NormalizedDataForSend {
 export class AdminStepperComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>()
   stepperOrientation$: Observable<StepperOrientation>;
-  selectedValue: UserInfo[]
-  trueProperty: boolean = false
-  usersArray: UserInfo[] = []
   form: FormGroup
-  resultValue: number | null
-  buttonData: string
   showSteps: boolean
+  usersArray: allUsersForAdmin[] = []
+  selectedValue: allUsersForAdmin[]
+  resultValue: number | null
+  trueProperty: boolean = false
+  buttonData: string
 
 
   @ViewChild(MatStepper) stepper: MatStepper;
@@ -61,20 +48,6 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
   }
 
-  getAllUsers() {
-    this.dataService.fetchData()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: UserInfo[]) => {
-        let usersArr: UserInfo[] = []
-        data.map(item => {
-          if (item.months) {
-            usersArr.push(item)
-          }
-        })
-        this.usersArray = usersArr
-      })
-  }
-
   getCalcResultValue() {
     this.dataService.calcResult$
       .pipe(takeUntil(this.destroy$))
@@ -83,17 +56,34 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
       })
   }
 
-  onSelectValueUser(selectedValue: UserInfo[]) {
-    this.selectedValue = selectedValue
-    if (this.selectedValue) {
-      this.selectedValue.map(item => {
-        let months: any = []
-        for (let key in item.months) {
-          months.push({...item.months[key], key})
-        }
-        item.beautyMonths = months
+  getAllUsers() {
+    const monthLocalizedString = function (year: number, month: number, locale: string) {
+      return new Date(year, month - 1).toLocaleString(locale, {month: "long"});
+    };
+    this.dataService.getAllUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: allUsersForAdmin[]) => {
+          let dataArr: allUsersForAdmin[] = []
+          data.map(item => {
+            if (item.months.length > 0) {
+              item.months.map(month => {
+                month.monthName = monthLocalizedString(month.year, month.monthNum, "en")
+              })
+              dataArr.push(item)
+            }
+          })
+          this.usersArray = dataArr
+          console.log('admin stepper data', data)
+        },
+        error: err => alert('error while fetching the records')
       })
-    }
+  }
+
+
+  onSelectValueUser(selectedValue: allUsersForAdmin[]) {
+    this.selectedValue = selectedValue
+    console.log('this.selectedValue', this.selectedValue)
     if (this.selectedValue && this.selectedValue.length > 0) {
       this.stepper.selected!.completed = true
     }
@@ -109,7 +99,7 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   }
 
   checkValue(p?: any) {
-    this.trueProperty = this.selectedValue.every(item => item.editedMonths && item.editedMonths.length > 0)
+    this.trueProperty = this.selectedValue.every(item => item.months && item.months.length > 0)
   }
 
   onIncomeButton() {
@@ -161,54 +151,47 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    const selectedValue: UserInfo[] = this.selectedValue
-    const arrForSend: DataForSend[] = []
-    const arrForSendNormalized: NormalizedDataForSend[] = []
-    let changed: boolean = true
+    let selectedData = this.selectedValue;
+    let arrForSend: RequestCreateItem[] = []
 
-    for (let item of selectedValue) {
-      const userObj: any = {}
-      const months: any = []
-      userObj.userKey = item.key
-      userObj.months = months
-      for (let monthItem of item.editedMonths) {
-        let monthObj: any = {}
-        monthObj.monthKey = monthItem[0].key
-        monthObj.monthIndex = monthItem[1]
-        months.push(monthObj)
-      }
-      arrForSend.push(userObj)
-    }
-
-    for (let item of arrForSend) {
-      for (let monthItem of item.months) {
-        let userObj: any = {}
-        userObj.userKey = item.userKey
-        userObj.monthKey = monthItem.monthKey
-        userObj.monthIndex = monthItem.monthIndex
-        arrForSendNormalized.push(userObj)
-      }
-    }
-    if (this.buttonData === 'income') {
-      for (let item of arrForSendNormalized) {
-        this.dataService.setPageId(item.monthIndex)
-        this.dataService.addIncomeItem(this.form.value, item.userKey, item.monthKey, item.monthIndex, changed)
+    for (let item of selectedData) {
+      if (item.selectedMonth) {
+        for (let monthItem of item.selectedMonth) {
+          let objForSend: any = {}
+          objForSend.createdBy = item.id
+          objForSend.value = this.form.value.amount
+          objForSend.description = this.form.value.description
+          objForSend.type = null
+          objForSend.monthId = monthItem.monthId
+          if (this.buttonData === 'income') {
+            objForSend.type = 0
+          }
+          if (this.buttonData === 'expense') {
+            objForSend.type = 1
+          }
+          arrForSend.push(objForSend)
+          console.log('arrForSend', arrForSend)
+        }
       }
     }
 
-    if (this.buttonData === 'expense') {
-      for (let item of arrForSendNormalized) {
-        this.dataService.setPageId(item.monthIndex)
-        this.dataService.addExpenseItem(this.form.value, item.userKey, item.monthKey, item.monthIndex, changed)
-      }
-    }
+    arrForSend.forEach(item => {
+      this.dataService.createItem(item)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: res => {
+            console.log('new item', res)
+          },
+          error: err => alert('create item error')
+        })
+    })
     alert('Successfully added!')
     this.stepper.reset()
     this.showSteps = false
   }
 
   onBack() {
-    // this.trueProperty = false
+    this.trueProperty = false
   }
 
 

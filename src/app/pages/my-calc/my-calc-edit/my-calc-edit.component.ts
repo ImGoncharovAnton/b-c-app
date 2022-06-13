@@ -3,7 +3,6 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {DataService} from 'src/app/shared/service/data.service';
 import {DialogRef} from "../../../shared/dialog/dialog-ref";
 import {DIALOG_DATA} from "../../../shared/dialog/dialog-token";
-import {BudgetItem} from "../../../shared/model/budget-item.model";
 import {Subject, takeUntil} from "rxjs";
 import {ResponseItem} from "../../../shared/model/response-item.model";
 import {RequestUpdateItem} from "../../../shared/model/request-update-item.model";
@@ -22,6 +21,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   monthId: number
   IdEditItemIncome: number
   IdEditItemExpense: number
+
 
   ///
 
@@ -89,7 +89,6 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   }
 
   onSubmitIncome() {
-    console.log(this.idUser)
     const updateObj = new RequestUpdateItem(
       this.idUser,
       this.formGroup.value.amount,
