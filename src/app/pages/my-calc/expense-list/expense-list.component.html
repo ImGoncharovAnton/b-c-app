@@ -6,17 +6,16 @@
   <ul
     class="expense-list-group">
     <ng-container *ngIf="expenseItems">
-<!--      [ngClass]="[item.adminChanged ? 'gray' : '']"-->
+
       <li
         *ngFor="let item of expenseItems; let i = index"
         class="expense-list-item"
-
-      >
+        [ngClass]="[item.adminChanged ? 'gray' : '']">
         <div (click)="onEditItem(item.id)">
           <p>{{item.description}}: </p>
           <span>{{item.value}}</span>
         </div>
-<!--        <p class="modified-message" *ngIf="item.adminChanged">Added or modified by admin</p>-->
+        <p class="modified-message" *ngIf="item.adminChanged">Added or modified by admin</p>
         <mat-icon
           class="expense-list-icon"
           (click)="onDelete(item.id)">delete

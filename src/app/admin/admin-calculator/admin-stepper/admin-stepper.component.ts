@@ -158,7 +158,7 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
       if (item.selectedMonth) {
         for (let monthItem of item.selectedMonth) {
           let objForSend: any = {}
-          objForSend.createdBy = item.id
+          objForSend.createdBy = this.dataService.getLocalUserId()
           objForSend.value = this.form.value.amount
           objForSend.description = this.form.value.description
           objForSend.type = null
@@ -181,10 +181,12 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
         .subscribe({
           next: res => {
             console.log('new item', res)
+            this.dataService.createItemFromAdmin$.next(true);
           },
           error: err => alert('create item error')
         })
     })
+
     alert('Successfully added!')
     this.stepper.reset()
     this.showSteps = false

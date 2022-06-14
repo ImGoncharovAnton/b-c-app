@@ -1,13 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MonthItem} from "../../shared/model/month-item.model";
 import {Subject, takeUntil} from 'rxjs';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {DataService} from "../../shared/service/data.service";
-import {ResponseMonth} from "../../shared/model/response-month.model";
-import {ResponseItem} from "../../shared/model/response-item.model";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
-import {normalizedMonth} from "../../shared/functions/normalizedMonth";
 import {ResponseMonthsForUser} from "../../shared/model/response-months-for-user";
 
 @Component({
@@ -40,6 +36,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
       return new Date(year, month - 1).toLocaleString(locale, {month: "long"});
     };
     this.dataService.getUserMonths()
+      .pipe(takeUntil(this.destroy$))
       .subscribe((months: ResponseMonthsForUser[]) => {
         console.log('months', months)
         months.map(item => {

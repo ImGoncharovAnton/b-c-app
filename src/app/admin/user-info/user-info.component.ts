@@ -3,6 +3,27 @@ import {Subject, takeUntil} from "rxjs";
 import {DataService} from 'src/app/shared/service/data.service';
 import {DialogService} from "../../shared/dialog/dialog.service";
 import {MyCalcEditComponent} from "../../pages/my-calc/my-calc-edit/my-calc-edit.component";
+import {LiteResponseItem} from "../../shared/model/lite-response-item.model";
+
+export interface UserInfoData {
+  expense: number;
+  expenseArr: LiteResponseItem[];
+  id: number;
+  income: number;
+  incomeArr: LiteResponseItem[];
+  monthName: string;
+  monthNum: number;
+  userId: string;
+  year: number;
+}
+
+// export interface UserInfoItem {
+//   id: number;
+//   createdBy: string;
+//   value: number;
+//   description: string;
+//   monthId: number
+// }
 
 
 @Component({
@@ -12,8 +33,8 @@ import {MyCalcEditComponent} from "../../pages/my-calc/my-calc-edit/my-calc-edit
 })
 export class UserInfoComponent implements OnInit, OnDestroy {
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  monthNameArr: any
   userKey: string | null
-  monthNameArr: any[] = []
   @Input() username: string
 
   constructor(private dataService: DataService,
@@ -21,10 +42,10 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.dataService.idUser$
+    this.dataService.userIdFromAdmin$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(userKey => {
-        this.userKey = userKey
+      .subscribe(userId => {
+        this.userKey = userId
         this.getUserData()
       })
 
@@ -35,69 +56,41 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   }
 
   getUserData(): void {
+    this.dataService.itemsChangesIncome$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(arrIncome => {
+        this._getUser()
+      })
+    this.dataService.itemsChangesExpense$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(arrExpense => {
+        this._getUser()
+      })
+    this._getUser()
+  }
+
+  private _getUser(): void {
     const monthLocalizedString = function (year: number, month: number, locale: string) {
       return new Date(year, month - 1).toLocaleString(locale, {month: "long"});
     };
     if (this.userKey !== null) {
-      this.dataService.getUser(this.userKey).subscribe({
-          next: (months: any) => {
-            console.log('user-info data', months)
-            months.map((item: any) => {
+      this.dataService.getUser(this.userKey)
+        .subscribe({
+          next: (months: UserInfoData[]) => {
+            months.map((item: UserInfoData) => {
               item.monthName = monthLocalizedString(item.year, item.monthNum, "en")
             })
             this.monthNameArr = months
           },
-          error: err => alert('error while fetching the records')
-        }
-      )
+          error: err => alert(`error while fetching the records, ${err}`)
+        })
     } else {
       alert('error while fetching the records')
     }
   }
 
-  // _transformData(data: any[]) {
-  //   this.monthNameArr = [];
-  //   let incomesArr: [string, unknown][] = []
-  //   let expensesArr: [string, unknown][] = []
-  //   data.map(item => {
-  //     expensesArr = Object.entries(item.expensesArr)
-  //     incomesArr = Object.entries(item.incomesArr)
-  //     item.incomesArr = incomesArr
-  //     item.expensesArr = expensesArr
-  //     this.monthNameArr.push(item)
-  //   })
-  // }
-
-  /*fetchUserMonths(idUser: string | null) {
-    this.dataService.userChanged$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(techData => {
-        if (techData && techData.userKey === idUser) {
-          this.dataService.fetchUserMonths(idUser)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(data => {
-              this._transformData(data)
-            })
-        } else {
-          this.dataService.fetchUserMonths(idUser)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-              next: data => {
-                this._transformData(data)
-              },
-              error: (err) => {
-                alert('error fetching userdata')
-              }
-            })
-        }
-      })
-  }*/
-
-
   onEditItemIncome(id: number, monthId: number) {
     let userId = this.dataService.getLocalUserId()
-    console.log('onEditItemIncome userId', userId)
-    console.log('onEditItemIncome id', id)
     this.dataService.setIdEditItemIncome(id)
     this.dataService.idUser$.next(userId)
     // MonthId тут нужен только для того, чтобы обновлялись итемы на странице пользователя
@@ -108,8 +101,6 @@ export class UserInfoComponent implements OnInit, OnDestroy {
 
   onEditItemExpense(id: number, monthId: number) {
     let userId = this.dataService.getLocalUserId()
-    console.log('onEditItemExpense userId', userId)
-    console.log('onEditItemExpense id', id)
     this.dataService.setIdEditItemExpense(id)
     this.dataService.idUser$.next(userId)
     // MonthId тут нужен только для того, чтобы обновлялись итемы на странице пользователя

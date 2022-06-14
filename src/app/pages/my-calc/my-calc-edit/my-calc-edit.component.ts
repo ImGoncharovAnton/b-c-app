@@ -102,9 +102,9 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
       this.monthId
     )
     if (this.identityIncome) {
-      this.dataService.updateItem(this.IdEditItemIncome, updateObj).subscribe((res) => {
+      this.dataService.updateItem(this.IdEditItemIncome, updateObj)
+        .subscribe((res) => {
         this.dataService.getIncomeItemsForMonth(this.monthId)
-          .pipe(takeUntil(this.destroy$))
           .subscribe(data => {
             this.dataService.itemsChangesIncome$.next(data)
           })
@@ -113,7 +113,6 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
       this.dataService.createItem(createObj)
         .subscribe(res => {
           this.dataService.getIncomeItemsForMonth(this.monthId)
-            .pipe(takeUntil(this.destroy$))
             .subscribe(data => {
               this.dataService.itemsChangesIncome$.next(data)
             })
@@ -126,7 +125,6 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   }
 
   onSubmitExpense() {
-    console.log(this.idUser)
     const updateObj = new RequestUpdateItem(
       this.idUser,
       this.formGroup.value.amount,
@@ -142,19 +140,16 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
     if (this.identityExpense) {
       // need rework this, but question... How?
       this.dataService.updateItem(this.IdEditItemExpense, updateObj)
-        .pipe(takeUntil(this.destroy$))
         .subscribe(res => {
           this.dataService.getExpenseItemsForMonth(this.monthId)
-            .pipe(takeUntil(this.destroy$))
             .subscribe(data => {
               this.dataService.itemsChangesExpense$.next(data)
             })
         })
     } else {
       this.dataService.createItem(createObj)
-        .subscribe(res => {
+        .subscribe((res: ResponseItem) => {
           this.dataService.getExpenseItemsForMonth(this.monthId)
-            .pipe(takeUntil(this.destroy$))
             .subscribe(data => {
               this.dataService.itemsChangesExpense$.next(data)
             })

@@ -9,6 +9,8 @@ import {RequestCreateItem} from "../model/request-item.model";
 import {RequestUpdateItem} from "../model/request-update-item.model";
 import {ResponseItem} from "../model/response-item.model";
 import {ResponseMonthsForUser} from "../model/response-months-for-user";
+import {UserInfoData} from "../../admin/user-info/user-info.component";
+import {LiteResponseItem} from "../model/lite-response-item.model";
 
 @Injectable({
   providedIn: 'root'
@@ -18,18 +20,31 @@ export class DataService {
   private _monthsPath: string = environment.apiMonthsUrl // "https://localhost:7206/api/months/"
   private _setupPath: string = environment.apiSetupUrl // "https://localhost:7206/api/setup/"
   monthsChanged$ = new Subject<ResponseMonthsForUser[]>()
-  itemsChangesIncome$ = new BehaviorSubject<ResponseItem[] | null>(null)
-  itemsChangesExpense$ = new BehaviorSubject<ResponseItem[] | null>(null)
+  itemsChangesIncome$ = new Subject<LiteResponseItem[]>()
+  itemsChangesExpense$ = new Subject<LiteResponseItem[]>()
   idUser$ = new BehaviorSubject<string | null>(null)
   idMonth$ = new BehaviorSubject<number | null>(null)
+  userIdFromAdmin$ = new BehaviorSubject<string | null>(null)
+  createItemFromAdmin$ = new BehaviorSubject<boolean>(false)
   IdEditItemIncome: number
   IdEditItemExpense: number
   userId: string
   showSteps$ = new BehaviorSubject<boolean>(false)
   calcResult$ = new BehaviorSubject<number>(0)
+  // itemChange$ = new Subject<ResponseItem | null>()
 
   constructor(private http: HttpClient) {
     console.log('DataService Works!')
+  }
+
+  adminDetection(item: LiteResponseItem) {
+    if (item.createdBy === this.getLocalUserId()) {
+      item.adminChanged = false
+    }
+    if (item.createdBy !== this.getLocalUserId()) {
+      item.adminChanged = true
+    }
+    return item
   }
 
   getLocalUserId() {
@@ -87,19 +102,19 @@ export class DataService {
   }
 
   getIncomeItemsForMonth(monthId: number) {
-    return this.http.get<ResponseItem[]>(this._itemsPath + 'getIncomeItemsForMonth/' + monthId)
+    return this.http.get<LiteResponseItem[]>(this._itemsPath + 'getIncomeItemsForMonth/' + monthId)
   }
 
   getExpenseItemsForMonth(monthId: number) {
-    return this.http.get<ResponseItem[]>(this._itemsPath + 'getExpenseItemsForMonth/' + monthId)
+    return this.http.get<LiteResponseItem[]>(this._itemsPath + 'getExpenseItemsForMonth/' + monthId)
   }
 
   createItem(item:RequestCreateItem) {
-    return this.http.post(this._itemsPath + 'createItem', item)
+    return this.http.post<ResponseItem>(this._itemsPath + 'createItem', item)
   }
 
   updateItem(id: number, item: RequestUpdateItem) {
-    return this.http.put<ResponseItem>(this._itemsPath + 'updateItem/' + id, item)
+    return this.http.put(this._itemsPath + 'updateItem/' + id, item)
   }
 
   deleteItem(id: number) {
@@ -115,7 +130,7 @@ export class DataService {
   }
 
   getUser(id: string) {
-    return this.http.get(this._setupPath + 'GetUser/' + id)
+    return this.http.get<UserInfoData[]>(this._setupPath + 'GetUser/' + id)
   }
 
   // ------------------------------Admin panel end -----------------------------------

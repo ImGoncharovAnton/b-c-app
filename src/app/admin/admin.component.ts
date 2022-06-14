@@ -3,8 +3,9 @@ import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {DataService} from '../shared/service/data.service';
-import {Subject} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {BudgetItem} from "../shared/model/budget-item.model";
+import {ResponseItem} from "../shared/model/response-item.model";
 
 export interface allUsersForAdmin {
   email: string;
@@ -24,29 +25,6 @@ export interface allUsersForAdminMonth {
   income: number;
   expense: number;
   monthName: string;
-}
-
-
-export interface UserInfo {
-  username: string
-  email: string
-  key: string
-  role: string
-  months?: any
-  income?: number
-  expense?: number
-  beautyMonths?: any
-  editedMonths?: any;
-}
-
-export interface DataForAdminPanel {
-  userKey: string
-  monthKey: string
-  monthIndex: number
-  income?: number
-  expense?: number
-  incomeItem?: BudgetItem
-  expenseItem?: BudgetItem
 }
 
 @Component({
@@ -78,7 +56,15 @@ export class AdminComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.gelAllData()
+    this.dataService.createItemFromAdmin$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(val => {
+        if (val) {
+          this.gelAllData()
+        } else {
+          this.gelAllData()
+        }
+      })
   }
 
   ngOnDestroy() {
@@ -88,18 +74,50 @@ export class AdminComponent implements OnInit, OnDestroy {
   gelAllData() {
     this.dataService.getAllUsers().subscribe({
         next: (res: allUsersForAdmin[]) => {
+          console.log('admin component data', res)
           res.map((item: allUsersForAdmin) => {
+            let monthIdIncome: number
+            let monthIdExpense: number
+            let incomeValue: number
+            let expenseValue: number
+            this.dataService.itemsChangesIncome$
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(incomeArr => {
+                incomeValue = incomeArr.map(incomeItem => {
+                  monthIdIncome = incomeItem.monthId
+                  return incomeItem.value
+                }).reduce((a: number, b: number) => {
+                  return a + b
+                })
+                if (item.months.length > 0) {
+                  for (let month of item.months) {
+                    if (monthIdIncome === month.monthId) {
+                      month.income = incomeValue
+                    }
+                  }
+                  this._getSumMonths(item)
+                }
+              })
+            this.dataService.itemsChangesExpense$
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(expenseArr => {
+                expenseValue = expenseArr.map(expenseArr => {
+                  monthIdExpense = expenseArr.monthId
+                  return expenseArr.value
+                }).reduce((a: number, b: number) => {
+                  return a + b
+                })
+                if (item.months.length > 0) {
+                  for (let month of item.months) {
+                    if (monthIdExpense === month.monthId) {
+                      month.expense = expenseValue
+                    }
+                  }
+                  this._getSumMonths(item)
+                }
+              })
             if (item.months.length > 0) {
-              item.income = item.months.map((p: any) => {
-                return p.income
-              }).reduce((a: number, b: number) => {
-                return a + b
-              });
-              item.expense = item.months.map((p: any) => {
-                return p.expense
-              }).reduce((a: number, b: number) => {
-                return a + b
-              });
+              this._getSumMonths(item)
             }
           })
           this.dataSource = new MatTableDataSource<allUsersForAdmin>(res)
@@ -111,6 +129,20 @@ export class AdminComponent implements OnInit, OnDestroy {
         }
       }
     )
+  }
+
+  _getSumMonths(item: allUsersForAdmin) {
+    item.income = item.months.map((p: any) => {
+      return p.income
+    }).reduce((a: number, b: number) => {
+      return a + b
+    });
+    item.expense = item.months.map((p: any) => {
+      return p.expense
+    }).reduce((a: number, b: number) => {
+      return a + b
+    });
+    return item
   }
 
   /*getAllUsers() {
@@ -174,6 +206,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   onOpenUser(row: allUsersForAdmin) {
     this.username = row.username
     this.isOpenTab = true
-    this.dataService.idUser$.next(row.id)
+    this.dataService.userIdFromAdmin$.next(row.id)
   }
 }

@@ -3,8 +3,9 @@ import {Subject, takeUntil} from "rxjs";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {MyCalcEditComponent} from "../my-calc-edit/my-calc-edit.component";
 import {DataService} from 'src/app/shared/service/data.service';
-import {ResponseItem} from "../../../shared/model/response-item.model";
 import {normalizedItems} from "../../../shared/functions/normalizedItems";
+import {ActivatedRoute, Router} from "@angular/router";
+import {LiteResponseItem} from "../../../shared/model/lite-response-item.model";
 
 @Component({
   selector: 'app-income-list',
@@ -12,13 +13,14 @@ import {normalizedItems} from "../../../shared/functions/normalizedItems";
   styleUrls: ['./income-list.component.scss']
 })
 export class IncomeListComponent implements OnInit, OnDestroy {
-  incomeItems: ResponseItem[];
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+  incomeItems: LiteResponseItem[] = [];
+  private destroy$ = new Subject();
   monthId: number;
-  totalIncome: number;
+  totalIncome: number = 0;
 
   constructor(private dialog: DialogService,
-              private dataService: DataService) {
+              private dataService: DataService,
+              private route: ActivatedRoute) {
   }
 
   onEditItem(id: number) {
@@ -27,19 +29,22 @@ export class IncomeListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.dataService.idMonth$
+    this.route.queryParams
       .pipe(takeUntil(this.destroy$))
-      .subscribe(monthId => {
-        if (monthId !== null) {
-          this.monthId = monthId
+      .subscribe(params => {
+          this.monthId = params['id']
+          this.dataService.idMonth$.next(this.monthId)
         }
-      })
+      )
     this.dataService.itemsChangesIncome$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(items => {
-        if (items !== null && items.length > 0) {
-          this.incomeItems = items
-          this.totalIncome = normalizedItems(items)
+      .subscribe(itemsChanged => {
+        if (itemsChanged !== null && itemsChanged.length > 0) {
+          itemsChanged.map(item => {
+            this.dataService.adminDetection(item)
+          })
+          this.incomeItems = itemsChanged
+          this.totalIncome = normalizedItems(itemsChanged)
         } else {
           this.incomeItems = []
           this.totalIncome = 0
@@ -48,14 +53,20 @@ export class IncomeListComponent implements OnInit, OnDestroy {
     this.dataService.getIncomeItemsForMonth(this.monthId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(items => {
+        console.log('items income', items)
         if (items.length > 0) {
+          items.map(item => {
+            this.dataService.adminDetection(item)
+          })
           this.incomeItems = items
           this.totalIncome = normalizedItems(items)
         }
       })
   }
+
   ngOnDestroy(): void {
-    this.destroy$.next(true)
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 
   onDelete(id: number) {
@@ -70,4 +81,10 @@ export class IncomeListComponent implements OnInit, OnDestroy {
         console.log('Delete success', res)
       })
   }
+
+ /* var myArray = ['one', 'two', 'three'];
+  var myIndex = myArray.indexOf('two');
+  if (myIndex !== -1) {
+  myArray.splice(myIndex, 1);
+}*/
 }
