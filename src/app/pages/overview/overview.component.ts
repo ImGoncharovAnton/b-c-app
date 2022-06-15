@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {DataService} from "../../shared/service/data.service";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
-import {ResponseMonthsForUser} from "../../shared/model/response-months-for-user";
+import {ResponseMonthsForUser} from "../../shared/model/response/response-months-for-user";
 
 @Component({
   selector: 'app-overview',

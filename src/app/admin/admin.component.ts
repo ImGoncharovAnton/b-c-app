@@ -4,8 +4,6 @@ import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {DataService} from '../shared/service/data.service';
 import {Subject, takeUntil} from "rxjs";
-import {BudgetItem} from "../shared/model/budget-item.model";
-import {ResponseItem} from "../shared/model/response-item.model";
 
 export interface allUsersForAdmin {
   email: string;
@@ -74,7 +72,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   gelAllData() {
     this.dataService.getAllUsers().subscribe({
         next: (res: allUsersForAdmin[]) => {
-          console.log('admin component data', res)
           res.map((item: allUsersForAdmin) => {
             let monthIdIncome: number
             let monthIdExpense: number

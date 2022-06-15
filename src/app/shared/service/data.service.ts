@@ -3,14 +3,14 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Subject} from "rxjs";
 import {allUsersForAdmin} from "../../admin/admin.component";
 import {environment} from "../../../environments/environment";
-import {RequestMonth} from "../model/request-month.model";
-import {ResponseMonth} from "../model/response-month.model";
-import {RequestCreateItem} from "../model/request-item.model";
-import {RequestUpdateItem} from "../model/request-update-item.model";
-import {ResponseItem} from "../model/response-item.model";
-import {ResponseMonthsForUser} from "../model/response-months-for-user";
+import {RequestMonth} from "../model/request/request-month.model";
+import {ResponseMonth} from "../model/response/response-month.model";
+import {RequestCreateItem} from "../model/request/request-item.model";
+import {RequestUpdateItem} from "../model/request/request-update-item.model";
+import {ResponseMonthsForUser} from "../model/response/response-months-for-user";
 import {UserInfoData} from "../../admin/user-info/user-info.component";
-import {LiteResponseItem} from "../model/lite-response-item.model";
+import {LiteResponseItem} from "../model/response/lite-response-item.model";
+import {IHubMessage} from "../model/IHubMessage";
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +29,7 @@ export class DataService {
   IdEditItemIncome: number
   IdEditItemExpense: number
   userId: string
+  userIdForMessage: string
   showSteps$ = new BehaviorSubject<boolean>(false)
   calcResult$ = new BehaviorSubject<number>(0)
   // itemChange$ = new Subject<ResponseItem | null>()
@@ -68,6 +69,13 @@ export class DataService {
   getIdEditItemExpense() {
     return this.IdEditItemExpense
   }
+  setUserIdForMessage(userIdForMessage: string) {
+    this.userIdForMessage = userIdForMessage
+  }
+
+  getUserIdForMessage() {
+      return this.userIdForMessage
+  }
 
   // -------------------Months start---------------------------------------------
 
@@ -92,13 +100,8 @@ export class DataService {
 
   // --------------------------Items start-------------------------------------
 
-  // test request
-  getItems() {
-    return this.http.get(this._itemsPath + 'GetItems')
-  }
-
   getItem(id: number) {
-    return this.http.get<ResponseItem>(this._itemsPath + 'GetItem/' + id)
+    return this.http.get<LiteResponseItem>(this._itemsPath + 'GetItem/' + id)
   }
 
   getIncomeItemsForMonth(monthId: number) {
@@ -110,7 +113,7 @@ export class DataService {
   }
 
   createItem(item:RequestCreateItem) {
-    return this.http.post<ResponseItem>(this._itemsPath + 'createItem', item)
+    return this.http.post<LiteResponseItem>(this._itemsPath + 'createItem', item)
   }
 
   updateItem(id: number, item: RequestUpdateItem) {
@@ -135,4 +138,12 @@ export class DataService {
 
   // ------------------------------Admin panel end -----------------------------------
 
+  // -----------------------------SignalR---------------------------------------------
+
+  sendMessage(userId: string, message: string) {
+    let messageObj: any = {}
+    messageObj.userId = userId
+    messageObj.message = message
+    return this.http.post(this._setupPath + 'SendMessage', messageObj)
+  }
 }

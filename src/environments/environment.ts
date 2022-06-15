@@ -4,11 +4,7 @@
 
 export const environment = {
   production: false,
-  // apiAuthUrl: "https://localhost:7206/api/authmanagement/",
-  // apiItemsUrl: "https://localhost:7206/api/items/",
-  // apiMonthsUrl: "https://localhost:7206/api/months/"
-  // apiSetupUrl: "https://localhost:7206/api/setup/"
-
+  baseUrl: "https://localhost:7083/",
   apiAuthUrl: "https://localhost:7083/api/authmanagement/",
   apiItemsUrl: "https://localhost:7083/api/items/",
   apiMonthsUrl: "https://localhost:7083/api/months/",

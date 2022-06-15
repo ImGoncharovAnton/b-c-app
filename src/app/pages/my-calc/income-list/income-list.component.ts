@@ -5,7 +5,7 @@ import {MyCalcEditComponent} from "../my-calc-edit/my-calc-edit.component";
 import {DataService} from 'src/app/shared/service/data.service';
 import {normalizedItems} from "../../../shared/functions/normalizedItems";
 import {ActivatedRoute, Router} from "@angular/router";
-import {LiteResponseItem} from "../../../shared/model/lite-response-item.model";
+import {LiteResponseItem} from "../../../shared/model/response/lite-response-item.model";
 
 @Component({
   selector: 'app-income-list',

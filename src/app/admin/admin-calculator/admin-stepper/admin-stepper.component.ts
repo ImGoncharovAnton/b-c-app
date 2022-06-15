@@ -5,7 +5,8 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {DataService} from "../../../shared/service/data.service";
 import {MatStepper, StepperOrientation} from "@angular/material/stepper";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {RequestCreateItem} from "../../../shared/model/request-item.model";
+import {RequestCreateItem} from "../../../shared/model/request/request-item.model";
+import {IHubMessage} from "../../../shared/model/IHubMessage";
 
 @Component({
   selector: 'app-admin-stepper',
@@ -74,7 +75,6 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
             }
           })
           this.usersArray = dataArr
-          console.log('admin stepper data', data)
         },
         error: err => alert('error while fetching the records')
       })
@@ -153,8 +153,11 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
   onSubmit() {
     let selectedData = this.selectedValue;
     let arrForSend: RequestCreateItem[] = []
+    let userIdArr: string[] = []
+    let message: string = 'New items added by admin, please reload page!'
 
     for (let item of selectedData) {
+      userIdArr.push(item.id)
       if (item.selectedMonth) {
         for (let monthItem of item.selectedMonth) {
           let objForSend: any = {}
@@ -170,24 +173,31 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
             objForSend.type = 1
           }
           arrForSend.push(objForSend)
-          console.log('arrForSend', arrForSend)
         }
       }
     }
 
-    arrForSend.forEach(item => {
-      this.dataService.createItem(item)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: res => {
-            console.log('new item', res)
-            this.dataService.createItemFromAdmin$.next(true);
-          },
-          error: err => alert('create item error')
-        })
-    })
 
-    alert('Successfully added!')
+    try {
+      arrForSend.forEach(item => {
+        this.dataService.createItem(item)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(
+            res => this.dataService.createItemFromAdmin$.next(true)
+          )
+      })
+      alert('Successfully added!')
+      userIdArr.forEach(el => {
+        this.dataService.sendMessage(el, message)
+          .subscribe({
+            next: (res) => {},
+            error: er => console.error(er)
+          })
+      })
+    }
+    catch (e) {
+      alert('create item error')
+    }
     this.stepper.reset()
     this.showSteps = false
   }

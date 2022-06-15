@@ -1,13 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DialogService} from "../../../shared/dialog/dialog.service";
-import {BudgetItem} from "../../../shared/model/budget-item.model";
 import {Subject, takeUntil} from "rxjs";
 import {MyCalcEditComponent} from "../my-calc-edit/my-calc-edit.component";
 import {DataService} from 'src/app/shared/service/data.service';
-import {ResponseItem} from "../../../shared/model/response-item.model";
 import {normalizedItems} from "../../../shared/functions/normalizedItems";
 import {ActivatedRoute} from "@angular/router";
-import {LiteResponseItem} from "../../../shared/model/lite-response-item.model";
+import {LiteResponseItem} from "../../../shared/model/response/lite-response-item.model";
 
 @Component({
   selector: 'app-expense-list',

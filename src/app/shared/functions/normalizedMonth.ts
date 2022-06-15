@@ -1,5 +1,5 @@
-import {ResponseItem} from "../model/response-item.model";
-import {ResponseMonth} from "../model/response-month.model";
+import {ResponseMonth} from "../model/response/response-month.model";
+import {LiteResponseItem} from "../model/response/lite-response-item.model";
 
 export function normalizedMonth(item: ResponseMonth) {
   const monthLocalizedString = function (year: number, month: number, locale: string) {
@@ -11,7 +11,7 @@ export function normalizedMonth(item: ResponseMonth) {
   let expense: number = 0
   if (item.items.length > 0) {
     dataItems = item.items
-    income = dataItems.map((i: ResponseItem) => {
+    income = dataItems.map((i: LiteResponseItem) => {
       if (i.type === 0){
         return i.value
       } else {
@@ -20,7 +20,7 @@ export function normalizedMonth(item: ResponseMonth) {
     }).reduce((a, b) => {
       return a + b
     });
-    expense = dataItems.map((i: ResponseItem) => {
+    expense = dataItems.map((i: LiteResponseItem) => {
       if (i.type === 1){
         return i.value
       } else {

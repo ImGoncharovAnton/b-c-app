@@ -3,7 +3,7 @@ import {Subject, takeUntil} from "rxjs";
 import {DataService} from 'src/app/shared/service/data.service';
 import {DialogService} from "../../shared/dialog/dialog.service";
 import {MyCalcEditComponent} from "../../pages/my-calc/my-calc-edit/my-calc-edit.component";
-import {LiteResponseItem} from "../../shared/model/lite-response-item.model";
+import {LiteResponseItem} from "../../shared/model/response/lite-response-item.model";
 
 export interface UserInfoData {
   expense: number;
@@ -90,21 +90,24 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   }
 
   onEditItemIncome(id: number, monthId: number) {
+    if (this.userKey !== null) {
+      this.dataService.setUserIdForMessage(this.userKey)
+    }
     let userId = this.dataService.getLocalUserId()
     this.dataService.setIdEditItemIncome(id)
     this.dataService.idUser$.next(userId)
-    // MonthId тут нужен только для того, чтобы обновлялись итемы на странице пользователя
-    // если переписать логику обновления внутри my-calc-edit, monthId нужно будет убрать
     this.dataService.idMonth$.next(monthId)
+
     this.dialog.open(MyCalcEditComponent, {data: 'income'})
   }
 
   onEditItemExpense(id: number, monthId: number) {
+    if (this.userKey !== null) {
+      this.dataService.setUserIdForMessage(this.userKey)
+    }
     let userId = this.dataService.getLocalUserId()
     this.dataService.setIdEditItemExpense(id)
     this.dataService.idUser$.next(userId)
-    // MonthId тут нужен только для того, чтобы обновлялись итемы на странице пользователя
-    // если переписать логику обновления внутри my-calc-edit, monthId нужно будет убрать
     this.dataService.idMonth$.next(monthId)
     this.dialog.open(MyCalcEditComponent, {data: 'expense'})
   }

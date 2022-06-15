@@ -3,7 +3,6 @@ import {Router} from '@angular/router';
 import {AuthService, ResponseAuthData} from '../shared/service/auth.service';
 import {NgForm, NgModel} from "@angular/forms";
 import {Observable} from "rxjs";
-import {DataService} from '../shared/service/data.service';
 
 @Component({
   selector: 'app-auth',
@@ -17,12 +16,12 @@ export class AuthComponent implements OnInit {
   error: string = '';
 
   constructor(private authService: AuthService,
-              private router: Router,
-              private dataService: DataService) {
+              private router: Router) {
   }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
+    this.error = '';
   }
 
   ngOnInit(): void {
@@ -32,21 +31,18 @@ export class AuthComponent implements OnInit {
     if (!form.valid) {
       return
     }
-    const username = form.value.username;
     const email = form.value.email;
     const password = form.value.password;
     // Checking for word "admin" at registration
     const result = email.match(/admin/)
 
-    // let authObs: Observable<AuthResponseData>
     let authObs: Observable<ResponseAuthData>
 
     this.isLoading = true;
     this.error = '';
 
     if (this.isLoginMode) {
-      authObs = this.authService.login1(email, password)
-      // authObs = this.authService.login(email, password)
+      authObs = this.authService.login(email, password)
     } else {
       // Checking for word "admin" at registration
       if (result) {
@@ -54,21 +50,12 @@ export class AuthComponent implements OnInit {
         form.reset()
         return alert('E-mail with the word "admin" cannot be used, please use another email')
       } else {
-        authObs = this.authService.register1(form.value);
-        // authObs = this.authService.signUp(email, password)
+        authObs = this.authService.register(form.value);
       }
     }
 
     authObs.subscribe({
       next: (response) => {
-        console.log('Auth response', response)
-        // if (!this.isLoginMode) {
-        //   console.log('register true')
-        //   this.dataService.storeUser(username, response.email, response.localId)
-        // } else {
-        //   console.log('login true')
-        //   this.dataService.getUserId(response.localId)
-        // }
         this.isLoading = false;
         this.router.navigate(['/overview-page']);
       },
@@ -88,7 +75,7 @@ export class AuthComponent implements OnInit {
     if (password.errors?.['required']) {
       return 'Password is required'
     } else if (password.errors?.['minlength']) {
-      return 'Password should be at least 6 characters'
+      return 'Password should be at least 8 characters, at least one lower and uppercase char, and must have at least one non alphanumeric char'
     }
     return null
   }

@@ -1,4 +1,4 @@
-import {LiteResponseItem} from "../model/lite-response-item.model";
+import {LiteResponseItem} from "../model/response/lite-response-item.model";
 
 export function normalizedItems(items: LiteResponseItem[]) {
   let total: number

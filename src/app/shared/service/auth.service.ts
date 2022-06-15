@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, Observable, tap} from "rxjs";
-import {User1} from "../model/user.model";
+import {User} from "../model/user.model";
 import {Router} from "@angular/router";
 import {environment} from "../../../environments/environment";
 
@@ -32,7 +32,7 @@ export class AuthService {
       refreshToken: this.getToken().refreshToken
     }).pipe(
       tap(response => {
-        this.handleAuthentication1(
+        this.handleAuthentication(
           response.token,
           response.refreshToken
         )
@@ -49,32 +49,32 @@ export class AuthService {
     }
   }
 
-  public register1(data: any) {
+  public register(data: any) {
     return this.http.post<ResponseAuthData>(this._authPath + 'register', data).pipe(tap(resData => {
-      this.handleAuthentication1(
+      this.handleAuthentication(
         resData.token,
         resData.refreshToken)
     }))
   }
 
-  public login1(email: string, password: string) {
+  public login(email: string, password: string) {
     return this.http.post<ResponseAuthData>(this._authPath + 'login', {email: email, password: password})
       .pipe(tap(resData => {
-        this.handleAuthentication1(
+        this.handleAuthentication(
           resData.token,
           resData.refreshToken
         )
       }))
   }
 
-  handleAuthentication1(token: string, refreshToken: string) {
+  handleAuthentication(token: string, refreshToken: string) {
     const decodedToken = JSON.parse(atob(token.split('.')[1]))
     const userId: string = decodedToken.id
     const role: string = decodedToken.role
     const dif: number = decodedToken.exp - decodedToken.iat
     const expireDate: Date = new Date(decodedToken.exp * 1000); // Tue Jun 07 2022 15:58:25 GMT+0300 (Msc)
 
-    const user = new User1(
+    const user = new User(
       userId,
       role,
       refreshToken,
@@ -102,7 +102,7 @@ export class AuthService {
     }
 
     if (new Date(userData.tokenExpirationDate) > new Date()) { // check valid expiration
-      const loadedUser = new User1(
+      const loadedUser = new User(
         userData.userId,
         userData.role,
         userData.refreshToken,
@@ -137,29 +137,4 @@ export class AuthService {
       this.logout();
     }, expirationDuration);
   }
-
-/*  private handleAuthentication(
-    email: string,
-    userId: string,
-    token: string,
-    expiresIn: number) {
-    let role: string
-    const result = email.match(/admin/)
-    if (result) {
-      role = 'immortal';
-    } else {
-      role = 'mortal'
-    }
-
-    const expireDate = new Date(new Date().getTime() + expiresIn * 1000)
-    const user = new User(
-      email,
-      userId,
-      token,
-      expireDate,
-      role)
-    this.userSub$.next(user)
-    this.autoLogout(expiresIn * 1000)
-    localStorage.setItem('userData', JSON.stringify(user))
-  }*/
 }

@@ -4,7 +4,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {MyCalcEditComponent} from "./my-calc-edit/my-calc-edit.component";
 import {DialogService} from 'src/app/shared/dialog/dialog.service';
 import {DataService} from 'src/app/shared/service/data.service';
-import {MonthItem} from "../../shared/model/month-item.model";
 import {normalizedMonth} from "../../shared/functions/normalizedMonth";
 import {normalizedItems} from "../../shared/functions/normalizedItems";
 
@@ -17,7 +16,6 @@ export class MyCalcComponent implements OnInit, OnDestroy {
   parentId: number
   totalBudget: number
   monthName: string
-  month: MonthItem
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private route: ActivatedRoute,

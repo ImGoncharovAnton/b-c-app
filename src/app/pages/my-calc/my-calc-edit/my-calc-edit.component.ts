@@ -4,9 +4,9 @@ import {DataService} from 'src/app/shared/service/data.service';
 import {DialogRef} from "../../../shared/dialog/dialog-ref";
 import {DIALOG_DATA} from "../../../shared/dialog/dialog-token";
 import {Subject, takeUntil} from "rxjs";
-import {ResponseItem} from "../../../shared/model/response-item.model";
-import {RequestUpdateItem} from "../../../shared/model/request-update-item.model";
-import {RequestCreateItem} from "../../../shared/model/request-item.model";
+import {RequestUpdateItem} from "../../../shared/model/request/request-update-item.model";
+import {RequestCreateItem} from "../../../shared/model/request/request-item.model";
+import {LiteResponseItem} from "../../../shared/model/response/lite-response-item.model";
 
 @Component({
   selector: 'app-my-calc-edit',
@@ -21,14 +21,8 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
   monthId: number
   IdEditItemIncome: number
   IdEditItemExpense: number
+  message = "item updated by admin, please reload page!"
 
-
-  ///
-
-  editedItemIndex: number;
-  userKeyId: string | null;
-  monthKeyId: string | null;
-  changedState: boolean = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private dialogRef: DialogRef,
@@ -58,7 +52,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
       this.IdEditItemIncome = this.dataService.getIdEditItemIncome()
       this.dataService.getItem(this.IdEditItemIncome)
         .pipe(takeUntil(this.destroy$))
-        .subscribe((item: ResponseItem) => {
+        .subscribe((item: LiteResponseItem) => {
           this.formGroup.setValue({
             amount: item.value,
             description: item.description
@@ -70,7 +64,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
       this.IdEditItemExpense = this.dataService.getIdEditItemExpense()
       this.dataService.getItem(this.IdEditItemExpense)
         .pipe(takeUntil(this.destroy$))
-        .subscribe((item: ResponseItem) => {
+        .subscribe((item: LiteResponseItem) => {
           this.formGroup.setValue({
             amount: item.value,
             description: item.description
@@ -101,6 +95,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
       0,
       this.monthId
     )
+    let userIdForMessage = this.dataService.getUserIdForMessage()
     if (this.identityIncome) {
       this.dataService.updateItem(this.IdEditItemIncome, updateObj)
         .subscribe((res) => {
@@ -109,6 +104,9 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
             this.dataService.itemsChangesIncome$.next(data)
           })
       })
+      if(userIdForMessage) {
+        this.dataService.sendMessage(userIdForMessage, this.message).subscribe()
+      }
     } else {
       this.dataService.createItem(createObj)
         .subscribe(res => {
@@ -137,6 +135,7 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
       1,
       this.monthId
     )
+    let userIdForMessage = this.dataService.getUserIdForMessage()
     if (this.identityExpense) {
       // need rework this, but question... How?
       this.dataService.updateItem(this.IdEditItemExpense, updateObj)
@@ -146,9 +145,13 @@ export class MyCalcEditComponent implements OnInit, OnDestroy {
               this.dataService.itemsChangesExpense$.next(data)
             })
         })
+      if(userIdForMessage) {
+        this.dataService.sendMessage(userIdForMessage, this.message).subscribe()
+      }
     } else {
       this.dataService.createItem(createObj)
-        .subscribe((res: ResponseItem) => {
+        .subscribe((res: LiteResponseItem) => {
+          console.log('res create item expense', res)
           this.dataService.getExpenseItemsForMonth(this.monthId)
             .subscribe(data => {
               this.dataService.itemsChangesExpense$.next(data)
