@@ -75,7 +75,7 @@ export class AuthComponent implements OnInit {
     if (password.errors?.['required']) {
       return 'Password is required'
     } else if (password.errors?.['minlength']) {
-      return 'Password should be at least 8 characters, at least one lower and uppercase char, and must have at least one non alphanumeric char'
+      return 'Password should be at least 8 characters, at least one uppercase char and unique char'
     }
     return null
   }

@@ -38,7 +38,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.dataService.getUserMonths()
       .pipe(takeUntil(this.destroy$))
       .subscribe((months: ResponseMonthsForUser[]) => {
-        console.log('months', months)
         months.map(item => {
           item.monthName = monthLocalizedString(item.year, item.monthNum, 'en')
         })

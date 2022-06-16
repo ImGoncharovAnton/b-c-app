@@ -28,24 +28,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private _signalR() {
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl(environment.baseUrl + 'messageHub')
-      .build()
-    connection.on("MessageReceived", (obj:IHubMessage) => {
-      if (this._getLocalUserId() === obj.userId) {
-        console.log(obj)
-        alert(obj.message)
-      }
-    })
-    connection.start()
-      .catch(err => console.error(err));
+    if (this._getLocalRole() !== 'Immortal') {
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl(environment.baseUrl + 'messageHub')
+        .build()
+      connection.on("MessageReceived", (obj:IHubMessage) => {
+        if (this._getLocalUserId() === obj.userId) {
+          alert(obj.message)
+        }
+      })
+      connection.start()
+        .catch(err => console.error(err));
+    }
   }
 
-  // private _getLocalRole() {
-  //   let jsonData = localStorage.getItem('userData')
-  //   let userData = jsonData !== null ? JSON.parse(jsonData) : []
-  //   return userData.role
-  // }
+  private _getLocalRole() {
+    let jsonData = localStorage.getItem('userData')
+    let userData = jsonData !== null ? JSON.parse(jsonData) : []
+    return userData.role
+  }
 
   private _getLocalUserId() {
     let jsonData = localStorage.getItem('userData')

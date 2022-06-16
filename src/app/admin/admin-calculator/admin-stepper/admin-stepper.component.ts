@@ -83,7 +83,6 @@ export class AdminStepperComponent implements OnInit, OnDestroy {
 
   onSelectValueUser(selectedValue: allUsersForAdmin[]) {
     this.selectedValue = selectedValue
-    console.log('this.selectedValue', this.selectedValue)
     if (this.selectedValue && this.selectedValue.length > 0) {
       this.stepper.selected!.completed = true
     }
